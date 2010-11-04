@@ -1,7 +1,7 @@
 /*
  * The MIT License
  * 
- * Copyright (c) 2004-2009, Sun Microsystems, Inc., Kohsuke Kawaguchi
+ * Copyright (c) 2004-2009, Sun Microsystems, Inc., Kohsuke Kawaguchi, Olivier Lamy
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,12 @@
  */
 package hudson.maven;
 
+import static hudson.Util.fixNull;
+import hudson.AbortException;
+import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Proc;
-import hudson.AbortException;
-import hudson.EnvVars;
-import hudson.slaves.Channels;
-import static hudson.Util.fixNull;
-import hudson.maven.agent.Main;
-import hudson.maven.agent.Maven21Interceptor;
-import hudson.maven.agent.PluginManagerInterceptor;
-import hudson.maven.ProcessCache.NewProcess;
 import hudson.model.BuildListener;
 import hudson.model.Computer;
 import hudson.model.Executor;
@@ -49,10 +44,9 @@ import hudson.remoting.RemoteOutputStream;
 import hudson.remoting.SocketInputStream;
 import hudson.remoting.SocketOutputStream;
 import hudson.remoting.Which;
+import hudson.slaves.Channels;
 import hudson.tasks.Maven.MavenInstallation;
-import hudson.tasks._maven.MavenConsoleAnnotator;
 import hudson.util.ArgumentListBuilder;
-import hudson.util.IOException2;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -65,21 +59,19 @@ import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import org.apache.tools.ant.AntClassLoader;
-import org.codehaus.plexus.classworlds.ClassWorld;
-
+import org.jvnet.hudson.maven3.agent.Maven3Main;
+import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
+import org.kohsuke.stapler.framework.io.IOException2;
 
 /**
- * Launches the maven process.
+ * @author Olivier Lamy
  *
- * @author Kohsuke Kawaguchi
  */
-final class MavenProcessFactory implements ProcessCache.Factory {
+public class Maven3ProcessFactory implements ProcessCache.Factory
+{
     private final MavenModuleSet mms;
     private final Launcher launcher;
     /**
@@ -98,7 +90,7 @@ final class MavenProcessFactory implements ProcessCache.Factory {
      */
     private final FilePath workDir;
 
-    MavenProcessFactory(MavenModuleSet mms, Launcher launcher, EnvVars envVars, FilePath workDir) {
+    Maven3ProcessFactory(MavenModuleSet mms, Launcher launcher, EnvVars envVars, FilePath workDir) {
         this.mms = mms;
         this.launcher = launcher;
         this.envVars = envVars;
@@ -145,12 +137,6 @@ final class MavenProcessFactory implements ProcessCache.Factory {
         int getPort();
     }
 
-    private static final class GetCharset implements Callable<String,IOException> {
-        public String call() throws IOException {
-            return System.getProperty("file.encoding");
-        }
-    }
-
     /**
      * Opens a server socket and returns {@link Acceptor} so that
      * we can accept a connection later on it.
@@ -172,7 +158,7 @@ final class MavenProcessFactory implements ProcessCache.Factory {
                 this.serverSocket = new ServerSocket();
                 serverSocket.bind(null); // new InetSocketAddress(InetAddress.getLocalHost(),0));
                 // prevent a hang at the accept method in case the forked process didn't start successfully
-                serverSocket.setSoTimeout(socketTimeOut);
+                serverSocket.setSoTimeout(MavenProcessFactory.socketTimeOut);
             }
 
             public Connection accept() throws IOException {
@@ -199,25 +185,15 @@ final class MavenProcessFactory implements ProcessCache.Factory {
     /**
      * Starts maven process.
      */
-    public NewProcess newProcess(BuildListener listener, OutputStream out) throws IOException, InterruptedException {
-        if(debug)
+    public ProcessCache.NewProcess newProcess(BuildListener listener, OutputStream out) throws IOException, InterruptedException {
+        if(MavenProcessFactory.debug)
             listener.getLogger().println("Using env variables: "+ envVars);
         try {
-            //launcher.getChannel().export( type, instance )
             final Acceptor acceptor = launcher.getChannel().call(new SocketHandler());
-            Charset charset;
-            try {
-                charset = Charset.forName(launcher.getChannel().call(new GetCharset()));
-            } catch (UnsupportedCharsetException e) {
-                // choose the bit preserving charset. not entirely sure if iso-8859-1 does that though.
-                charset = Charset.forName("iso-8859-1");
-            }
 
-            MavenConsoleAnnotator mca = new MavenConsoleAnnotator(out,charset);
-
-            final ArgumentListBuilder cmdLine = buildMavenCmdLine(listener,acceptor.getPort());
+            final ArgumentListBuilder cmdLine = buildMavenAgentCmdLine(listener,acceptor.getPort());
             String[] cmds = cmdLine.toCommandArray();
-            final Proc proc = launcher.launch().cmds(cmds).envs(envVars).stdout(mca).pwd(workDir).start();
+            final Proc proc = launcher.launch().cmds(cmds).envs(envVars).stdout(out).pwd(workDir).start();
 
             Connection con;
             try {
@@ -231,7 +207,7 @@ final class MavenProcessFactory implements ProcessCache.Factory {
                 throw e;
             }
 
-            return new NewProcess(
+            return new ProcessCache.NewProcess(
                 Channels.forProcess("Channel to Maven "+ Arrays.toString(cmds),
                     Computer.threadPoolForRemoting, new BufferedInputStream(con.in), new BufferedOutputStream(con.out),
                     listener.getLogger(), proc),
@@ -250,9 +226,8 @@ final class MavenProcessFactory implements ProcessCache.Factory {
     /**
      * Builds the command line argument list to launch the maven process.
      *
-     * UGLY.
      */
-    private ArgumentListBuilder buildMavenCmdLine(BuildListener listener,int tcpPort) throws IOException, InterruptedException {
+    private ArgumentListBuilder buildMavenAgentCmdLine(BuildListener listener,int tcpPort) throws IOException, InterruptedException {
         MavenInstallation mvn = getMavenInstallation(listener);
         if(mvn==null) {
             listener.error("Maven version is not configured for this project. Can't determine which Maven to run");
@@ -279,26 +254,18 @@ final class MavenProcessFactory implements ProcessCache.Factory {
             args.add(jdk.getHome()+"/bin/java"); // use JDK.getExecutable() here ?
         }
 
-        if(debugPort!=0)
-            args.add("-Xrunjdwp:transport=dt_socket,server=y,address="+debugPort);
-        if(yjp)
+        if(MavenProcessFactory.debugPort!=0)
+            args.add("-Xrunjdwp:transport=dt_socket,server=y,address="+MavenProcessFactory.debugPort);
+        if(MavenProcessFactory.yjp)
             args.add("-agentlib:yjpagent=tracing");
 
         args.addTokenized(getMavenOpts());
         
         args.add("-cp");
-        String classPath =
-            ( isMaster ? Which.jarFile( Main.class ).getAbsolutePath()
-                            : slaveRoot.child( "maven-agent.jar" ).getRemote() )
-                + ( launcher.isUnix() ? ":" : ";" )
-                + ( isMaster ? Which.jarFile( ClassWorld.class ).getAbsolutePath()
-                                : slaveRoot.child( "plexus-classworld.jar" ).getRemote() )
-                + ( launcher.isUnix() ? ":" : ";" )
-                + ( isMaster ? Which.jarFile( AntClassLoader.class ).getAbsolutePath()
-                                : slaveRoot.child( "maven-plugin-ant.jar" ).getRemote() );
-        args.add(classPath);
-            //+classWorldsJar);
-        args.add(Main.class.getName());
+        args.add(
+            (isMaster? Which.jarFile(Maven3Main.class).getAbsolutePath():slaveRoot.child("maven3-agent.jar").getRemote())+
+            (launcher.isUnix()?":":";")+classWorldsJar);
+        args.add(Maven3Main.class.getName());
 
         // M2_HOME
         args.add(mvn.getHome());
@@ -310,22 +277,14 @@ final class MavenProcessFactory implements ProcessCache.Factory {
             throw new RunnerAbortedException();
         }
         args.add(remotingJar);
-
-        // interceptor.jar
+        
         args.add(isMaster?
-            Which.jarFile(PluginManagerInterceptor.class).getAbsolutePath():
-            slaveRoot.child("maven-interceptor.jar").getRemote());
+            Which.jarFile(Maven3Launcher.class).getAbsolutePath():
+            slaveRoot.child("maven3-listener.jar").getRemote());
 
         // TCP/IP port to establish the remoting infrastructure
         args.add(tcpPort);
-
-        // if this is Maven 2.1, interceptor override
-        if(mvn.isMaven2_1(launcher)) {
-            args.add(isMaster?
-                Which.jarFile(Maven21Interceptor.class).getAbsolutePath():
-                slaveRoot.child("maven2.1-interceptor.jar").getRemote());
-        }
-       
+        
         return args;
     }
 
@@ -380,14 +339,18 @@ final class MavenProcessFactory implements ProcessCache.Factory {
 
         public String call() throws IOException {
             File home = new File(mvnHome);
-            File bootDir = new File(home, "core/boot");
+            if (MavenProcessFactory.debug)
+                listener.getLogger().println("Using mvnHome: "+ mvnHome);
+            File bootDir = new File(home, "boot");
             File[] classworlds = bootDir.listFiles(CLASSWORLDS_FILTER);
             if(classworlds==null || classworlds.length==0) {
                 // Maven 2.0.6 puts it to a different place
                 bootDir = new File(home, "boot");
                 classworlds = bootDir.listFiles(CLASSWORLDS_FILTER);
                 if(classworlds==null || classworlds.length==0) {
-                    listener.error(Messages.MavenProcessFactory_ClassWorldsNotFound(home));
+                    // FIXME use messages
+                    //listener.error(Messages.MavenProcessFactory_ClassWorldsNotFound(home));
+                    listener.error("classworld not found");
                     throw new RunnerAbortedException();
                 }
             }
@@ -414,9 +377,7 @@ final class MavenProcessFactory implements ProcessCache.Factory {
      * Note that Maven 3.0 changed the name to plexus-classworlds 
      *
      * <pre>
-     * $ find tools/ -name "*classworlds*.jar"
-     * tools/maven/boot/classworlds-1.1.jar
-     * tools/maven-2.2.1/boot/classworlds-1.1.jar
+     * $ find tools/ -name "plexus-classworlds*.jar"
      * tools/maven-3.0-alpha-2/boot/plexus-classworlds-1.3.jar
      * tools/maven-3.0-alpha-3/boot/plexus-classworlds-2.2.2.jar
      * tools/maven-3.0-alpha-4/boot/plexus-classworlds-2.2.2.jar
@@ -426,35 +387,10 @@ final class MavenProcessFactory implements ProcessCache.Factory {
      */
     private static final FilenameFilter CLASSWORLDS_FILTER = new FilenameFilter() {
         public boolean accept(File dir, String name) {
-            return name.contains("classworlds") && name.endsWith(".jar");
+            return name.contains("plexus-classworlds") && name.endsWith(".jar");
         }
     };
-
-    /**
-     * Set true to produce debug output.
-     */
-    public static boolean debug = false;
-
-    /**
-     * If not 0, launch Maven with a debugger port.
-     */
-    public static int debugPort;
-
-    public static boolean profile = Boolean.getBoolean("hudson.maven.profile");
     
-    /**
-     * If true, launch Maven with YJP offline profiler agent.
-     */
-    public static boolean yjp = Boolean.getBoolean("hudson.maven.yjp");
-
-    static {
-        String port = System.getProperty("hudson.maven.debugPort");
-        if(port!=null)
-            debugPort = Integer.parseInt(port);
-    }
-    
-    public static int socketTimeOut = Integer.parseInt( System.getProperty( "hudson.maven.socketTimeOut", Integer.toString( 30*1000 ) ) );
-       
-
     private static final Logger LOGGER = Logger.getLogger(MavenProcessFactory.class.getName());
+
 }
