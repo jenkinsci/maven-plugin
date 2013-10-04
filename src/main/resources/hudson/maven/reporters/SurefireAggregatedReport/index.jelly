@@ -62,6 +62,8 @@ THE SOFTWARE.
           </j:forEach>
         </tbody>
       </table>
-      </l:main-panel>
+
+      <t:aggregated-failed-tests/>
+    </l:main-panel>
   </l:layout>
 </j:jelly>
