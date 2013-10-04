@@ -33,7 +33,7 @@ THE SOFTWARE.
   </parent>
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
-  <artifactId>maven-plugin</artifactId>
+  <artifactId>maven-plugin</artifactId><!-- for the same reason, artifactId is against the convention -->
   <version>2.0-beta-1-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
@@ -503,4 +503,18 @@ THE SOFTWARE.
     </build>
   </profile>
   </profiles>
+
+  <distributionManagement>
+    <repository>
+      <id>maven.jenkins-ci.org</id>
+      <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+    </repository>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/maven-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/maven-plugin.git</developerConnection>
+    <url>http://github.com/jenkinsci/maven-plugin</url>
+  </scm>
+
 </project>
