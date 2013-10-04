@@ -214,6 +214,11 @@ THE SOFTWARE.
           <groupId>org.sonatype.sisu</groupId>
           <artifactId>sisu-guice</artifactId>
         </exclusion>
+        <!-- Clashes with core, breaks tests: -->
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
