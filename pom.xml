@@ -27,12 +27,14 @@ THE SOFTWARE.
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.jenkins-ci.main</groupId>
-    <artifactId>pom</artifactId>
-    <version>1.535-SNAPSHOT</version>
+    <groupId>org.jenkins-ci.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>1.533</version>
   </parent>
 
+  <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
   <artifactId>maven-plugin</artifactId>
+  <version>2.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>Maven Integration plugin</name>
@@ -55,12 +57,6 @@ THE SOFTWARE.
   </issueManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-core</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>javadoc</artifactId>
@@ -154,10 +150,6 @@ THE SOFTWARE.
       <artifactId>maven3-interceptor-commons</artifactId>
       <version>${mavenInterceptorsVersion}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.ant</groupId>
-      <artifactId>ant</artifactId>
-    </dependency>    
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
@@ -262,10 +254,6 @@ THE SOFTWARE.
       <version>4.2.4</version>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-file</artifactId>
       <version>${wagonVersion}</version>
@@ -307,10 +295,6 @@ THE SOFTWARE.
       <version>1.2</version>
     </dependency>                
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>            
-    <dependency>
       <groupId>org.jenkins-ci.lib</groupId>
       <artifactId>lib-jenkins-maven-embedder</artifactId>
       <version>3.11</version>
@@ -333,11 +317,6 @@ THE SOFTWARE.
           <artifactId>wagon-webdav</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
     </dependency>
 
     <!-- JENKINS-10076 : This wagon is better to provide webdav support -->
@@ -379,26 +358,31 @@ THE SOFTWARE.
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <version>4.11</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <version>1.8.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
+      <version>1.4.10</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-mockito</artifactId>
+      <version>1.4.10</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.4</version>
       <scope>test</scope>
     </dependency>
 
