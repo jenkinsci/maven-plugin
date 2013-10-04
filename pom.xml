@@ -385,7 +385,12 @@ THE SOFTWARE.
       <version>1.7.4</version>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.jenkins-ci.test</groupId>
+      <artifactId>sample-plexus-component</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
