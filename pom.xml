@@ -472,6 +472,13 @@ THE SOFTWARE.
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-XX:MaxPermSize=128m</argLine>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -508,13 +515,6 @@ THE SOFTWARE.
               </goals>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-            <argLine>-XX:MaxPermSize=128m</argLine>
-          </configuration>
         </plugin>
       </plugins>
     </build>
