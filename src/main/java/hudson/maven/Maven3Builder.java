@@ -23,23 +23,15 @@
  */
 package hudson.maven;
 
+import static hudson.Util.fixNull;
 import hudson.maven.MavenBuild.ProxyImpl2;
 import hudson.maven.reporters.TestFailureDetector;
+import hudson.maven.util.ExecutionEventLogger;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.remoting.Channel;
 import hudson.remoting.DelegatingCallable;
 import hudson.util.IOException2;
-import org.apache.maven.cli.event.ExecutionEventLogger;
-import org.apache.maven.eventspy.EventSpy;
-import org.apache.maven.execution.AbstractExecutionListener;
-import org.apache.maven.execution.ExecutionEvent;
-import org.apache.maven.execution.ExecutionListener;
-import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-import org.jvnet.hudson.maven3.listeners.HudsonMavenExecutionResult;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -50,6 +42,7 @@ import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,7 +51,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
-import static hudson.Util.fixNull;
+import org.apache.maven.InternalErrorException;
+import org.apache.maven.cli.CLIManager;
+import org.apache.maven.eventspy.EventSpy;
+import org.apache.maven.exception.DefaultExceptionHandler;
+import org.apache.maven.exception.ExceptionHandler;
+import org.apache.maven.exception.ExceptionSummary;
+import org.apache.maven.execution.AbstractExecutionListener;
+import org.apache.maven.execution.ExecutionEvent;
+import org.apache.maven.execution.ExecutionListener;
+import org.apache.maven.lifecycle.LifecycleExecutionException;
+import org.apache.maven.plugin.MojoExecution;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.StringUtils;
+import org.jvnet.hudson.maven3.listeners.HudsonMavenExecutionResult;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Olivier Lamy
@@ -155,28 +163,17 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
             mavenExecutionResult = (HudsonMavenExecutionResult) mavenExecutionResultGetMethod.invoke( null, null );
 
+            //mavenExecutionResult = Maven3Launcher.getMavenExecutionResult();
 
-            if(r==0 && mavenExecutionResult.getThrowables().isEmpty()) {
+			// manage of Maven error threaded as in MavenCli, delegated by Maven3Launcher.launch
+            MavenResultProcessor summary = new MavenResultProcessor(mavenExecutionListener.logger);
+            r = summary.processResult();
+
+            if(r==0) {
                 if(mavenExecutionListener.hasTestFailures()){
                     return Result.UNSTABLE;
                 }
                 return Result.SUCCESS;
-            }
-
-            // JENKINS-19352: partial roll-back of JENKINS-15025 (https://github.com/jenkinsci/maven-plugin/commit/19c4a4a0e9df8e2788703b44c84187b224ae239d)
-            // This is maybe causing duplicate logs in the scenario described in 15025, but at least it fixes that no error logs at all are present in the common
-            // scenario.
-            if (!mavenExecutionResult.getThrowables().isEmpty()) {
-               logger.println( "mavenExecutionResult exceptions not empty");
-                for(Throwable throwable : mavenExecutionResult.getThrowables()) {
-                    logger.println("message : " + throwable.getMessage());
-                    if (throwable.getCause()!=null) {
-                        logger.println("cause : " + throwable.getCause().getMessage());
-                    }
-                    logger.println("Stack trace : ");
-                    throwable.printStackTrace( logger );
-                }
-
             }
 
             if(markAsSuccess) {
@@ -203,7 +200,147 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
         }
     }
 
-    private static final class JenkinsEventSpy extends MavenExecutionListener implements EventSpy,Serializable{
+    private class MavenResultProcessor {
+
+        private org.slf4j.Logger slf4jLogger;
+    	boolean showErrors = false; // default from DefaultMavenExecutionRequest.showErrors
+    	boolean failFast = false; // default from DefaultMavenExecutionRequest.reactorFailureBehavior
+
+		public MavenResultProcessor( org.slf4j.Logger slf4jLogger )
+        {
+            this.slf4jLogger = slf4jLogger;
+
+            /*
+             * Following values comes from MavenExecutionRequest that is not
+             * reachable. Request can easily get into an
+             * ExecutionListener.sessionEnded call from MavenSession argument,
+             * in this scenario all implementations must be patched to handle
+             * errors.
+             */
+            // need to calculate some values as in the maven request.
+	    	showErrors = goals.contains(CLIManager.DEBUG) || goals.contains(CLIManager.ERRORS);
+	    	failFast = goals.contains(CLIManager.FAIL_NEVER);
+        }
+
+		// partial copy of MavenCli.execute()
+	    private int processResult() {
+	    	if ( !mavenExecutionResult.getThrowables().isEmpty() )
+	        {
+	        	ExceptionHandler handler = new DefaultExceptionHandler();
+
+	            Map<String, String> references = new LinkedHashMap<String, String>();
+
+	            MavenProject project = null;
+
+	            for ( Throwable exception : mavenExecutionResult.getThrowables() )
+	            {
+	                ExceptionSummary summary = handler.handleException( exception );
+
+	                logSummary( summary, references, "", showErrors );
+
+	                if ( project == null && exception instanceof LifecycleExecutionException )
+	                {
+	                    project = ( (LifecycleExecutionException) exception ).getProject();
+	                }
+	            }
+
+	            slf4jLogger.error( "" );
+
+	            if ( !showErrors )
+	            {
+	                slf4jLogger.error( "To see the full stack trace of the errors, re-run Maven with the -e switch." );
+	            }
+	            if ( !slf4jLogger.isDebugEnabled() )
+	            {
+	                slf4jLogger.error( "Re-run Maven using the -X switch to enable full debug logging." );
+	            }
+
+	            if ( !references.isEmpty() )
+	            {
+	                slf4jLogger.error( "" );
+	                slf4jLogger.error( "For more information about the errors and possible solutions"
+	                              + ", please read the following articles:" );
+
+	                for ( Map.Entry<String, String> entry : references.entrySet() )
+	                {
+	                    slf4jLogger.error( entry.getValue() + " " + entry.getKey() );
+	                }
+	            }
+
+	            if ( project != null && !project.equals( mavenExecutionResult.getMavenProjectInfos().get( 0 ) ) )
+	            {
+	                slf4jLogger.error( "" );
+	                slf4jLogger.error( "After correcting the problems, you can resume the build with the command" );
+	                slf4jLogger.error( "  mvn <goals> -rf :" + project.getArtifactId() );
+	            }
+
+	            if ( failFast )
+	            {
+	                slf4jLogger.info( "Build failures were ignored." );
+
+	                return 0;
+	            }
+	            else
+	            {
+	                return 1;
+	            }
+	        }
+	        else
+	        {
+	            return 0;
+	        }
+	    }
+
+	    // copy of MavenCli.logSummary()
+		private void logSummary(ExceptionSummary summary, Map<String, String> references, String indent, boolean showErrors)
+		{
+			String referenceKey = "";
+
+			if ( StringUtils.isNotEmpty( summary.getReference() ) )
+			{
+				referenceKey = references.get( summary.getReference() );
+				if (referenceKey == null) {
+					referenceKey = "[Help " + ( references.size() + 1 ) + "]";
+					references.put( summary.getReference(), referenceKey );
+				}
+			}
+
+			String msg = summary.getMessage();
+
+			if (StringUtils.isNotEmpty( referenceKey ))
+			{
+				if (msg.indexOf('\n') < 0)
+				{
+					msg += " -> " + referenceKey;
+				}
+				else
+				{
+					msg += "\n-> " + referenceKey;
+				}
+			}
+
+			String[] lines = msg.split("(\r\n)|(\r)|(\n)");
+
+			for ( int i = 0; i < lines.length; i++ )
+			{
+				String line = indent + lines[i].trim();
+
+				if ( i == lines.length - 1 && ( showErrors || ( summary.getException() instanceof InternalErrorException ) ) ) {
+					slf4jLogger.error( line, summary.getException() );
+				} else {
+					slf4jLogger.error(line);
+				}
+			}
+
+			indent += "  ";
+
+			for ( ExceptionSummary child : summary.getChildren() ) {
+				logSummary( child, references, indent, showErrors );
+			}
+		}
+    }
+
+	private static final class JenkinsEventSpy extends MavenExecutionListener implements EventSpy,Serializable{
         private static final long serialVersionUID = 4942789836756366117L;
 
         public JenkinsEventSpy(AbstractMavenBuilder maven3Builder) {
