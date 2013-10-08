@@ -89,7 +89,7 @@ public class SurefireArchiverUnitTest {
     
     @Test
     public void testArchiveResults() throws InterruptedException, IOException, URISyntaxException, ComponentConfigurationException {
-        Assume.assumeFalse("TestResult.parse: Test reports were found but none of them are new. Did tests run?", "https://jenkins.ci.cloudbees.com/job/core/job/jenkins_main_trunk/".equals(System.getenv("JOB_URL")));
+        Assume.assumeFalse("TestResult.parse: Test reports were found but none of them are new. Did tests run?", "https://buildhive.cloudbees.com/job/jenkinsci/job/maven-plugin/".equals(System.getenv("JOB_URL")));
         URL resource = SurefireArchiverUnitTest.class.getResource("/surefire-archiver-test2");
         File reportsDir = new File(resource.toURI().getPath());
         
