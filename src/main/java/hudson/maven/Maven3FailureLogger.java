@@ -150,7 +150,7 @@ import org.jvnet.hudson.maven3.listeners.MavenProjectInfo;
      * in this scenario all implementations must be patched to handle
      * errors.
      */
-	public void processCLIArguments(List<String> goals)
+	public void setOptions(List<String> goals)
 	{
 	    // need to calculate some values as in the maven request.
 		showErrors = goals.contains("-" + CLIManager.DEBUG) || goals.contains("-" + CLIManager.ERRORS);

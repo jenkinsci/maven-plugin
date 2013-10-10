@@ -159,7 +159,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
 			// manage of Maven error threaded as in MavenCli, delegated by Maven3Launcher.launch
             Maven3FailureLogger summary = new Maven3FailureLogger(mavenExecutionListener.logger);
-            summary.processCLIArguments(goals);
+            summary.setOptions(goals);
             summary.logFailures(mavenExecutionResult);
 
             if(r==0 && mavenExecutionResult.getThrowables().isEmpty()) {
