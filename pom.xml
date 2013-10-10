@@ -477,6 +477,11 @@ THE SOFTWARE.
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>-XX:MaxPermSize=128m</argLine>
+          <systemPropertyVariables>
+              <buildDirectory>${project.build.directory}</buildDirectory>
+              <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+              <java.awt.headless>true</java.awt.headless>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
