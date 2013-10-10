@@ -15,19 +15,19 @@ import org.codehaus.plexus.util.StringUtils;
 import org.jvnet.hudson.maven3.listeners.HudsonMavenExecutionResult;
 import org.jvnet.hudson.maven3.listeners.MavenProjectInfo;
 
-public class Maven3ResultProcessor {
+/* package */ class Maven3FailureLogger {
 
     private org.slf4j.Logger slf4jLogger;
 	boolean showErrors = false; // default from DefaultMavenExecutionRequest.showErrors
 	boolean failNever = false; // default from DefaultMavenExecutionRequest.reactorFailureBehavior
 
-	public Maven3ResultProcessor( org.slf4j.Logger slf4jLogger )
+	public Maven3FailureLogger( org.slf4j.Logger slf4jLogger )
     {
         this.slf4jLogger = slf4jLogger;
     }
 
 	// partial copy paste of MavenCli.execute()
-    public boolean processFailure(HudsonMavenExecutionResult result) {
+    public void logFailures(HudsonMavenExecutionResult result) {
     	if ( !result.getThrowables().isEmpty() )
         {
         	ExceptionHandler handler = new DefaultExceptionHandler();
@@ -54,7 +54,7 @@ public class Maven3ResultProcessor {
             {
                 slf4jLogger.error( "To see the full stack trace of the errors, re-run Maven with the -e switch." );
             }
-            if ( !slf4jLogger.isDebugEnabled() )
+            if ( !slf4jLogger.isDebugEnabled() ) // TODO fix me, this is not the same log of Maven3 process
             {
                 slf4jLogger.error( "Re-run Maven using the -X switch to enable full debug logging." );
             }
@@ -81,17 +81,7 @@ public class Maven3ResultProcessor {
             if ( failNever )
             {
                 slf4jLogger.info( "Build failures were ignored." );
-
-                return false;
             }
-            else
-            {
-                return true;
-            }
-        }
-        else
-        {
-            return false;
         }
     }
 

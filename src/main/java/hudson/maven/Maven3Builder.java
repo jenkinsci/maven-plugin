@@ -127,11 +127,11 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
             Method launchMethod = maven3MainClass.getMethod( "launch", String[].class );
 
-            /*Integer res = (Integer) */launchMethod.invoke(null, new Object[] {goals.toArray(new String[goals.size()])} );
+            Integer res = (Integer) launchMethod.invoke(null, new Object[] {goals.toArray(new String[goals.size()])} );
 
             //int r = Maven3Main.launch( goals.toArray(new String[goals.size()]));
 
-//            int r = res.intValue();
+            int r = res.intValue();
 
             // now check the completion status of async ops
             long startTime = System.nanoTime();
@@ -158,11 +158,11 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             //mavenExecutionResult = Maven3Launcher.getMavenExecutionResult();
 
 			// manage of Maven error threaded as in MavenCli, delegated by Maven3Launcher.launch
-            Maven3ResultProcessor summary = new Maven3ResultProcessor(mavenExecutionListener.logger);
+            Maven3FailureLogger summary = new Maven3FailureLogger(mavenExecutionListener.logger);
             summary.processCLIArguments(goals);
-            boolean isFail = summary.processFailure(mavenExecutionResult);
+            summary.logFailures(mavenExecutionResult);
 
-            if(isFail) {
+            if(r==0 && mavenExecutionResult.getThrowables().isEmpty()) {
                 if(mavenExecutionListener.hasTestFailures()){
                     return Result.UNSTABLE;
                 }
