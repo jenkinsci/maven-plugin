@@ -26,7 +26,6 @@ package hudson.maven;
 
 import static hudson.model.Result.FAILURE;
 import static org.apache.maven.model.building.ModelBuildingRequest.VALIDATION_LEVEL_MAVEN_3_0;
-
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
@@ -96,7 +95,9 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 import org.codehaus.plexus.util.PathTool;
+
 import jenkins.maven3.agent.Maven31Main;
+
 import org.jvnet.hudson.maven3.agent.Maven3Main;
 import org.jvnet.hudson.maven3.launcher.Maven31Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
@@ -581,6 +582,18 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         return envVars.expand(expandTokens(listener, project.getMavenOpts()));
     }
 
+    // Maven 3 logs via java.util.logging which has a quite verbose default format
+    // https://issues.jenkins-ci.org/browse/JENKINS-19396
+    private String maven3VerboseLoggingWorkaround(String mavenOpts) {
+        if (mavenOpts==null) {
+            return " -Djava.util.logging.SimpleFormatter.format=\"%4$s: %5$s%6$s%n\"";
+        } else if (mavenOpts.contains("-Djava.util.logging.SimpleFormatter.format")) {
+            return mavenOpts;
+        } else {
+            return mavenOpts + "  -Djava.util.logging.SimpleFormatter.format=\"%4$s: %5$s%6$s%n\"";
+        }
+    }
+    
     /**
      * The sole job of the {@link MavenModuleSet} build is to update SCM
      * and triggers module builds.
@@ -712,22 +725,25 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
                         Class<?> maven3LauncherClass = null;
 
+                        String mavenOpts = getMavenOpts(listener, envVars);
                         switch ( mavenVersionType ){
                             case MAVEN_2:
                                 LOGGER.fine( "using maven 2 " + mavenVersion );
-                                factory = new MavenProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,getMavenOpts(listener, envVars),
+                                factory = new MavenProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,mavenOpts,
                                                                   pom.getParent() );
                                 break;
                             case MAVEN_3_0_X:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                factory = new Maven3ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, getMavenOpts(listener, envVars),
+                                mavenOpts = maven3VerboseLoggingWorkaround(mavenOpts);
+                                factory = new Maven3ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
                                                                     pom.getParent() );
                                 maven3MainClass = Maven3Main.class;
                                 maven3LauncherClass = Maven3Launcher.class;
                                 break;
                             default:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                factory = new Maven31ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, getMavenOpts(listener, envVars),
+                                mavenOpts = maven3VerboseLoggingWorkaround(mavenOpts);
+                                factory = new Maven31ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
                                                                     pom.getParent() );
                                 maven3MainClass = Maven31Main.class;
                                 maven3LauncherClass = Maven31Launcher.class;
