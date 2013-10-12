@@ -129,8 +129,6 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
             Integer res = (Integer) launchMethod.invoke(null, new Object[] {goals.toArray(new String[goals.size()])} );
 
-            //int r = Maven3Main.launch( goals.toArray(new String[goals.size()]));
-
             int r = res.intValue();
 
             // now check the completion status of async ops
@@ -151,11 +149,9 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
                 logger.println("Resource loading "+format(n,ch.resourceLoadingTime.get())+"ms, "+ch.resourceLoadingCount+" times");
             }
 
-            Method mavenExecutionResultGetMethod = maven3LauncherClass.getMethod( "getMavenExecutionResult", null );
+            Method mavenExecutionResultGetMethod = maven3LauncherClass.getMethod( "getMavenExecutionResult", (Class[])null );
 
-            mavenExecutionResult = (HudsonMavenExecutionResult) mavenExecutionResultGetMethod.invoke( null, null );
-
-            //mavenExecutionResult = Maven3Launcher.getMavenExecutionResult();
+            mavenExecutionResult = (HudsonMavenExecutionResult) mavenExecutionResultGetMethod.invoke( null, (Object[])null );
 
 			// manage of Maven error threaded as in MavenCli, delegated by Maven3Launcher.launch
             Maven3FailureLogger summary = new Maven3FailureLogger(mavenExecutionListener.logger);
