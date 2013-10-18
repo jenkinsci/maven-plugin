@@ -179,13 +179,6 @@ public abstract class MavenBuilder extends AbstractMavenBuilder implements Deleg
                 return Result.SUCCESS;
             }
 
-            if(markAsSuccess) {
-                listener.getLogger().println(Messages.MavenBuilder_Failed());
-                if(a.hasBuildFailures()){
-                    return Result.UNSTABLE;
-                }
-                return Result.SUCCESS;
-            }
             return Result.FAILURE;
         } catch (NoSuchMethodException e) {
             throw new IOException2(e);
@@ -305,6 +298,12 @@ public abstract class MavenBuilder extends AbstractMavenBuilder implements Deleg
 
         public void postBuild(MavenSession session, ReactorManager rm, EventDispatcher dispatcher) throws BuildFailureException, LifecycleExecutionException, IOException, InterruptedException {
             long startTime = System.nanoTime();
+            // If postModule wasn't executed before this method, the build has failed.
+            if (lastModule != null) {
+                ModuleName name = new ModuleName(lastModule);
+                MavenBuildProxy2 proxy = listener.proxies.get(name);
+                proxy.setResult(Result.FAILURE);
+            }
             fireLeaveModule();
             listener.postBuild(session, rm, dispatcher);
             overheadTime += System.nanoTime()-startTime;

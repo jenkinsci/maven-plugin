@@ -165,13 +165,6 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
                 return Result.SUCCESS;
             }
 
-            if(markAsSuccess) {
-                logger.println(Messages.MavenBuilder_Failed());
-                if(mavenExecutionListener.hasTestFailures()){
-                    return Result.UNSTABLE;
-                }
-                return Result.SUCCESS;
-            }
             return Result.FAILURE;
         } catch (NoSuchMethodException e) {
             throw new IOException2(e);
