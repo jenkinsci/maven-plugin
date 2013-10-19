@@ -582,18 +582,6 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         return envVars.expand(expandTokens(listener, project.getMavenOpts()));
     }
 
-    // Maven 3 logs via java.util.logging which has a quite verbose default format
-    // https://issues.jenkins-ci.org/browse/JENKINS-19396
-    private String maven3VerboseLoggingWorkaround(String mavenOpts) {
-        if (mavenOpts==null) {
-            return " -Djava.util.logging.SimpleFormatter.format=\"%4$s: %5$s%6$s%n\"";
-        } else if (mavenOpts.contains("-Djava.util.logging.SimpleFormatter.format")) {
-            return mavenOpts;
-        } else {
-            return mavenOpts + "  -Djava.util.logging.SimpleFormatter.format=\"%4$s: %5$s%6$s%n\"";
-        }
-    }
-    
     /**
      * The sole job of the {@link MavenModuleSet} build is to update SCM
      * and triggers module builds.
@@ -734,7 +722,6 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                                 break;
                             case MAVEN_3_0_X:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                mavenOpts = maven3VerboseLoggingWorkaround(mavenOpts);
                                 factory = new Maven3ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
                                                                     pom.getParent() );
                                 maven3MainClass = Maven3Main.class;
@@ -742,7 +729,6 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                                 break;
                             default:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                mavenOpts = maven3VerboseLoggingWorkaround(mavenOpts);
                                 factory = new Maven31ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
                                                                     pom.getParent() );
                                 maven3MainClass = Maven31Main.class;

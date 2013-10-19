@@ -48,6 +48,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 import org.apache.maven.eventspy.EventSpy;
@@ -103,6 +105,8 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
     }
 
     public Result call() throws IOException {
+        
+        configureConsoleLogging();
 
         try {
             initializeAsynchronousExecutions();
@@ -182,7 +186,18 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
         }
     }
 
-	private static final class JenkinsEventSpy extends MavenExecutionListener implements EventSpy,Serializable{
+    // worakround for verbose logging https://issues.jenkins-ci.org/browse/JENKINS-19396
+	private void configureConsoleLogging() {
+	    Logger rootLogger = Logger.getLogger("");
+	    Handler[] handlers = rootLogger.getHandlers();
+	    for (Handler h : handlers) {
+	        if (h instanceof ConsoleHandler) {
+	            ((ConsoleHandler)h).setFormatter(new MavenConsoleFormatter());
+	        }
+	    }
+    }
+
+    private static final class JenkinsEventSpy extends MavenExecutionListener implements EventSpy,Serializable{
         private static final long serialVersionUID = 4942789836756366117L;
 
         public JenkinsEventSpy(AbstractMavenBuilder maven3Builder) {
