@@ -1156,6 +1156,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         }
 
         public static final class Result implements Serializable {
+            private static final long serialVersionUID = 1770277148826049154L;
             public final List<PomInfo> infos;
             public final Map<String,String> modelParents;
             public Result(List<PomInfo> infos, Map<String,String> modelParents) {

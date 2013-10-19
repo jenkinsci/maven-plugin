@@ -54,15 +54,24 @@ public abstract class PlexusModuleContributorFactory implements ExtensionPoint {
                 all.add(pmc);
         }
 
-        return new PlexusModuleContributor() {
-            @Override
-            public List<URL> getPlexusComponentJars() {
-                List<URL> urls = new ArrayList<URL>();
-                for (PlexusModuleContributor pc : all) {
-                    urls.addAll(pc.getPlexusComponentJars());
-                }
-                return urls;
+        return new AggregatedPlexusModuleContributor(all);
+    }
+    
+    private static class AggregatedPlexusModuleContributor extends PlexusModuleContributor {
+        private static final long serialVersionUID = -96035620100000276L;
+        private List<PlexusModuleContributor> all;
+        
+        public AggregatedPlexusModuleContributor(List<PlexusModuleContributor> all) {
+            this.all = all;
+        }
+
+        @Override
+        public List<URL> getPlexusComponentJars() {
+            List<URL> urls = new ArrayList<URL>();
+            for (PlexusModuleContributor pc : all) {
+                urls.addAll(pc.getPlexusComponentJars());
             }
-        };
+            return urls;
+        }
     }
 }

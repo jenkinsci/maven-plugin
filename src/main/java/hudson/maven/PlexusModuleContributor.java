@@ -58,21 +58,29 @@ public abstract class PlexusModuleContributor implements Serializable {
             files.add(jar.getRemote());
         }
 
-        return new PlexusModuleContributor() {
-            @Override
-            public List<URL> getPlexusComponentJars() {
-                try {
-                    List<URL> r = new ArrayList<URL>(files.size());
-                    for (String file : files) {
-                        r.add(new File(file).toURI().toURL());
-                    }
-                    return r;
-                } catch (MalformedURLException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
+        return new PlexusModuleContributorOfPaths(files);
+    }
+    
+    private static class PlexusModuleContributorOfPaths extends PlexusModuleContributor {
+        private static final long serialVersionUID = 8528727996575052850L;
+        private List<String> files;
 
-            private static final long serialVersionUID = 1L;
-        };
+        public PlexusModuleContributorOfPaths(List<String> files) {
+            this.files = files;
+        }
+        
+        @Override
+        public List<URL> getPlexusComponentJars() {
+            try {
+                List<URL> r = new ArrayList<URL>(files.size());
+                for (String file : files) {
+                    r.add(new File(file).toURI().toURL());
+                }
+                return r;
+            } catch (MalformedURLException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        
     }
 }
