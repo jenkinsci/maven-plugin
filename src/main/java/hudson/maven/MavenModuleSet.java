@@ -105,7 +105,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.model.building.ModelBuildingRequest;
+
 import hudson.tasks.Mailer;
+
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
@@ -125,6 +127,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @author Kohsuke Kawaguchi
  */
+@SuppressWarnings("rawtypes")
 public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenModuleSetBuild> implements TopLevelItem, ItemGroup<MavenModule>, SCMedItem, Saveable, BuildableItemWithBuildWrappers {
 	
     /**
@@ -1313,6 +1316,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
             return !NOT_APPLICABLE_TYPES.contains(descriptor.clazz);
         }
 
+        @SuppressWarnings("unchecked")
         private static final Set<Class> NOT_APPLICABLE_TYPES = new HashSet<Class>(Arrays.asList(
             Fingerprinter.class,    // this kicks in automatically
             JavadocArchiver.class,  // this kicks in automatically

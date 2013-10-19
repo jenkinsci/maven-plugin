@@ -504,6 +504,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         return r;
     }
 
+    @SuppressWarnings("unchecked")
     public void run() {
         execute(new MavenModuleSetBuildExecution());
         getProject().updateTransientActions();
