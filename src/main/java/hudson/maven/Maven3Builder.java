@@ -192,7 +192,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 	    Handler[] handlers = rootLogger.getHandlers();
 	    for (Handler h : handlers) {
 	        if (h instanceof ConsoleHandler) {
-	            ((ConsoleHandler)h).setFormatter(new MavenConsoleFormatter());
+	            ((ConsoleHandler)h).setFormatter(new Maven3ConsoleFormatter());
 	        }
 	    }
     }
