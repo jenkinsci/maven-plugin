@@ -31,6 +31,7 @@ import hudson.maven.MavenReporterDescriptor;
 import hudson.model.BuildListener;
 import hudson.tasks.MailSender;
 import hudson.tasks.Mailer;
+
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
@@ -59,9 +60,17 @@ public class MavenMailer extends MavenReporter {
     }
     
     public String getAllRecipients() {
-    	return this.recipients == null ?
-    			this.mavenRecipients :
-    			this.recipients + " " + this.mavenRecipients; 
+        StringBuilder sb = new StringBuilder();
+        
+        if (this.recipients != null) {
+            sb.append(this.recipients);
+        }
+        if (this.mavenRecipients != null) {
+            sb.append(" ");
+            sb.append(this.mavenRecipients);
+        }
+        
+    	return sb.toString().trim();
     }
 
     @Extension
