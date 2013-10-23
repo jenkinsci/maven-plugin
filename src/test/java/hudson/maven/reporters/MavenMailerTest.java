@@ -216,6 +216,36 @@ public class MavenMailerTest {
         assertContainsRecipient(EMAIL_JENKINS_CONFIGURED, message);
         
     }
+    
+    @Test
+    @Bug(20209)
+    public void testRecipientsNotNullAndMavenRecipientsNull () {
+        MavenMailer fixture = new MavenMailer();
+        fixture.recipients = "your-mail@gmail.com";
+        fixture.mavenRecipients = null;
+        
+        assertEquals("your-mail@gmail.com", fixture.getAllRecipients());
+    }
+    
+    @Test
+    @Bug(20209)
+    public void testMavenRecipientsNotNullAndRecipientsNull () {
+        MavenMailer fixture = new MavenMailer();
+        fixture.recipients = null;
+        fixture.mavenRecipients = "your-mail@gmail.com";
+        
+        assertEquals("your-mail@gmail.com", fixture.getAllRecipients());
+    }
+    
+    @Test
+    @Bug(20209)
+    public void testMavenRecipientsAndRecipientsNotNull () {
+        MavenMailer fixture = new MavenMailer();
+        fixture.recipients = "your-mail@gmail.com";
+        fixture.mavenRecipients = "your-other-mail@gmail.com";
+        
+        assertEquals("your-mail@gmail.com your-other-mail@gmail.com", fixture.getAllRecipients());
+    }
 
 	private void assertContainsRecipient(String email, Message message) throws Exception {
 		assert email != null;
