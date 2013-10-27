@@ -192,7 +192,6 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             envs.put("POM_GROUPID", root.getGroupId());
             envs.put("POM_ARTIFACTID", root.getArtifactId());
             envs.put("POM_PACKAGING", root.getPackaging());
-            envs.put("POM_RELATIVEPATH", root.getRelativePath());
         }
 
         return envs;
