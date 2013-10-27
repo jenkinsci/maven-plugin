@@ -183,7 +183,18 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 mvn.buildEnvVars(envs);
             }
         }
-        
+
+        MavenModule root = getProject().getRootModule();
+        if (root!=null) {// I don't think it can ever be null but let's be defensive
+            // TODO: this needs to be documented but where?
+            envs.put("POM_DISPLAYNAME", root.getDisplayName());
+            envs.put("POM_VERSION", root.getVersion());
+            envs.put("POM_GROUPID", root.getGroupId());
+            envs.put("POM_ARTIFACTID", root.getArtifactId());
+            envs.put("POM_PACKAGING", root.getPackaging());
+            envs.put("POM_RELATIVEPATH", root.getRelativePath());
+        }
+
         return envs;
     }
 

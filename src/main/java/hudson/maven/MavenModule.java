@@ -324,6 +324,33 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
     }
 
     /**
+     * Packaging type of the module.
+     *
+     * pom, jar, maven-plugin, ejb, war, ear, rar, par or other custom types.
+     *
+     * @since 2.1
+     */
+    public String getPackaging() {
+        return packaging;
+    }
+
+    /**
+     * Short-cut for {@code getModuleName().groupId}
+     * @since 2.1
+     */
+    public String getGroupId() {
+        return getModuleName().groupId;
+    }
+
+    /**
+     * Short-cut for {@code getModuleName().artifactId}
+     * @since 2.1
+     */
+    public String getArtifactId() {
+        return getModuleName().artifactId;
+    }
+
+    /**
      * Gets the list of goals to execute for this module.
      */
     public String getGoals() {
