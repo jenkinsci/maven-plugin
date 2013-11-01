@@ -1041,24 +1041,35 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
      */
     public String getMavenOpts() {
         if ((mavenOpts!=null) && (mavenOpts.trim().length()>0)) { 
-            return mavenOpts.replaceAll("[\t\r\n]+"," ");
+            return getFormattedMavenOpts(mavenOpts);
         }
         else {
             String globalOpts = getDescriptor().getGlobalMavenOpts();
             if (globalOpts!=null) {
-                return globalOpts.replaceAll("[\t\r\n]+"," ");
+                return getFormattedMavenOpts(globalOpts);
             }
             else {
                 return globalOpts;
             }
         }
     }
+    
+    private String getFormattedMavenOpts(String mavenOpts) {
+        return mavenOpts == null? null: mavenOpts.replaceAll("[\t\r\n]+"," ");
+    }
 
     /**
-     * Set mavenOpts.
+     * Set mavenOpts. If the new mavenOpts are equals to the global mavenOpts,
+     * job mavenOpts are set to null.
      */
     public void setMavenOpts(String mavenOpts) {
-        this.mavenOpts = mavenOpts;
+        String globalMavenOpts = getFormattedMavenOpts(getDescriptor().getGlobalMavenOpts());
+        
+        if (mavenOpts != null && !getFormattedMavenOpts(mavenOpts).equals(globalMavenOpts)) {
+            this.mavenOpts = mavenOpts;
+        } else {
+            this.mavenOpts = null;
+        }
     }
 
     /**
@@ -1144,7 +1155,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         if(rootPOM!=null && rootPOM.equals("pom.xml"))   rootPOM=null;   // normalization
 
         goals = Util.fixEmpty(req.getParameter("goals").trim());
-        mavenOpts = Util.fixEmpty(req.getParameter("mavenOpts").trim());
+        setMavenOpts(Util.fixEmpty(req.getParameter("mavenOpts").trim()));
         settings = SettingsProvider.parseSettingsProvider(req);
         globalSettings = GlobalSettingsProvider.parseSettingsProvider(req);
 

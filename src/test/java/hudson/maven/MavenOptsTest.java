@@ -122,6 +122,37 @@ public class MavenOptsTest extends HudsonTestCase {
 
         assertLogContains("[hudson.mavenOpt.test=foo]", m.getLastBuild());
     }
+    
+    @Bug(13926)
+    public void testMustnt_store_global_maven_opts_in_job_maven_opts() throws Exception {
+        final String firstGlobalMavenOpts = "first maven opts";
+        final String secondGlobalMavenOpts = "second maven opts";
+        final String jobMavenOpts = "job maven opts";
+        
+        configureDefaultMaven();
+        MavenModuleSet m = createMavenProject();
+        
+        assertNull(m.getMavenOpts());
+        
+        d.setGlobalMavenOpts(firstGlobalMavenOpts);
+        assertEquals(firstGlobalMavenOpts, m.getMavenOpts());
+        
+        m.setMavenOpts(firstGlobalMavenOpts);
+        assertEquals(firstGlobalMavenOpts, m.getMavenOpts());
+        
+        d.setGlobalMavenOpts(secondGlobalMavenOpts);
+        assertEquals(secondGlobalMavenOpts, m.getMavenOpts());
+        
+        m.setMavenOpts(jobMavenOpts);
+        assertEquals(jobMavenOpts, m.getMavenOpts());
+        
+        d.setGlobalMavenOpts(firstGlobalMavenOpts);
+        m.setMavenOpts(firstGlobalMavenOpts);
+        assertEquals(firstGlobalMavenOpts, m.getMavenOpts());
+        
+        d.setGlobalMavenOpts(secondGlobalMavenOpts);
+        assertEquals(secondGlobalMavenOpts, m.getMavenOpts());
+    }
 
 }
 
