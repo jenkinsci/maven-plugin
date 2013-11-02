@@ -26,7 +26,6 @@ package hudson.maven;
 
 import static hudson.model.Result.FAILURE;
 import static org.apache.maven.model.building.ModelBuildingRequest.VALIDATION_LEVEL_MAVEN_3_0;
-
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
@@ -96,7 +95,9 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 import org.codehaus.plexus.util.PathTool;
+
 import jenkins.maven3.agent.Maven31Main;
+
 import org.jvnet.hudson.maven3.agent.Maven3Main;
 import org.jvnet.hudson.maven3.launcher.Maven31Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
@@ -182,7 +183,17 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 mvn.buildEnvVars(envs);
             }
         }
-        
+
+        MavenModule root = getProject().getRootModule();
+        if (root!=null) {// I don't think it can ever be null but let's be defensive
+            // TODO: this needs to be documented but where?
+            envs.put("POM_DISPLAYNAME", root.getDisplayName());
+            envs.put("POM_VERSION", root.getVersion());
+            envs.put("POM_GROUPID", root.getGroupId());
+            envs.put("POM_ARTIFACTID", root.getArtifactId());
+            envs.put("POM_PACKAGING", root.getPackaging());
+        }
+
         return envs;
     }
 
@@ -503,6 +514,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         return r;
     }
 
+    @SuppressWarnings("unchecked")
     public void run() {
         execute(new MavenModuleSetBuildExecution());
         getProject().updateTransientActions();
@@ -712,22 +724,23 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
                         Class<?> maven3LauncherClass = null;
 
+                        String mavenOpts = getMavenOpts(listener, envVars);
                         switch ( mavenVersionType ){
                             case MAVEN_2:
                                 LOGGER.fine( "using maven 2 " + mavenVersion );
-                                factory = new MavenProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,getMavenOpts(listener, envVars),
+                                factory = new MavenProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,mavenOpts,
                                                                   pom.getParent() );
                                 break;
                             case MAVEN_3_0_X:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                factory = new Maven3ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, getMavenOpts(listener, envVars),
+                                factory = new Maven3ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
                                                                     pom.getParent() );
                                 maven3MainClass = Maven3Main.class;
                                 maven3LauncherClass = Maven3Launcher.class;
                                 break;
                             default:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                factory = new Maven31ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, getMavenOpts(listener, envVars),
+                                factory = new Maven31ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
                                                                     pom.getParent() );
                                 maven3MainClass = Maven31Main.class;
                                 maven3LauncherClass = Maven31Launcher.class;
@@ -1032,7 +1045,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         public void cleanUp(BuildListener listener) throws Exception {
             MavenMailer mailer = project.getReporters().get(MavenMailer.class);
             if (mailer != null) {
-                new MailSender(mailer.recipients,
+                new MailSender(mailer.getAllRecipients(),
                         mailer.dontNotifyEveryUnstableBuild,
                         mailer.sendToIndividuals).execute(MavenModuleSetBuild.this, listener);
             }
@@ -1154,6 +1167,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         }
 
         public static final class Result implements Serializable {
+            private static final long serialVersionUID = 1770277148826049154L;
             public final List<PomInfo> infos;
             public final Map<String,String> modelParents;
             public Result(List<PomInfo> infos, Map<String,String> modelParents) {

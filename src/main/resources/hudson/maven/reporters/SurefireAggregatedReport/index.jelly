@@ -32,7 +32,7 @@ THE SOFTWARE.
       <j:set var="prev" value="${it.previousResult}" />
       <test:bar />
 
-      <table class="pane sortable" id="testresult">
+      <table class="pane sortable bigtable" id="testresult">
         <tr>
           <td class="pane-header">${%Module}</td>
           <td class="pane-header" style="width:5em">${%Fail}</td>
@@ -62,6 +62,8 @@ THE SOFTWARE.
           </j:forEach>
         </tbody>
       </table>
-      </l:main-panel>
+
+      <t:aggregated-failed-tests/>
+    </l:main-panel>
   </l:layout>
 </j:jelly>

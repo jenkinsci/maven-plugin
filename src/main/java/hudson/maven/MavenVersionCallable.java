@@ -25,6 +25,7 @@ package hudson.maven;
  */
 
 import hudson.AbortException;
+import hudson.Util;
 import hudson.remoting.Callable;
 
 import java.io.File;
@@ -45,8 +46,11 @@ public class MavenVersionCallable
     
     private final String mavenHome;
     
-    public MavenVersionCallable( String mavenHome )
+    public MavenVersionCallable( String mavenHome ) throws IOException
     {
+        if(Util.fixEmptyAndTrim(mavenHome) == null) {
+            throw new AbortException(Messages.MavenVersionCallable_MavenHomeDoesntExist(mavenHome));
+        }
         this.mavenHome = mavenHome;
     }
 

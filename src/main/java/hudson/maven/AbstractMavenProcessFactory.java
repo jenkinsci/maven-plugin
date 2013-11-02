@@ -43,6 +43,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 
+import javax.annotation.CheckForNull;
 import jenkins.model.Jenkins;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Zip;
@@ -482,6 +483,7 @@ public abstract class AbstractMavenProcessFactory
 
     }
 
+    @CheckForNull
     public JDK getJava(TaskListener log) throws IOException, InterruptedException {
         JDK jdk = mms.getJDK();
         if (jdk != null) jdk = jdk.forNode(getCurrentNode(), log).forEnvironment(envVars);

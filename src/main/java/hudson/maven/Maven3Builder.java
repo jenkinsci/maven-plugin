@@ -23,23 +23,15 @@
  */
 package hudson.maven;
 
+import static hudson.Util.fixNull;
 import hudson.maven.MavenBuild.ProxyImpl2;
 import hudson.maven.reporters.TestFailureDetector;
+import hudson.maven.util.ExecutionEventLogger;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.remoting.Channel;
 import hudson.remoting.DelegatingCallable;
 import hudson.util.IOException2;
-import org.apache.maven.cli.event.ExecutionEventLogger;
-import org.apache.maven.eventspy.EventSpy;
-import org.apache.maven.execution.AbstractExecutionListener;
-import org.apache.maven.execution.ExecutionEvent;
-import org.apache.maven.execution.ExecutionListener;
-import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-import org.jvnet.hudson.maven3.listeners.HudsonMavenExecutionResult;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -56,9 +48,19 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Logger;
 
-import static hudson.Util.fixNull;
+import org.apache.maven.eventspy.EventSpy;
+import org.apache.maven.execution.AbstractExecutionListener;
+import org.apache.maven.execution.ExecutionEvent;
+import org.apache.maven.execution.ExecutionListener;
+import org.apache.maven.plugin.MojoExecution;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import org.jvnet.hudson.maven3.listeners.HudsonMavenExecutionResult;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Olivier Lamy
@@ -103,6 +105,8 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
     }
 
     public Result call() throws IOException {
+        
+        configureConsoleLogging();
 
         try {
             initializeAsynchronousExecutions();
@@ -129,8 +133,6 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
             Integer res = (Integer) launchMethod.invoke(null, new Object[] {goals.toArray(new String[goals.size()])} );
 
-            //int r = Maven3Main.launch( goals.toArray(new String[goals.size()]));
-
             int r = res.intValue();
 
             // now check the completion status of async ops
@@ -151,10 +153,14 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
                 logger.println("Resource loading "+format(n,ch.resourceLoadingTime.get())+"ms, "+ch.resourceLoadingCount+" times");
             }
 
-            Method mavenExecutionResultGetMethod = maven3LauncherClass.getMethod( "getMavenExecutionResult", null );
+            Method mavenExecutionResultGetMethod = maven3LauncherClass.getMethod( "getMavenExecutionResult", (Class[])null );
 
-            mavenExecutionResult = (HudsonMavenExecutionResult) mavenExecutionResultGetMethod.invoke( null, null );
+            mavenExecutionResult = (HudsonMavenExecutionResult) mavenExecutionResultGetMethod.invoke( null, (Object[])null );
 
+			// manage of Maven error threaded as in MavenCli, delegated by Maven3Launcher.launch
+            Maven3FailureLogger summary = new Maven3FailureLogger(mavenExecutionListener.logger);
+            summary.setOptions(goals);
+            summary.logFailures(mavenExecutionResult);
 
             if(r==0 && mavenExecutionResult.getThrowables().isEmpty()) {
                 if(mavenExecutionListener.hasTestFailures()){
@@ -163,29 +169,6 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
                 return Result.SUCCESS;
             }
 
-            // JENKINS-19352: partial roll-back of JENKINS-15025 (https://github.com/jenkinsci/maven-plugin/commit/19c4a4a0e9df8e2788703b44c84187b224ae239d)
-            // This is maybe causing duplicate logs in the scenario described in 15025, but at least it fixes that no error logs at all are present in the common
-            // scenario.
-            if (!mavenExecutionResult.getThrowables().isEmpty()) {
-               logger.println( "mavenExecutionResult exceptions not empty");
-                for(Throwable throwable : mavenExecutionResult.getThrowables()) {
-                    logger.println("message : " + throwable.getMessage());
-                    if (throwable.getCause()!=null) {
-                        logger.println("cause : " + throwable.getCause().getMessage());
-                    }
-                    logger.println("Stack trace : ");
-                    throwable.printStackTrace( logger );
-                }
-
-            }
-
-            if(markAsSuccess) {
-                logger.println(Messages.MavenBuilder_Failed());
-                if(mavenExecutionListener.hasTestFailures()){
-                    return Result.UNSTABLE;
-                }
-                return Result.SUCCESS;
-            }
             return Result.FAILURE;
         } catch (NoSuchMethodException e) {
             throw new IOException2(e);
@@ -201,6 +184,17 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             if (DUMP_PERFORMANCE_COUNTERS)
                 Channel.current().dumpPerformanceCounters(listener.error("Remoting stats"));
         }
+    }
+
+    // worakround for verbose logging https://issues.jenkins-ci.org/browse/JENKINS-19396
+	private void configureConsoleLogging() {
+	    Logger rootLogger = Logger.getLogger("");
+	    Handler[] handlers = rootLogger.getHandlers();
+	    for (Handler h : handlers) {
+	        if (h instanceof ConsoleHandler) {
+	            ((ConsoleHandler)h).setFormatter(new Maven3ConsoleFormatter());
+	        }
+	    }
     }
 
     private static final class JenkinsEventSpy extends MavenExecutionListener implements EventSpy,Serializable{

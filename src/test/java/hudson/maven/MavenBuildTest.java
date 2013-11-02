@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import hudson.Launcher;
+import hudson.model.BallColor;
 import hudson.model.BuildListener;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Result;
@@ -245,6 +246,34 @@ public class MavenBuildTest {
         }
     }
 
+    /**
+     * This tests build a project with two modules. One that have tests failures
+     * and the other don't compile due to a missing dependency.
+     * 
+     * @throws Exception
+     */
+    @Bug(16522)
+    @Test
+    public void testCorrectModuleBuildStatus() throws Exception {
+        MavenModuleSet mavenProject = j.createMavenProject();
+        MavenInstallation mavenInstallation = j.configureDefaultMaven();
+        mavenProject.setMaven(mavenInstallation.getName());
+        mavenProject.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-16522.zip")));
+        mavenProject.setGoals( "clean install" );
+        MavenModuleSetBuild build = mavenProject.scheduleBuild2(0).get();
+        
+        j.assertBuildStatus(Result.FAILURE, build);
+        
+        MavenModule moduleA = mavenProject.getModule("org.marcelo$moduleA");
+        assertNotNull(moduleA);
+        assertEquals(BallColor.YELLOW, moduleA.getIconColor());
+        
+        MavenModule moduleB = mavenProject.getModule("org.marcelo$moduleB");
+        assertNotNull(moduleB);
+        assertEquals(BallColor.RED, moduleB.getIconColor());
+        
+    }
+    
     private static class TestReporter extends MavenReporter {
         private static final long serialVersionUID = 1L;
 
