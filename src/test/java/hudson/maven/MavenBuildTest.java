@@ -5,12 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import hudson.Launcher;
+import hudson.maven.MavenBuildProxy.BuildCallable;
 import hudson.model.BallColor;
 import hudson.model.BuildListener;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Result;
 import hudson.model.StringParameterDefinition;
-import hudson.model.queue.QueueTaskFuture;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.AggregatedTestResultAction;
@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+
+import org.apache.maven.project.MavenProject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
@@ -222,27 +225,59 @@ public class MavenBuildTest {
                 getClass().getResource("/hudson/maven/maven-multimod.zip")
         ));
 
-        MavenModuleSetBuild build = project.scheduleBuild2(0).waitForStart();
+        project.getReporters().add(new AbortInTheMiddleOfModuleB());
 
-        ensureSubmoduleBuildsStarted(build);
+        MavenModuleSetBuild build = project.scheduleBuild2(0).get();
 
-        build.doStop();
-
-        Thread.sleep(2000);
         j.assertBuildStatus(Result.ABORTED, build);
         assertFalse(build.isBuilding());
+
+        j.assertBuildStatus(Result.SUCCESS, getModuleBuild(build, "moduleA"));
+        j.assertBuildStatus(Result.ABORTED, getModuleBuild(build, "moduleB"));
+        j.assertBuildStatus(Result.NOT_BUILT, getModuleBuild(build, "moduleC"));
+
         for (MavenBuild mb: build.getModuleLastBuilds().values()) {
             final String moduleName = mb.getParent().getDisplayName();
             assertFalse("Module " + moduleName + " is still building", mb.isBuilding());
         }
     }
 
-    private void ensureSubmoduleBuildsStarted(MavenModuleSetBuild build) throws InterruptedException {
-        for (;;) {
-            for (MavenBuild mb: build.getModuleLastBuilds().values()) {
-                if (Result.SUCCESS.equals(mb.getResult())) return;
+    private MavenBuild getModuleBuild(MavenModuleSetBuild build, String name) {
+        MavenModule module = build.getProject().getModule(
+                "org.jvnet.hudson.main.test.multimod:" + name
+        );
+        return build.getModuleLastBuilds().get(module);
+    }
+
+    /** Abort build after ModuleB compile phase */
+    private static class AbortInTheMiddleOfModuleB extends MavenReporter {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public boolean postExecute(MavenBuildProxy build, MavenProject pom, MojoInfo mojo, BuildListener listener, Throwable error) throws InterruptedException, IOException {
+
+            if ("moduleB".equals(pom.getArtifactId()) && "compile".equals(mojo.getGoal())) {
+                stop(build);
             }
-            Thread.sleep(1000);
+
+            return true;
+        }
+
+        private void stop(MavenBuildProxy build) throws IOException, InterruptedException {
+            build.execute(new BuildCallable<Void, IOException>() {
+                private static final long serialVersionUID = 1L;
+
+                public Void call(MavenBuild build) throws InterruptedException, IOException {
+                    try {
+
+                        build.getParentBuild().doStop();
+                        System.out.println("Stopped");
+                    } catch (ServletException ex) {
+                        throw new IOException(ex);
+                    }
+                    return null;
+                }
+            });
         }
     }
 
