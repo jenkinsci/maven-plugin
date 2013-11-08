@@ -549,6 +549,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         long startTime;
         private final OutputStream log;
         private final MavenModuleSetBuild parentBuild;
+        boolean noBuildEvents = false;
 
         ProxyImpl2(MavenModuleSetBuild parentBuild,SplittableBuildListener listener) throws FileNotFoundException {
             this.parentBuild = parentBuild;
@@ -556,8 +557,14 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             log = new FileOutputStream(getLogFile()); // no buffering so that AJAX clients can see the log live
         }
 
+        protected void setNoBuildEvents(boolean noBuildEvents) {
+            this.noBuildEvents = noBuildEvents;
+        }
+
         public void start() {
-            onStartBuilding();
+            if (!noBuildEvents) {
+                onStartBuilding();
+            }
             startTime = System.currentTimeMillis();
             try {
                 sync();
@@ -571,7 +578,9 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         public void end() {
             if(result==null)
                 setResult(Result.SUCCESS);
-            onEndBuilding();
+            if (!noBuildEvents) {
+                onEndBuilding();
+            }
             duration += System.currentTimeMillis()- startTime;
             parentBuild.notifyModuleBuild(MavenBuild.this);
             try {
@@ -882,6 +891,9 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                     final SplittableBuildListener slistener = new SplittableBuildListener(listener);
                     final ProcessCache.MavenProcess process = MavenBuild.mavenProcessCache.get( launcher.getChannel(), slistener, factory);
                     final ProxyImpl2 proxy = new ProxyImpl2(parentBuild, slistener);
+                    // madamcin: added this method to ProxyImpl2 for use in this execution context.
+                    //           this blocks the proxy from changing the state of the MavenBuild.
+                    proxy.setNoBuildEvents(true);
                     final Map<ModuleName, ProxyImpl2> proxies = new HashMap<ModuleName, ProxyImpl2>();
                     proxies.put(getProject().getModuleName(), proxy);
                     final Collection<MavenModule> modules = Collections.singleton(getProject());
@@ -975,29 +987,6 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                 }
             }
             return true;
-        }
-
-        private Maven3Builder.Maven3BuilderRequest createRequest(BuildListener listener,
-                                                          ProxyImpl2 buildProxy,
-                                                          MavenModule module,
-                                                          List<String> goals,
-                                                          Map<String,String> systemProps,
-                                                          Class<?> maven3MainClass,
-                                                          Class<?> maven3LauncherCLass,
-                                                          MavenBuildInformation mavenBuildInformation,
-                                                          boolean supportEventSpy) {
-            Maven3Builder.Maven3BuilderRequest request = new Maven3Builder.Maven3BuilderRequest();
-            request.listener = listener;
-            request.modules = Collections.singleton(module);
-            request.goals = goals;
-            request.systemProps = systemProps;
-            request.proxies = new HashMap<ModuleName, ProxyImpl2>();
-            request.proxies.put(module.getModuleName(), buildProxy);
-            request.maven3MainClass = maven3MainClass;
-            request.maven3LauncherClass = maven3LauncherCLass;
-            request.mavenBuildInformation = mavenBuildInformation;
-            request.supportEventSpy = supportEventSpy;
-            return request;
         }
 
         public void post2(BuildListener listener) throws Exception {
