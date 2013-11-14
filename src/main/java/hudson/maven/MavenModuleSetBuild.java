@@ -91,7 +91,9 @@ import jenkins.mvn.SettingsProvider;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 import org.codehaus.plexus.util.PathTool;
@@ -189,6 +191,19 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             // TODO: this needs to be documented but where?
             envs.put("POM_DISPLAYNAME", root.getDisplayName());
             envs.put("POM_VERSION", root.getVersion());
+            ArtifactVersion artifactVersion = new DefaultArtifactVersion(root.getVersion());
+            envs.put("POM_VERSION_MAJOR", Integer.toString(artifactVersion.getMajorVersion()));
+            envs.put("POM_VERSION_MINOR", Integer.toString(artifactVersion.getMinorVersion()));
+            envs.put("POM_VERSION_INCREMENTAL", Integer.toString(artifactVersion.getIncrementalVersion()));
+            envs.put("POM_VERSION_NEXT_MAJOR", Integer.toString(artifactVersion.getMajorVersion() + 1));
+            envs.put("POM_VERSION_NEXT_MINOR", Integer.toString(artifactVersion.getMinorVersion() + 1));
+            envs.put("POM_VERSION_NEXT_INCREMENTAL", Integer.toString(artifactVersion.getIncrementalVersion() + 1));
+            String qualifier = artifactVersion.getQualifier();
+            if (qualifier == null) {
+                qualifier = "";
+            }
+            envs.put("POM_VERSION_QUALIFIER", qualifier);
+            envs.put("POM_VERSION_BUILDNUMBER", Integer.toString(artifactVersion.getBuildNumber()));
             envs.put("POM_GROUPID", root.getGroupId());
             envs.put("POM_ARTIFACTID", root.getArtifactId());
             envs.put("POM_PACKAGING", root.getPackaging());
