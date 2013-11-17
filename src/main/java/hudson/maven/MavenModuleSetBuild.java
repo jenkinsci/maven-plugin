@@ -189,24 +189,24 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         MavenModule root = getProject().getRootModule();
         if (root!=null) {// I don't think it can ever be null but let's be defensive
             // TODO: this needs to be documented but where?
-            envs.put("POM_DISPLAYNAME", root.getDisplayName());
-            envs.put("POM_VERSION", root.getVersion());
+            envs.put("POM_ROOT_DISPLAYNAME", root.getDisplayName());
+            envs.put("POM_ROOT_VERSION", root.getVersion());
             ArtifactVersion artifactVersion = new DefaultArtifactVersion(root.getVersion());
-            envs.put("POM_VERSION_MAJOR", Integer.toString(artifactVersion.getMajorVersion()));
-            envs.put("POM_VERSION_MINOR", Integer.toString(artifactVersion.getMinorVersion()));
-            envs.put("POM_VERSION_INCREMENTAL", Integer.toString(artifactVersion.getIncrementalVersion()));
-            envs.put("POM_VERSION_NEXT_MAJOR", Integer.toString(artifactVersion.getMajorVersion() + 1));
-            envs.put("POM_VERSION_NEXT_MINOR", Integer.toString(artifactVersion.getMinorVersion() + 1));
-            envs.put("POM_VERSION_NEXT_INCREMENTAL", Integer.toString(artifactVersion.getIncrementalVersion() + 1));
+            envs.put("POM_ROOT_VERSION_MAJOR", Integer.toString(artifactVersion.getMajorVersion()));
+            envs.put("POM_ROOT_VERSION_MINOR", Integer.toString(artifactVersion.getMinorVersion()));
+            envs.put("POM_ROOT_VERSION_INCREMENTAL", Integer.toString(artifactVersion.getIncrementalVersion()));
+            envs.put("POM_ROOT_VERSION_NEXT_MAJOR", Integer.toString(artifactVersion.getMajorVersion() + 1));
+            envs.put("POM_ROOT_VERSION_NEXT_MINOR", Integer.toString(artifactVersion.getMinorVersion() + 1));
+            envs.put("POM_ROOT_VERSION_NEXT_INCREMENTAL", Integer.toString(artifactVersion.getIncrementalVersion() + 1));
             String qualifier = artifactVersion.getQualifier();
             if (qualifier == null) {
                 qualifier = "";
             }
-            envs.put("POM_VERSION_QUALIFIER", qualifier);
-            envs.put("POM_VERSION_BUILDNUMBER", Integer.toString(artifactVersion.getBuildNumber()));
-            envs.put("POM_GROUPID", root.getGroupId());
-            envs.put("POM_ARTIFACTID", root.getArtifactId());
-            envs.put("POM_PACKAGING", root.getPackaging());
+            envs.put("POM_ROOT_VERSION_QUALIFIER", qualifier);
+            envs.put("POM_ROOT_VERSION_BUILDNUMBER", Integer.toString(artifactVersion.getBuildNumber()));
+            envs.put("POM_ROOT_GROUPID", root.getGroupId());
+            envs.put("POM_ROOT_ARTIFACTID", root.getArtifactId());
+            envs.put("POM_ROOT_PACKAGING", root.getPackaging());
         }
 
         return envs;
