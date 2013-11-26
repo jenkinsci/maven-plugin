@@ -106,7 +106,7 @@ enum TestMojo {
         public Iterable<File> getReportFiles(MavenProject pom, MojoInfo mojo)
                 throws ComponentConfigurationException {
             /* play2-maven-plugin just run `play test` - this one dumps test reports to target/test-reports */
-            File junitDir = new File(pom.getBaseDir(), "target/test-reports");
+            File junitDir = new File(pom.getBasedir(), "target/test-reports");
             if (junitDir.exists()) {
                 return super.getReportFiles(junitDir, super.getFileSet(junitDir));
             }
