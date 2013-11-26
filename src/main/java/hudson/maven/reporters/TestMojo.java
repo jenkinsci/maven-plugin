@@ -100,6 +100,18 @@ enum TestMojo {
 
             return null;
         }
+    },
+    PLAY2_MAVEN_PLUGIN("org.nanoko.playframework", "play2-maven-plugin", "test", null) {
+        @Override
+        public Iterable<File> getReportFiles(MavenProject pom, MojoInfo mojo)
+                throws ComponentConfigurationException {
+            /* play2-maven-plugin just run `play test` - this one dumps test reports to target/test-reports */
+            File junitDir = new File(pom.getBaseDir(), "target/test-reports");
+            if (junitDir.exists()) {
+                return super.getReportFiles(junitDir, super.getFileSet(junitDir));
+            }
+            return null;
+        }        
     };
 
     private String reportDirectoryConfigKey;
