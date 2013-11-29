@@ -125,7 +125,7 @@ public class MavenArtifactArchiver extends MavenReporter {
             }
 
             // record the action
-            build.executeAsync(new MavenBuildProxy.BuildCallable<Void, IOException>() {
+            build.execute(new MavenBuildProxy.BuildCallable<Void, IOException>() {
                 private static final long serialVersionUID = -7955474564875700905L;
 
                 public Void call(MavenBuild build) throws IOException, InterruptedException {
@@ -138,10 +138,6 @@ public class MavenArtifactArchiver extends MavenReporter {
                             repositoryUrl,
                             repositoryId);
                     build.addAction(mar);
-
-                    // TODO kutzi: why are the fingerprints recorded here?
-                    // I thought that is the job of MavenFingerprinter
-                    mar.recordFingerprints();
 
                     return null;
                 }
