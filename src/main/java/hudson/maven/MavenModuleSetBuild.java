@@ -668,6 +668,12 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                             return r;
             			}
 
+                        for (Action action : getRootBuild().getActions()) {
+                            if(action instanceof EnvironmentContributingAction){
+                                ((EnvironmentContributingAction) action).buildEnvVars(MavenModuleSetBuild.this, envVars);
+                            }
+                        }
+
                         parsePoms(listener, logger, envVars, mvn, mavenVersion, mavenBuildInformation); // #5428 : do pre-build *before* parsing pom
                         SplittableBuildListener slistener = new SplittableBuildListener(listener);
                         proxies = new HashMap<ModuleName, ProxyImpl2>();
@@ -786,7 +792,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
                         
                         final List<MavenArgumentInterceptorAction> argInterceptors = this.getBuild().getActions(MavenArgumentInterceptorAction.class);
-                        
+
 						// find the correct maven goals and options, there might by an action overruling the defaults
                         String goals = project.getGoals(); // default
                         for (MavenArgumentInterceptorAction mavenArgInterceptor : argInterceptors) {
