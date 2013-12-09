@@ -668,6 +668,9 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                             return r;
             			}
 
+                        logger.println("prebuilders: " + Joiner.on(", ").join(project.getPrebuilders()));
+                        logger.println("root actions: " + Joiner.on(", ").join(project.getLastBuild().getActions()));
+
                         for (Action action : getRootBuild().getActions()) {
                             if(action instanceof EnvironmentContributingAction){
                                 ((EnvironmentContributingAction) action).buildEnvVars(MavenModuleSetBuild.this, envVars);
