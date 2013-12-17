@@ -36,6 +36,7 @@ import hudson.Util;
 import hudson.maven.local_repo.DefaultLocalRepositoryLocator;
 import hudson.maven.local_repo.LocalRepositoryLocator;
 import hudson.maven.local_repo.PerJobLocalRepositoryLocator;
+import hudson.maven.reporters.MavenMailer;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.BuildableItemWithBuildWrappers;
@@ -90,9 +91,6 @@ import java.util.logging.Logger;
 import javax.servlet.ServletException;
 
 import jenkins.model.Jenkins;
-import jenkins.model.ModelObjectWithChildren;
-import jenkins.mvn.DefaultGlobalSettingsProvider;
-import jenkins.mvn.DefaultSettingsProvider;
 import jenkins.mvn.FilePathSettingsProvider;
 import jenkins.mvn.GlobalMavenConfig;
 import jenkins.mvn.GlobalSettingsProvider;
@@ -217,14 +215,6 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
      */
     private LocalRepositoryLocator localRepository = null;
     
-   /**
-    * If true, the build will send a failure e-mail for each failing maven module.
-    * Defaults to <code>true</code> to simulate old behavior. 
-    * <p>
-    * see JENKINS-5695. 
-    */
-    private Boolean perModuleEmail = Boolean.TRUE;
-
     /**
      * If true, do not automatically schedule a build when one of the project dependencies is built.
      * <p>
@@ -562,8 +552,11 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         return !(getLocalRepository() instanceof DefaultLocalRepositoryLocator);
     }
 
+    /** @deprecated see {@link MavenMailer#perModuleEmail} */
+    @Deprecated
     public boolean isPerModuleEmail() {
-        return perModuleEmail;
+        MavenMailer m = reporters.get(MavenMailer.class);
+        return m != null ? m.perModuleEmail : true;
     }
     
     public boolean ignoreUpstremChanges() {
@@ -813,10 +806,6 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         	postbuilders = new DescribableList<Builder,Descriptor<Builder>>(this);
         }
         postbuilders.setOwner(this);
-        
-        if(perModuleEmail == null){
-            perModuleEmail = Boolean.TRUE;
-        }
         
         if (Boolean.TRUE.equals(usePrivateRepository)) {
             this.localRepository = new PerJobLocalRepositoryLocator();
@@ -1165,7 +1154,6 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
             localRepository = req.bindJSON(LocalRepositoryLocator.class,json.getJSONObject("explicitLocalRepository"));
         else
             localRepository = null;
-        perModuleEmail = req.hasParameter("maven.perModuleEmail");
         ignoreUpstremChanges = !json.has("triggerByDependency");
         runHeadless = req.hasParameter("maven.runHeadless");
         incrementalBuild = req.hasParameter("maven.incrementalBuild");
@@ -1258,6 +1246,9 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         public String getHelpFile(String fieldName) {
             String v = super.getHelpFile(fieldName);
             if (v!=null)    return v;
+            if (fieldName == null) {
+                return null;
+            }
             return Jenkins.getInstance().getDescriptor(Maven.class).getHelpFile(fieldName);
         }
 
