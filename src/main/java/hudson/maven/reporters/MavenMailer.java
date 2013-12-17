@@ -47,6 +47,8 @@ public class MavenMailer extends MavenReporter {
     public boolean sendToIndividuals;
     public boolean perModuleEmail;
 
+    @Deprecated public MavenMailer() {}
+
     @DataBoundConstructor public MavenMailer(String recipients, boolean notifyEveryUnstableBuild, boolean sendToIndividuals, boolean perModuleEmail) {
         this.recipients = recipients;
         this.dontNotifyEveryUnstableBuild = !notifyEveryUnstableBuild;
