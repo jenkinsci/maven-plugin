@@ -26,31 +26,37 @@ package hudson.maven.reporters;
 import hudson.Launcher;
 import hudson.Extension;
 import hudson.maven.MavenBuild;
+import hudson.maven.MavenModule;
 import hudson.maven.MavenReporter;
 import hudson.maven.MavenReporterDescriptor;
 import hudson.model.BuildListener;
 import hudson.tasks.MailSender;
-import hudson.tasks.Mailer;
-
-import org.kohsuke.stapler.StaplerRequest;
-
 import java.io.IOException;
-
-import net.sf.json.JSONObject;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Sends out an e-mail notification for Maven build result.
  * @author Kohsuke Kawaguchi
  */
 public class MavenMailer extends MavenReporter {
-    /**
-     * @see Mailer
-     */
     public String recipients;
+    /** not data-bound; set by {@link MavenModule} */
     public String mavenRecipients;
+    /** negative sense is historical */
     public boolean dontNotifyEveryUnstableBuild;
     public boolean sendToIndividuals;
     public boolean perModuleEmail;
+
+    @DataBoundConstructor public MavenMailer(String recipients, boolean notifyEveryUnstableBuild, boolean sendToIndividuals, boolean perModuleEmail) {
+        this.recipients = recipients;
+        this.dontNotifyEveryUnstableBuild = !notifyEveryUnstableBuild;
+        this.sendToIndividuals = sendToIndividuals;
+        this.perModuleEmail = perModuleEmail;
+    }
+
+    public boolean isNotifyEveryUnstableBuild() {
+        return !dontNotifyEveryUnstableBuild;
+    }
 
     public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         if(perModuleEmail) {
@@ -79,23 +85,6 @@ public class MavenMailer extends MavenReporter {
             return Messages.MavenMailer_DisplayName();
         }
 
-        public String getHelpFile() {
-            return "/help/project-config/mailer.html";
-        }
-
-        // reuse the config from the mailer.
-        @Override
-        public String getConfigPage() {
-            return getViewPage(Mailer.class,"config.jelly");
-        }
-
-        public MavenReporter newInstance(StaplerRequest req, JSONObject formData) throws FormException {
-            MavenMailer m = new MavenMailer();
-            req.bindParameters(m,"mailer_");
-            m.dontNotifyEveryUnstableBuild = req.getParameter("mailer_notifyEveryUnstableBuild")==null;
-            m.perModuleEmail = req.hasParameter("maven.perModuleEmail");
-            return m;
-        }
     }
 
     private static final long serialVersionUID = 1L;
