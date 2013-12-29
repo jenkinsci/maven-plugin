@@ -2,21 +2,28 @@ package hudson.maven;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
-
 import hudson.Launcher;
 import hudson.maven.MavenBuildProxy.BuildCallable;
+import hudson.model.AbstractProject;
+import hudson.model.Action;
 import hudson.model.BallColor;
 import hudson.model.BuildListener;
+import hudson.model.InvisibleAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Result;
 import hudson.model.StringParameterDefinition;
+import hudson.tasks.Builder;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.AggregatedTestResultAction;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -318,5 +325,59 @@ public class MavenBuildTest {
             return true;
         }
     }    
+
+    /**
+     * This test makes sure the project actions of the prebuilders and postbuilders get requested (and therefore exposed).
+     * 
+     * @throws Exception
+     */
+    @Bug(20506)
+    @Test
+    public void testActionsOfPreAndPostBuildersMustBeExposed() throws Exception {
+        j.configureDefaultMaven();
+        MavenModuleSet m = j.createMavenProject();
+        m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
+        m.setGoals("initialize");
+
+        TestBuilder pre = new TestBuilder();
+        TestBuilder post = new TestBuilder();
+        assertFalse(pre.projectActionsGotRequested());
+        assertFalse(post.projectActionsGotRequested());
+
+        m.getPrebuilders().add(pre);
+        m.getPostbuilders().add(post);
+        
+        j.buildAndAssertSuccess(m);
+        
+        assertTrue("actions of prebuilders have not been requested during build",pre.projectActionsGotRequested());
+        assertTrue("actions of postbuilders have not been requested during build",post.projectActionsGotRequested());
+        
+        final TestAction action = m.getAction(TestAction.class);
+        assertNotNull(action);
+        final List<TestAction> actions = m.getActions(TestAction.class);
+        assertEquals(2, actions.size());
+    }     
     
+    private static class TestBuilder extends Builder {
+
+        private boolean projectActionsGotRequested = false;
+
+        public Action getProjectAction(AbstractProject<?, ?> project) {
+            return null;
+        }
+
+        public Collection<? extends Action> getProjectActions(AbstractProject<?, ?> project) {
+            this.projectActionsGotRequested = true;
+            return Collections.singletonList(new TestAction());
+        }
+
+        public boolean projectActionsGotRequested() {
+            return projectActionsGotRequested;
+        }
+
+    }
+    
+    private static class TestAction extends InvisibleAction{
+    }
+
 }
