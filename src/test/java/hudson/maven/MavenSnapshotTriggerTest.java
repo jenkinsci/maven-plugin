@@ -5,8 +5,12 @@ import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.hasItems;
 
+import static org.junit.matchers.JUnitMatchers.*;
 /**
  * Tests that Maven jobs are triggered, when snapshot dependencies of them were build.
  *
@@ -126,7 +130,6 @@ public class MavenSnapshotTriggerTest extends HudsonTestCase {
         }
 
         assertEquals("Expected number of upstream project for project 'snap-dep-test-down' to be #2", 2, upstreamProjectNames.size());
-        assertTrue("Expected 'snap-dep-test-A1' as upstream project for project 'snap-dep-test-C'", upstreamProjectNames.contains("snap-dep-test-A1"));
-        assertTrue("Expected 'snap-dep-test-B2' as upstream project for project 'snap-dep-test-C'", upstreamProjectNames.contains("snap-dep-test-B2"));
+        assertThat("Expected 'snap-dep-test-A1' and 'snap-dep-test-B2' as upstream project for project 'snap-dep-test-C'", upstreamProjectNames, hasItems("snap-dep-test-A1", "snap-dep-test-B2"));
     }
 }
