@@ -1,16 +1,15 @@
 package hudson.maven;
 
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.hasItems;
+
 import hudson.model.AbstractProject;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.hasItems;
 
-import static org.junit.matchers.JUnitMatchers.*;
 /**
  * Tests that Maven jobs are triggered, when snapshot dependencies of them were build.
  *
