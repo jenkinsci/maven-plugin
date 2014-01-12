@@ -469,6 +469,14 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         if (buildWrappers!=null)
 	        for (BuildWrapper step : buildWrappers)
                 r.addAll(step.getProjectActions(this));
+        
+        if (prebuilders!=null)
+            for (Builder builder : prebuilders)
+                r.addAll(builder.getProjectActions(this));
+
+        if (postbuilders!=null)
+            for (Builder builder : postbuilders)
+                r.addAll(builder.getProjectActions(this));
 
         return r;
     }
