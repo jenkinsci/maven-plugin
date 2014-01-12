@@ -413,7 +413,6 @@ THE SOFTWARE.
       <plugin>
         <groupId>org.jenkins-ci.tools</groupId>
         <artifactId>maven-hpi-plugin</artifactId>
-        <version>1.100</version>
         <!-- version specified in grandparent pom -->
         <extensions>true</extensions>
         <configuration>
