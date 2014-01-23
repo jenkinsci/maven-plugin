@@ -169,12 +169,15 @@ public class MavenArtifactRecord extends MavenAbstractArtifactRecord<MavenBuild>
         } else {
             ((WrappedArtifactRepository) deploymentRepository).setUniqueVersion(true);
         }
+        ArtifactDeployer deployer;
         Artifact main = mainArtifact.toArtifact(handlerManager, artifactFactory, parent);
+        try {
         File pomFile = null;
         if (!isPOM()) {
             pomFile = pomArtifact.getFile(parent);
             main.addMetadata(new ProjectArtifactMetadata(main, pomFile));
         }
+        try {
         if (main.getType().equals("maven-plugin")) {
             GroupRepositoryMetadata metadata = new GroupRepositoryMetadata(main.getGroupId());
             String goalPrefix = PluginDescriptor.getGoalPrefixFromArtifactId(main.getArtifactId());
@@ -182,23 +185,30 @@ public class MavenArtifactRecord extends MavenAbstractArtifactRecord<MavenBuild>
             main.addMetadata(metadata);
         }
 
-        ArtifactDeployer deployer = embedder.lookup(ArtifactDeployer.class, uniqueVersion ? "default" : "maven2");
+        deployer = embedder.lookup(ArtifactDeployer.class, uniqueVersion ? "default" : "maven2");
         logger.println(
                 "[INFO] Deployment in " + deploymentRepository.getUrl() + " (id=" + deploymentRepository.getId() + ",uniqueVersion=" + deploymentRepository.isUniqueVersion()+")");
 
         // deploy the main artifact. This also deploys the POM
         logger.println(Messages.MavenArtifact_DeployingMainArtifact(main.getFile().getName()));
         deployer.deploy(main.getFile(), main, deploymentRepository, embedder.getLocalRepository());
-        main.getFile().delete();
+        } finally {
         if (pomFile != null) {
             pomFile.delete();
+        }
+        }
+        } finally {
+        main.getFile().delete();
         }
 
         for (MavenArtifact aa : attachedArtifacts) {
             Artifact a = aa.toArtifact(handlerManager, artifactFactory, parent);
+            try {
             logger.println(Messages.MavenArtifact_DeployingMainArtifact(a.getFile().getName()));
             deployer.deploy(a.getFile(), a, deploymentRepository, embedder.getLocalRepository());
+            } finally {
             a.getFile().delete();
+            }
         }
     }
 
