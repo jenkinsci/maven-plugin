@@ -23,31 +23,30 @@
  */
 package hudson.maven.reporters;
 
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Util;
-import hudson.Extension;
 import hudson.maven.MavenBuild;
 import hudson.maven.MavenBuildProxy;
+import hudson.maven.MavenBuildProxy.BuildCallable;
 import hudson.maven.MavenModule;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
 import hudson.maven.MavenReporter;
 import hudson.maven.MavenReporterDescriptor;
 import hudson.maven.MojoInfo;
-import hudson.maven.MavenBuildProxy.BuildCallable;
 import hudson.model.AbstractItem;
 import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.DirectoryBrowserSupport;
 import hudson.model.ProminentProjectAction;
 import hudson.model.Result;
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
 
 /**
  * Watches out for the execution of maven-site-plugin and records its output.
@@ -78,8 +77,8 @@ public class MavenSiteArchiver extends MavenReporter {
             // store at MavenModuleSet level and moduleName
             final FilePath target = build.getModuleSetRootDir().child("site").child(moduleName);
             try {
-                listener.getLogger().printf("[JENKINS] Archiving site from %s to %s\n", destDir, target);
-                new FilePath(destDir).copyRecursiveTo("**/*",target);
+                listener.getLogger().printf("[JENKINS] Archiving site from %s to %s%n", destDir, target);
+                new FilePath(destDir).copyRecursiveTo(target);
             } catch (IOException e) {
                 Util.displayIOException(e,listener);
                 e.printStackTrace(listener.fatalError("Unable to copy site from %s to %s",destDir,target));
@@ -164,7 +163,8 @@ public class MavenSiteArchiver extends MavenReporter {
          * Serves the site.
          */
         public DirectoryBrowserSupport doDynamic() {
-            return new DirectoryBrowserSupport(this,new FilePath(getSiteDir(project)), project.getDisplayName()+" site", "help.gif", false);
+            File siteDir = getSiteDir(project);
+            return new DirectoryBrowserSupport(project, new FilePath(siteDir), project.getDisplayName() + " site", "help.gif", !new File(siteDir, "index.html").isFile());
         }
     }
 
