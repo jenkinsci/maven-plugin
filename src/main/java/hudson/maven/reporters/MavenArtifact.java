@@ -54,6 +54,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import jenkins.model.ArtifactManager;
+import jenkins.model.StandardArtifactManager;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -203,11 +205,20 @@ public final class MavenArtifact implements Serializable {
      * @throws FileNotFoundException if the archived artifact was missing
      */
     public File getFile(MavenBuild build) throws IOException {
+        ArtifactManager artifactManager = build.getArtifactManager();
+        if (artifactManager instanceof StandardArtifactManager) {
+            @SuppressWarnings("deprecation") File artifactsDir = build.getArtifactsDir();
+            File f = new File(new File(new File(new File(artifactsDir, groupId), artifactId), version), canonicalName);
+            if (!f.exists()) {
+                throw new FileNotFoundException("Archived artifact is missing: " + f);
+            }
+            return f;
+        }
         File f = File.createTempFile("jenkins-", canonicalName);
         f.deleteOnExit();
         OutputStream os = new FileOutputStream(f);
         try {
-            Util.copyStreamAndClose(build.getArtifactManager().root().child(artifactPath()).open(), os);
+            Util.copyStreamAndClose(artifactManager.root().child(artifactPath()).open(), os);
         } finally {
             os.close();
         }
