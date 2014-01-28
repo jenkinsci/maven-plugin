@@ -28,13 +28,11 @@ import hudson.maven.RedeployPublisher.WrappedArtifactRepository;
 import hudson.model.AbstractItem;
 import hudson.model.Action;
 import hudson.model.TaskListener;
-import java.io.File;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.deployer.ArtifactDeployer;
 import org.apache.maven.artifact.deployer.ArtifactDeploymentException;
@@ -170,12 +168,13 @@ public class MavenArtifactRecord extends MavenAbstractArtifactRecord<MavenBuild>
             ((WrappedArtifactRepository) deploymentRepository).setUniqueVersion(true);
         }
         ArtifactDeployer deployer;
-        Artifact main = mainArtifact.toArtifact(handlerManager, artifactFactory, parent);
+        MavenArtifact.CloseableArtifact mainC = mainArtifact.toCloseableArtifact(handlerManager, artifactFactory, parent);
         try {
-        File pomFile = null;
+        Artifact main = mainC.get();
+        MavenArtifact.TemporaryFile pomFile = null;
         if (!isPOM()) {
-            pomFile = pomArtifact.getFile(parent);
-            main.addMetadata(new ProjectArtifactMetadata(main, pomFile));
+            pomFile = pomArtifact.getTemporaryFile(parent);
+            main.addMetadata(new ProjectArtifactMetadata(main, pomFile.getFile()));
         }
         try {
         if (main.getType().equals("maven-plugin")) {
@@ -193,21 +192,22 @@ public class MavenArtifactRecord extends MavenAbstractArtifactRecord<MavenBuild>
         logger.println(Messages.MavenArtifact_DeployingMainArtifact(main.getFile().getName()));
         deployer.deploy(main.getFile(), main, deploymentRepository, embedder.getLocalRepository());
         } finally {
-        if (pomFile != null) {
-            pomFile.delete();
-        }
+            if (pomFile != null) {
+                pomFile.close();
+            }
         }
         } finally {
-        main.getFile().delete();
+            mainC.close();
         }
 
         for (MavenArtifact aa : attachedArtifacts) {
-            Artifact a = aa.toArtifact(handlerManager, artifactFactory, parent);
+            MavenArtifact.CloseableArtifact aC = aa.toCloseableArtifact(handlerManager, artifactFactory, parent);
             try {
-            logger.println(Messages.MavenArtifact_DeployingMainArtifact(a.getFile().getName()));
-            deployer.deploy(a.getFile(), a, deploymentRepository, embedder.getLocalRepository());
+                Artifact a = aC.get();
+                logger.println(Messages.MavenArtifact_DeployingMainArtifact(a.getFile().getName()));
+                deployer.deploy(a.getFile(), a, deploymentRepository, embedder.getLocalRepository());
             } finally {
-            a.getFile().delete();
+                aC.close();
             }
         }
     }

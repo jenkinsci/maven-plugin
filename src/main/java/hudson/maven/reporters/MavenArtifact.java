@@ -23,6 +23,7 @@
  */
 package hudson.maven.reporters;
 
+import com.google.common.collect.Maps;
 import hudson.Util;
 import hudson.maven.MavenBuild;
 import hudson.maven.MavenBuildProxy;
@@ -31,20 +32,7 @@ import hudson.model.BuildListener;
 import hudson.model.FingerprintMap;
 import hudson.model.Run;
 import hudson.util.LRUStringConverter;
-import jenkins.model.Jenkins;
-
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-
-import com.google.common.collect.Maps;
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
-
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -53,11 +41,22 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
-import jenkins.model.ArtifactManager;
+import jenkins.model.Jenkins;
 import jenkins.model.StandardArtifactManager;
+import jenkins.util.VirtualFile;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * Captures information about an artifact created by Maven and archived by
@@ -163,10 +162,37 @@ public final class MavenArtifact implements Serializable {
     }
 
     /**
-     * Creates a Maven {@link Artifact} back from the persisted data.
-     * {@link Artifact#getFile} should be deleted when you are finished as it is a temporary copy.
+     * @deprecated only works with {@link StandardArtifactManager} and subclasses; use {@link #toCloseableArtifact} instead
      */
+    @Deprecated
     public Artifact toArtifact(ArtifactHandlerManager handlerManager, ArtifactFactory factory, MavenBuild build) throws IOException {
+        return toCloseableArtifact(handlerManager, factory, build).get();
+    }
+
+    /**
+     * {@link Artifact} holder that can be released in a {@code finally}-block.
+     * @since 2.0.3
+     */
+    public static final class CloseableArtifact implements Closeable {
+        private final Artifact artifact;
+        private final Closeable closeable;
+        CloseableArtifact(Artifact artifact, Closeable closeable) {
+            this.artifact = artifact;
+            this.closeable = closeable;
+        }
+        public Artifact get() {
+            return artifact;
+        }
+        @Override public void close() throws IOException {
+            closeable.close();
+        }
+    }
+
+    /**
+     * Creates a Maven {@link Artifact} back from the persisted data.
+     * @param closeable pass in a reference which will be filled with something you should close when done
+     */
+    public CloseableArtifact toCloseableArtifact(ArtifactHandlerManager handlerManager, ArtifactFactory factory, MavenBuild build) throws IOException {
         // Hack: presence of custom ArtifactHandler during builds could influence the file extension
         // in the repository during deployment. So simulate that behavior if that's necessary.
         final String canonicalExtension = canonicalName.substring(canonicalName.lastIndexOf('.')+1);
@@ -183,9 +209,9 @@ public final class MavenArtifact implements Serializable {
         }
 
         Artifact a = factory.createArtifactWithClassifier(groupId, artifactId, version, type, classifier);
-        a.setFile(getFile(build));
-       
-        return a;
+        TemporaryFile file = getTemporaryFile(build);
+        a.setFile(file.getFile());
+        return new CloseableArtifact(a, file);
     }
 
     /**
@@ -201,28 +227,88 @@ public final class MavenArtifact implements Serializable {
 
     /**
      * Obtains the {@link File} representing the archived artifact.
-     * This is a temporary copy which you should delete when finished.
      * @throws FileNotFoundException if the archived artifact was missing
+     * @deprecated only works with {@link StandardArtifactManager} and subclasses; use {@link #getTemporaryFile} instead
      */
+    @Deprecated
     public File getFile(MavenBuild build) throws IOException {
-        ArtifactManager artifactManager = build.getArtifactManager();
-        if (artifactManager instanceof StandardArtifactManager) {
-            @SuppressWarnings("deprecation") File artifactsDir = build.getArtifactsDir();
-            File f = new File(new File(new File(new File(artifactsDir, groupId), artifactId), version), canonicalName);
-            if (!f.exists()) {
-                throw new FileNotFoundException("Archived artifact is missing: " + f);
-            }
-            return f;
-        }
-        File f = File.createTempFile("jenkins-", canonicalName);
-        f.deleteOnExit();
-        OutputStream os = new FileOutputStream(f);
-        try {
-            Util.copyStreamAndClose(artifactManager.root().child(artifactPath()).open(), os);
-        } finally {
-            os.close();
+        @SuppressWarnings("deprecation") File artifactsDir = build.getArtifactsDir();
+        File f = new File(new File(new File(new File(artifactsDir, groupId), artifactId), version), canonicalName);
+        if (!f.exists()) {
+            throw new FileNotFoundException("Archived artifact is missing: " + f);
         }
         return f;
+    }
+
+    /**
+     * Gets an archived artifact.
+     * @param build a Maven build that might have archived this
+     * @return a representation of the artifact
+     * @since 2.0.3
+     */
+    public @Nonnull TemporaryFile getTemporaryFile(MavenBuild build) {
+        return new TemporaryFile(build);
+    }
+
+    /**
+     * Representation of an archived artifact that might be accessed in various ways.
+     * Release in a {@code finally}-block.
+     * @since 2.0.3
+     */
+    public final class TemporaryFile implements Closeable {
+
+        private final MavenBuild build;
+        private File copy;
+
+        TemporaryFile(MavenBuild build) {
+            this.build = build;
+        }
+
+        /**
+         * Gets the artifact from whatever storage mechanism is appropriate.
+         * This is the preferred method for code that does not need to deal with {@link File} specifically.
+         * @return the purported location of the artifact (might no longer exist if it has since been deleted)
+         */
+        public @Nonnull VirtualFile getVirtualFile() {
+            return build.getArtifactManager().root().child(artifactPath());
+        }
+
+        /**
+         * Gets the artifact as a local file, perhaps creating a temporary copy as needed.
+         * You must {@link #close} it when finished; do not delete the result file yourself.
+         * @return either the original artifact, or a copy thereof; may not exist if it has since been deleted
+         */
+        public @Nonnull synchronized File getFile() throws IOException {
+            if (copy == null) {
+                try {
+                    return MavenArtifact.this.getFile(build);
+                } catch (FileNotFoundException x) {
+                    File f = File.createTempFile("jenkins-", canonicalName);
+                    f.deleteOnExit();
+                    OutputStream os = new FileOutputStream(f);
+                    try {
+                        Util.copyStreamAndClose(getVirtualFile().open(), os);
+                    } finally {
+                        os.close();
+                    }
+                    copy = f;
+                }
+            }
+            return copy;
+        }
+
+        public synchronized void close() throws IOException {
+            if (copy != null) {
+                try {
+                    if (!copy.delete()) {
+                        throw new IOException("could not delete " + copy);
+                    }
+                } finally {
+                    copy = null;
+                }
+            }
+        }
+
     }
 
     /**
