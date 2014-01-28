@@ -25,22 +25,20 @@ package hudson.maven;
 
 import hudson.model.Result;
 import hudson.tasks.Maven.MavenInstallation;
-
-import org.apache.commons.lang.StringUtils;
-import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.SingleFileSCM;
-import org.jvnet.hudson.test.Email;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
+import org.apache.commons.lang.StringUtils;
 import static org.junit.Assert.*;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Email;
+import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.SingleFileSCM;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -159,8 +157,10 @@ public class RedeployPublisherTest {
                 ver = ver.substring( ver.length() - 1, ver.length() );
                 assertEquals("-bin.zip not ended with 1 , file " + file , "1", ver);
             }            
-        }        
-        
+        }
+        assertEquals(1, b.getModuleBuilds().size());
+        assertEquals(1, b.getModuleBuilds().values().iterator().next().size());
+        assertEquals(5, b.getModuleBuilds().values().iterator().next().iterator().next().getArtifacts().size());
     }    
     
     @Test
