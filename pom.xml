@@ -34,7 +34,7 @@ THE SOFTWARE.
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
   <artifactId>maven-plugin</artifactId><!-- for the same reason, artifactId is against the convention -->
-  <version>2.0.3</version>
+  <version>2.0.4-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>Maven Integration plugin</name>
