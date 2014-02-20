@@ -760,7 +760,14 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
 
         return new ArrayList<MavenReporter>(reporterSet);
     }
-    
+
+    /**
+     * @since 2.2-SNAPSHOT
+     */
+    public Set<ModuleDependency> getDependencies() {
+        return dependencies;
+    }
+
     /**
      * for debug purpose
      */
