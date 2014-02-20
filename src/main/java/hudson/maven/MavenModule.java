@@ -729,7 +729,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
     @Override
     protected void performDelete() throws IOException, InterruptedException {
         super.performDelete();
-        getParent().onModuleDeleted(this);
+        getParent().onModuleDeleted( this );
     }
 
     /**
@@ -746,7 +746,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
 			}
 		});
 
-        getReporters().addAllTo(reporterSet);
+        getReporters().addAllTo( reporterSet );
         getParent().getReporters().addAllTo(reporterSet);
         
 
@@ -762,10 +762,11 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
     }
 
     /**
+     * defensive copy of {@link hudson.maven.ModuleDependency}
      * @since 2.2-SNAPSHOT
      */
     public Set<ModuleDependency> getDependencies() {
-        return dependencies;
+        return new HashSet<ModuleDependency>( dependencies);
     }
 
     /**
