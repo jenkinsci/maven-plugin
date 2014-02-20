@@ -763,7 +763,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
 
     /**
      * defensive copy of {@link hudson.maven.ModuleDependency}
-     * @since 2.2-SNAPSHOT
+     * @since 2.2
      */
     public Set<ModuleDependency> getDependencies() {
         return new HashSet<ModuleDependency>( dependencies);
