@@ -128,7 +128,7 @@ final class PomInfo implements Serializable {
         if(parent!=null)
             parent.children.add(name);
 
-        for (Dependency dep : (List<Dependency>)project.getDependencies())
+        for (Dependency dep : project.getDependencies())
             dependencies.add(new ModuleDependency(dep));
 
         MavenProject parentProject = project.getParent();
