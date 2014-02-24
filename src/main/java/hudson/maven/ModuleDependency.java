@@ -73,11 +73,37 @@ public final class ModuleDependency implements Serializable {
      */
     private ArtifactVersion parsedVersion;
 
+    /**
+     * @since 2.2
+     */
+    private String scope;
+
+    /**
+     * @since 2.2
+     */
+    private String type;
+
+    /**
+     * @since 2.2
+     */
+    private String classifier;
+
     public ModuleDependency(String groupId, String artifactId, String version) {
         this(groupId, artifactId, version, false);
     }
     
     public ModuleDependency(String groupId, String artifactId, String version, boolean plugin) {
+        this.groupId = groupId.intern();
+        this.artifactId = artifactId.intern();
+        if(version==null)
+            this.version = UNKNOWN;
+        else
+            this.version = version.intern();
+        this.plugin = plugin;
+    }
+
+    public ModuleDependency(String groupId, String artifactId, String version, String scope,
+                            String type, String classifier, boolean plugin) {
         this.groupId = groupId.intern();
         this.artifactId = artifactId.intern();
         if(version==null)
@@ -96,7 +122,7 @@ public final class ModuleDependency implements Serializable {
     }
 
     public ModuleDependency(org.apache.maven.model.Dependency dep) {
-        this(dep.getGroupId(),dep.getArtifactId(),dep.getVersion());
+        this(dep.getGroupId(),dep.getArtifactId(),dep.getVersion(),dep.getScope(),dep.getType(),dep.getClassifier(),false);
     }
 
     public ModuleDependency(MavenProject project) {
@@ -185,7 +211,7 @@ public final class ModuleDependency implements Serializable {
      * Upon reading from the disk, intern strings.
      */
     protected Object readResolve() {
-        return new ModuleDependency(groupId,artifactId,version,plugin);
+        return new ModuleDependency(groupId,artifactId,version,scope,type,classifier,plugin);
     }
 
     /**
