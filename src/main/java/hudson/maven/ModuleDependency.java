@@ -111,6 +111,9 @@ public final class ModuleDependency implements Serializable {
         else
             this.version = version.intern();
         this.plugin = plugin;
+        this.type = type.intern();
+        this.scope = scope.intern();
+        this.classifier = classifier.intern();
     }
 
     public ModuleDependency(ModuleName name, String version) {
