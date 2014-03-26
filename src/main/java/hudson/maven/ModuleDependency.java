@@ -23,22 +23,21 @@
  */
 package hudson.maven;
 
+import hudson.Functions;
 import org.apache.commons.collections.comparators.ReverseComparator;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.model.Extension;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.ReportPlugin;
-import org.apache.maven.model.Extension;
+import org.apache.maven.project.MavenProject;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import hudson.Functions;
 
 /**
  * group id + artifact id + version and a flag to know if it's a plugin 
@@ -93,27 +92,31 @@ public final class ModuleDependency implements Serializable {
     }
     
     public ModuleDependency(String groupId, String artifactId, String version, boolean plugin) {
-        this.groupId = groupId.intern();
-        this.artifactId = artifactId.intern();
+        this.groupId = intern(groupId);
+        this.artifactId = intern(artifactId);
         if(version==null)
             this.version = UNKNOWN;
         else
-            this.version = version.intern();
+            this.version = intern(version);
         this.plugin = plugin;
     }
 
     public ModuleDependency(String groupId, String artifactId, String version, String scope,
                             String type, String classifier, boolean plugin) {
-        this.groupId = groupId.intern();
-        this.artifactId = artifactId.intern();
+        this.groupId = intern(groupId);
+        this.artifactId = intern(artifactId);
         if(version==null)
             this.version = UNKNOWN;
         else
-            this.version = version.intern();
+            this.version = intern(version);
         this.plugin = plugin;
-        this.type = type.intern();
-        this.scope = scope.intern();
-        this.classifier = classifier.intern();
+        this.type = intern(type);
+        this.scope = intern(scope);
+        this.classifier = intern(classifier);
+    }
+
+    private String intern(String s) {
+        return s==null ? null : s.intern();
     }
 
     public ModuleDependency(ModuleName name, String version) {
