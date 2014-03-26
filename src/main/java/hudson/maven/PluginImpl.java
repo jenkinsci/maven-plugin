@@ -27,7 +27,10 @@ import hudson.Plugin;
 import hudson.PluginManager.PluginUpdateMonitor;
 import hudson.init.InitMilestone;
 import hudson.init.Initializer;
+import hudson.maven.reporters.MavenArtifact;
 import hudson.model.Items;
+import hudson.model.Run;
+import hudson.util.LRUStringConverter;
 
 /**
  * @author huybrechts
@@ -42,6 +45,7 @@ public class PluginImpl extends Plugin {
         Items.XSTREAM.alias("dependency", ModuleDependency.class);
         Items.XSTREAM.alias("maven2-module-set", MavenModule.class);  // this was a bug, but now we need to keep it for compatibility
         Items.XSTREAM.alias("maven2-moduleset", MavenModuleSet.class);
+        Run.XSTREAM.registerLocalConverter(MavenArtifact.class, "md5sum", new LRUStringConverter(5000));
 
     }
     

@@ -75,10 +75,6 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public final class MavenArtifact implements Serializable {
 
-    static {
-        Run.XSTREAM.registerLocalConverter(MavenArtifact.class, "md5sum", new LRUStringConverter(5000));
-    }
-
     /**
      * Basic parameters of a Maven artifact.
      */
