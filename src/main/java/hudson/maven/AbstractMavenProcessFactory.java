@@ -19,6 +19,7 @@ import hudson.model.TaskListener;
 import hudson.model.Run.RunnerAbortedException;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
+import hudson.remoting.Pipe;
 import hudson.remoting.RemoteInputStream;
 import hudson.remoting.RemoteOutputStream;
 import hudson.remoting.SocketInputStream;
@@ -44,6 +45,8 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 
 import javax.annotation.CheckForNull;
+
+import hudson.util.StreamCopyThread;
 import jenkins.model.Jenkins;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Zip;
@@ -122,28 +125,52 @@ public abstract class AbstractMavenProcessFactory
      * This implementation is remoting aware, so it can be safely sent to the remote callable object.
      *
      * <p>
-     * When we run Maven on a slave, the master may not have a direct TCP/IP connectivty to the slave.
+     * When Maven runs on the master, Connection.in/.out just points to SocketInput/OutputStream,  and
+     * a channel will be built on top of it. No complication.
+     *
+     * <p>
+     * When we run Maven on a slave, the master may not have a direct TCP/IP connectivity to the slave.
      * That means the {@link Channel} between the master and the Maven needs to be tunneled through
      * the channel between master and the slave, then go to TCP socket to the Maven.
+     *
+     * In this case, we'll have a thread running on the slave to read the socket as fast as we can
+     * and buffer data on the master. What we need to avoid here is to have channel input stream be a
+     * {@link RemoteInputStream}, as it'll turn every read into a remote read that has a large latency.
      */
     private static final class Connection implements Serializable {
+        // these two fields are non-null when Connection is in memory
         public InputStream in;
         public OutputStream out;
 
-        Connection(InputStream in, OutputStream out) {
-            this.in = in;
+        // this field is used to capture the #in field in the serialized transport format
+        private Pipe pipe;
+        // only used on the sender side that was Socket object locally
+        private transient Socket socket;
+
+        Connection(Socket socket) throws IOException {
+            this.in =  new SocketInputStream(socket);
+            this.out = new SocketOutputStream(socket);
+            this.socket = socket;
+        }
+
+        private Connection(Pipe in, OutputStream out) {
+            this.pipe = in;
             this.out = out;
         }
 
         private Object writeReplace() {
-            return new Connection(new RemoteInputStream(in),new RemoteOutputStream(out));
+            Pipe p = Pipe.createLocalToRemote();
+            // the thread will terminate when there's nothing more to read.
+            new StreamCopyThread("Stream reader: maven process at "+socket,in,p.getOut(),true).start();
+
+            return new Connection(p,new RemoteOutputStream(out));
         }
 
         private Object readResolve() {
-            // ObjectInputStream seems to access data at byte-level and do not do any buffering,
-            // so if we are remoted, buffering would be crucial.
-            this.in = new BufferedInputStream(in);
-            this.out = new BufferedOutputStream(out);
+            assert in==null;
+            this.in = pipe.getIn();
+            assert out!=null;
+            assert socket==null;
             return this;
         }
 
@@ -185,7 +212,7 @@ public abstract class AbstractMavenProcessFactory
                 // we'd only accept one connection
                 serverSocket.close();
 
-                return new Connection(new SocketInputStream(socket),new SocketOutputStream(socket));
+                return new Connection(socket);
             }
 
             public int getPort() {
