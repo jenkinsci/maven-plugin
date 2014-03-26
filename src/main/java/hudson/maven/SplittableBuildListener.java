@@ -30,7 +30,9 @@ import hudson.model.Result;
 import hudson.model.StreamBuildListener;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
+import hudson.remoting.Future;
 import hudson.util.AbstractTaskListener;
+import hudson.util.IOException2;
 import jenkins.util.MarkFindingOutputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.DeferredFileOutputStream;
@@ -43,6 +45,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Delegating {@link BuildListener} that can have "side" {@link OutputStream}
@@ -142,11 +145,18 @@ final class SplittableBuildListener extends AbstractTaskListener implements Buil
             int start = markCount;
             
             // have the remote send us a mark
-            ch.call(new SendMark());
-            
+            Future<Void> f = ch.callAsync(new SendMark());
+
             // and block until we receive a mark
-            while (markCount==start)
-                markCountLock.wait();
+            while (markCount==start && !f.isDone())
+                markCountLock.wait(10*1000);
+
+            // if SendMark fails, then we fail
+            try {
+                f.get();
+            } catch (ExecutionException e) {
+                throw new IOException2(e);
+            }
         }
     }
     
