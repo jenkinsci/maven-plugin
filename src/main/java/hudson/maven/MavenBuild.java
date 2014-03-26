@@ -26,6 +26,7 @@ package hudson.maven;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.maven.reporters.MavenArtifactRecord;
 import hudson.maven.reporters.SurefireArchiver;
 import hudson.maven.reporters.TestFailureDetector;
@@ -449,6 +450,8 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         }
 
         void performArchiving(Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+            long startTime = System.currentTimeMillis();
+
             for (Map.Entry<String,String> e : artifacts.entrySet()) {
                 listener.getLogger().println("[JENKINS] Archiving " + e.getValue() + " to " + e.getKey());
             }
@@ -474,6 +477,11 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             for (Map.Entry<String,String> e : artifacts.entrySet()) {
                 FilePath f = new FilePath(ws, e.getValue());
                 am.archive(f.getParent(), launcher, listener, Collections.singletonMap(e.getKey(), f.getName()));
+            }
+
+            if (false) {
+                long duration = System.currentTimeMillis()-startTime;
+                listener.getLogger().println("[JENKINS] Archiving took "+ Util.getTimeSpanString(duration));
             }
         }
 
