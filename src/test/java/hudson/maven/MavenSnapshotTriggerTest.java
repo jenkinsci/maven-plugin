@@ -84,11 +84,25 @@ public class MavenSnapshotTriggerTest extends HudsonTestCase {
      * Verifies SNAPSHOT dependency resolution of multiple SNAPSHOT upstream dependencies. (JENKINS-21014)
      * Note - has to build the projects once each first in order to get dependency info.
      * Artifact C depends on artifacts A and B.
-     * For artifact A there exists two projects. Project A1 has install and A1 has verify in its maven goal. A1 is selected as upstream build for artifact C due to higher ranking of install over verify.
-     * For artifact B there exists two projects. Projects B1 has  compile and B2 has verify in its maven goal. B2 is preferred as upstream dependency for artifact B as the verify goal takes precedence over the name tiebreaker which would prefer project B1.
+     * For artifact A there exists two projects. Project A1 has install and A2 has verify in its maven goal. A1 is selected as upstream build for artifact C due to higher ranking of install over verify.
+     * For artifact B there exists two projects. Projects B1 has compile and B2 has verify in its maven goal. B2 is preferred as upstream dependency for artifact B as the verify goal takes precedence over the name tiebreaker which would prefer project B1.
      */
     public void testMultipleDependencySnapshotTrigger() throws Exception {
         configureDefaultMaven();
+
+        // This is only executed to make sure that dependency A is available in repository
+        MavenModuleSet prepareProject = createMavenProject("prepareProject");
+        prepareProject.setGoals("clean install");
+        prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
+        buildAndAssertSuccess(prepareProject);
+        prepareProject.delete();
+
+        // This is only executed to make sure that dependency B is available in repository
+        prepareProject = createMavenProject("prepareProject");
+        prepareProject.setGoals("clean install");
+        prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
+        buildAndAssertSuccess(prepareProject);
+        prepareProject.delete();
 
         MavenModuleSet projA1 = createMavenProject("snap-dep-test-A1");
         projA1.setGoals("clean install");
