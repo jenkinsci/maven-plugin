@@ -501,6 +501,10 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             return MavenBuild.this.getParent().getParent().isArchivingDisabled();
         }
         
+        public boolean isSiteArchivingDisabled() {
+            return MavenBuild.this.getParent().getParent().isSiteArchivingDisabled();
+        }
+        
         public void registerAsProjectAction(MavenReporter reporter) {
             MavenBuild.this.registerAsProjectAction(reporter);
         }

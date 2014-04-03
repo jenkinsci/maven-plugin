@@ -62,6 +62,12 @@ public class MavenSiteArchiver extends MavenReporter {
         if(!mojo.is("org.apache.maven.plugins","maven-site-plugin","site"))
             return true;
 
+
+    	if(build.isSiteArchivingDisabled()) {
+    		listener.getLogger().println("[JENKINS] Archiving disabled - not archiving site for " + pom.getName());
+    		return true;
+    	}
+
         File destDir;
         try {
             destDir = mojo.getConfigurationValue("outputDirectory", File.class);

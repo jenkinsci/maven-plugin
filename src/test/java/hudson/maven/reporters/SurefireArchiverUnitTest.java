@@ -268,6 +268,11 @@ public class SurefireArchiverUnitTest {
         }
 
         @Override
+        public boolean isSiteArchivingDisabled() {
+            return false;
+        }
+
+        @Override
         public void registerAsProjectAction(MavenReporter reporter) {
         }
 
