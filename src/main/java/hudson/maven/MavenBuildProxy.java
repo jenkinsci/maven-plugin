@@ -132,6 +132,11 @@ public interface MavenBuildProxy {
     boolean isArchivingDisabled();
     
     /**
+     * If true, artifacts will not actually be archived to master during site deploy. Calls {@link MavenModuleSet#isSiteArchivingDisabled()}.
+     */
+    boolean isSiteArchivingDisabled();
+    
+    /**
      * Nominates that the reporter will contribute a project action
      * for this build by using {@link MavenReporter#getProjectActions(MavenModule)}.
      *
@@ -239,6 +244,10 @@ public interface MavenBuildProxy {
 
         public boolean isArchivingDisabled() {
             return core.isArchivingDisabled();
+        }
+        
+        public boolean isSiteArchivingDisabled() {
+            return core.isSiteArchivingDisabled();
         }
         
         public void registerAsProjectAction(MavenReporter reporter) {

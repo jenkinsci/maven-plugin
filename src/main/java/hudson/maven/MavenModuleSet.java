@@ -228,6 +228,11 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     private boolean archivingDisabled = false;
     
     /**
+     * If true, do not archive artifacts to the master during site deploy.
+     */
+    private boolean siteArchivingDisabled = false;
+    
+    /**
      * parameter for pom parsing by default <code>false</code> to be faster
      * @since 1.394
      */
@@ -579,6 +584,10 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         return archivingDisabled;
     }
 
+    public boolean isSiteArchivingDisabled() {
+        return siteArchivingDisabled;
+    }
+
     public void setIncrementalBuild(boolean incrementalBuild) {
         this.incrementalBuild = incrementalBuild;
     }
@@ -638,6 +647,10 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
 
     public void setIsArchivingDisabled(boolean archivingDisabled) {
         this.archivingDisabled = archivingDisabled;
+    }
+    
+    public void setIsSiteArchivingDisabled(boolean siteArchivingDisabled) {
+        this.siteArchivingDisabled = siteArchivingDisabled;
     }
     
     public boolean isResolveDependencies()
@@ -1166,6 +1179,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         runHeadless = req.hasParameter("maven.runHeadless");
         incrementalBuild = req.hasParameter("maven.incrementalBuild");
         archivingDisabled = req.hasParameter("maven.archivingDisabled");
+        siteArchivingDisabled = req.hasParameter("maven.siteArchivingDisabled");
         resolveDependencies = req.hasParameter( "maven.resolveDependencies" );
         processPlugins = req.hasParameter( "maven.processPlugins" );
         mavenValidationLevel = NumberUtils.toInt(req.getParameter("maven.validationLevel"), -1);
