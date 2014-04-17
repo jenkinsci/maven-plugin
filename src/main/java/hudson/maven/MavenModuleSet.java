@@ -756,7 +756,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
             .add(new CollectionSearchIndex<MavenModule>() {// for computers
                 protected MavenModule get(String key) {
                     for (MavenModule m : modules.values()) {
-                        if(m.getDisplayName().equals(key))
+                        if(StringUtils.equals( m.getDisplayName(),key))
                             return m;
                     }
                     return null;
