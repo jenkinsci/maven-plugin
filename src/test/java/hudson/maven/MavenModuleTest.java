@@ -6,9 +6,9 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.support.membermodification.MemberMatcher.constructor;
 import static org.powermock.api.support.membermodification.MemberModifier.suppress;
 import hudson.maven.MavenModuleSet.DescriptorImpl;
-import hudson.model.AbstractProject;
 import hudson.model.DependencyGraph;
 import hudson.model.MockHelper;
+import hudson.model.AbstractProject;
 
 import java.io.IOException;
 import java.util.Collection;

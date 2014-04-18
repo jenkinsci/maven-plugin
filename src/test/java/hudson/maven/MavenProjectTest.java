@@ -140,6 +140,26 @@ public class MavenProjectTest extends HudsonTestCase {
         wc.getPage(project, "site/core");
     }
     
+    public void testNestedMultiModuleSiteBuild() throws Exception {
+        MavenModuleSet project = createProject("maven-nested-multimodule-site.zip");
+        project.setGoals("site");
+
+        try {
+            buildAndAssertSuccess(project);
+        } catch (InterruptedException x) {
+            return; // TODO as above
+        }
+
+        // this should succeed
+        HudsonTestCase.WebClient wc = new WebClient();
+        wc.getPage(project, "site");
+        wc.getPage(project, "site/core");
+        wc.getPage(project, "site/client");
+        wc.getPage(project, "site/client/nested1");
+        wc.getPage(project, "site/client/nested1/nested2");
+
+    }
+    
     /**
      * Check if the the site goal will work when run from a slave.
      */
