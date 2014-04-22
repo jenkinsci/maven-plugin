@@ -79,9 +79,7 @@ public class MavenSiteArchiver extends MavenReporter {
 
         if(destDir != null && destDir.exists()) {
             // try to get the storage location if this is a multi-module project.
-            final String moduleName = getModuleName(build, pom);
-            // store at MavenModuleSet level and moduleName
-            final FilePath target = build.getModuleSetRootDir().child("site").child(moduleName);
+            final FilePath target = getModulePath(build, pom);
             try {
                 listener.getLogger().printf("[JENKINS] Archiving site from %s to %s%n", destDir, target);
                 new FilePath(destDir).copyRecursiveTo(target);
@@ -98,35 +96,39 @@ public class MavenSiteArchiver extends MavenReporter {
     }
 
     /**
-     * In multi module builds pomBaseDir of the parent project is the same as parent build module root.
-     *
+     * In multi module builds, ascend to the parents until hitting the project
+     * root.
+     * 
      * @param build
      * @param pom
-     *
+     * 
      * @return the relative path component to copy sites of multi module builds.
      * @throws IOException
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
-    private String getModuleName(MavenBuildProxy build, MavenProject pom) throws IOException, InterruptedException {
-        String moduleRoot = build.execute(new BuildCallable<String, IOException>() {
+    private FilePath getModulePath(MavenBuildProxy build, MavenProject pom) throws IOException, InterruptedException {
+        String rootArtifactId = build.execute(new BuildCallable<String, IOException>() {
             private static final long serialVersionUID = 1L;
 
             //@Override
             public String call(MavenBuild mavenBuild) throws IOException, InterruptedException {
-                 MavenModuleSetBuild moduleSetBuild = mavenBuild.getModuleSetBuild();
-                 if (moduleSetBuild == null) {
-                     throw new IOException("Parent build not found!"); 
-                 }
-                 return moduleSetBuild.getModuleRoot().getRemote();
+                MavenModuleSet moduleSet = mavenBuild.getModuleSetBuild().getParent();
+                if (moduleSet == null) {
+                    throw new IOException("Parent build not found!");
+                }
+                return moduleSet.getRootModule().getArtifactId();
             }
         });
-        final File pomBaseDir = pom.getBasedir();
-        final File remoteWorkspaceDir = new File(moduleRoot);
-        if (pomBaseDir.equals(remoteWorkspaceDir)) {
-            return "";
-        } else {
-            return pom.getArtifactId();
+
+        String path = "";
+        MavenProject currentLevel = pom;
+        // build the path to the module by ascending to the parent pom until the root project
+        while (!rootArtifactId.equals(currentLevel.getArtifactId())) {
+            path = currentLevel.getArtifactId() + File.separator + path;
+            currentLevel = currentLevel.getParent();
         }
+
+        return build.getModuleSetRootDir().child("site").child(path);
     }
 
 
