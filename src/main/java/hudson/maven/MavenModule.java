@@ -501,7 +501,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
             Map<ModuleDependency,MavenModule> modules = new HashMap<ModuleDependency,MavenModule>();
     
             for (MavenModule m : getAllMavenModules()) {
-                if(!m.isBuildable())  continue;
+                if(!m.isBuildable() || m.getParent().isDisableTriggerDownstreamProjects())  continue;
                 ModuleDependency moduleDependency = m.asDependency();
                 MavenModule old = modules.get(moduleDependency);
                 MavenModule relevant = chooseMoreRelevantModule(old, m);
