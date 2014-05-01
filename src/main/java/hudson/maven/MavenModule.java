@@ -639,17 +639,21 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         
         for (String goal : Util.tokenize(getGoals())) {
             if ("deploy".equals(goal) || "deploy:deploy".equals(goal)) {
-                return 2;
+                return 3;
             }
             
             if ("install".equals(goal)) {
+                relevancy = 2;
+            }
+
+            if ("verify".equals(goal)) {
                 relevancy = 1;
             }
         }
         
         for (Publisher publisher : getParent().getPublishers()) {
             if (publisher instanceof RedeployPublisher) {
-                return 2;
+                return 3;
             }
         }
         
