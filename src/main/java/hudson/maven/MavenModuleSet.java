@@ -24,7 +24,6 @@
  */
 package hudson.maven;
 
-import static hudson.model.ItemGroupMixIn.loadChildren;
 import hudson.CopyOnWrite;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -46,6 +45,7 @@ import hudson.model.Descriptor.FormException;
 import hudson.model.Executor;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
+import static hudson.model.ItemGroupMixIn.loadChildren;
 import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.Queue.Task;
@@ -62,17 +62,17 @@ import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrappers;
 import hudson.tasks.Builder;
 import hudson.tasks.Fingerprinter;
+import hudson.tasks.JavadocArchiver;
+import hudson.tasks.Mailer;
 import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Publisher;
-import hudson.tasks.JavadocArchiver;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.util.AlternativeUiTextProvider;
 import hudson.util.CopyOnWriteMap;
 import hudson.util.DescribableList;
 import hudson.util.FormValidation;
 import hudson.util.Function1;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -87,9 +87,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
-
 import jenkins.model.Jenkins;
 import jenkins.mvn.FilePathSettingsProvider;
 import jenkins.mvn.GlobalMavenConfig;
@@ -98,14 +96,10 @@ import jenkins.mvn.GlobalSettingsProviderDescriptor;
 import jenkins.mvn.SettingsProvider;
 import jenkins.mvn.SettingsProviderDescriptor;
 import net.sf.json.JSONObject;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.model.building.ModelBuildingRequest;
-
-import hudson.tasks.Mailer;
-
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
@@ -226,6 +220,11 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
      * If true, do not archive artifacts to the master.
      */
     private boolean archivingDisabled = false;
+    
+    /**
+     * If true, do not fingerprint consumed and produced artifacts.
+     */
+    private boolean fingerprintingDisabled = false;
     
     /**
      * parameter for pom parsing by default <code>false</code> to be faster
@@ -571,6 +570,10 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         return archivingDisabled;
     }
 
+    public boolean isFingerprintingDisabled() {
+        return fingerprintingDisabled;
+    }
+
     public void setIncrementalBuild(boolean incrementalBuild) {
         this.incrementalBuild = incrementalBuild;
     }
@@ -632,6 +635,10 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         this.archivingDisabled = archivingDisabled;
     }
     
+    public void setIsFingerprintingDisabled(boolean fingerprintingDisabled) {
+        this.fingerprintingDisabled = fingerprintingDisabled;
+    }
+
     public boolean isResolveDependencies()
     {
         return resolveDependencies;
@@ -751,7 +758,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
 
     @Override
     public boolean isFingerprintConfigured() {
-        return true;
+        return !isFingerprintingDisabled() || getPublishersList().get(Fingerprinter.class) != null;
     }
 
     public void onLoad(ItemGroup<? extends Item> parent, String name) throws IOException {
@@ -1158,6 +1165,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         runHeadless = req.hasParameter("maven.runHeadless");
         incrementalBuild = req.hasParameter("maven.incrementalBuild");
         archivingDisabled = req.hasParameter("maven.archivingDisabled");
+        fingerprintingDisabled = req.hasParameter("maven.fingerprintingDisabled");
         resolveDependencies = req.hasParameter( "maven.resolveDependencies" );
         processPlugins = req.hasParameter( "maven.processPlugins" );
         mavenValidationLevel = NumberUtils.toInt(req.getParameter("maven.validationLevel"), -1);
@@ -1320,7 +1328,6 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
 
         @SuppressWarnings("unchecked")
         private static final Set<Class> NOT_APPLICABLE_TYPES = new HashSet<Class>(Arrays.asList(
-            Fingerprinter.class,    // this kicks in automatically
             JavadocArchiver.class,  // this kicks in automatically
             Mailer.class,           // for historical reasons, Maven uses MavenMailer
             JUnitResultArchiver.class // done by SurefireArchiver

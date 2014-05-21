@@ -227,7 +227,7 @@ public class MavenFingerprinter extends MavenReporter {
         }
 
         public MavenReporter newAutoInstance(MavenModule module) {
-            return new MavenFingerprinter();
+            return module.getParent().isFingerprintingDisabled() ? null : new MavenFingerprinter();
         }
     }
 
