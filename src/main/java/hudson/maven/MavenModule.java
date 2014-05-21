@@ -477,7 +477,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
 
     @Override
     public boolean isFingerprintConfigured() {
-        return true;
+        return getParent().isFingerprintConfigured();
     }
 
     @Override // to make this accessible to MavenModuleSet

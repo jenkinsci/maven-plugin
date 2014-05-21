@@ -94,6 +94,10 @@ THE SOFTWARE.
                        title="${%Disable automatic site documentation artifact archiving}"
                        help="/plugin/maven-plugin/siteArchivingDisabled.html"
                        checked="${it.isSiteArchivingDisabled()}" />
+      <f:optionalBlock name="maven.fingerprintingDisabled"
+                       title="${%Disable automatic fingerprinting of consumed and produced artifacts}"
+                       help="/plugin/maven-plugin/fingerprintingDisabled.html"
+                       checked="${it.isFingerprintingDisabled()}" />
       <f:optionalBlock name="maven.disableTriggerDownstreamProjects"
                        title="${%Disable triggering of downstream projects}"
                        help="/plugin/maven-plugin/downstreamDisabled.html"
