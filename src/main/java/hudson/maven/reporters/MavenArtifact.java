@@ -29,9 +29,6 @@ import hudson.maven.MavenBuild;
 import hudson.maven.MavenBuildProxy;
 import hudson.model.Api;
 import hudson.model.BuildListener;
-import hudson.model.FingerprintMap;
-import hudson.model.Run;
-import hudson.util.LRUStringConverter;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,7 +40,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
-import jenkins.model.Jenkins;
 import jenkins.model.StandardArtifactManager;
 import jenkins.util.VirtualFile;
 import org.apache.maven.artifact.Artifact;
@@ -335,14 +331,6 @@ public final class MavenArtifact implements Serializable {
         else {
             build.queueArchiving(artifactPath(), file.getAbsolutePath());
         }
-    }
-
-    /**
-     * Called from within the master to record fingerprint.
-     */
-    public void recordFingerprint(MavenBuild build) throws IOException {
-        FingerprintMap map = Jenkins.getInstance().getFingerprintMap();
-        map.getOrCreate(build,fileName,md5sum);
     }
 
     public Api getApi() {

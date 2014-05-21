@@ -212,11 +212,4 @@ public class MavenArtifactRecord extends MavenAbstractArtifactRecord<MavenBuild>
         }
     }
 
-    public void recordFingerprints() throws IOException {
-        // record fingerprints
-        if(mainArtifact!=null)
-            mainArtifact.recordFingerprint(parent);
-        for (MavenArtifact a : attachedArtifacts)
-            a.recordFingerprint(parent);
-    }
 }
