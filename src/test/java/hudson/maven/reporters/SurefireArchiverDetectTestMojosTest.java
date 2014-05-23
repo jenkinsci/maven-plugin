@@ -147,7 +147,7 @@ public class SurefireArchiverDetectTestMojosTest {
     
     @Test
     public void shouldDetectSoapUiMavenPlugin() {
-        MojoInfoBuilder builder = mojoBuilder("eviware", "maven-soapui-plugin", "test");
+        MojoInfoBuilder builder = mojoBuilder("com.smartbear.soapui", "soapui-maven-plugin", "test");
         
         MojoInfo mojo = builder.build();
         assertTrue(this.surefireArchiver.isTestMojo(mojo));
@@ -158,7 +158,18 @@ public class SurefireArchiverDetectTestMojosTest {
     
     @Test
     public void shouldDetectSoapUiProMavenPlugin() {
-        MojoInfoBuilder builder = mojoBuilder("eviware", "maven-soapui-pro-plugin", "test");
+        MojoInfoBuilder builder = mojoBuilder("com.smartbear.soapui", "soapui-pro-maven-plugin", "test");
+        
+        MojoInfo mojo = builder.build();
+        assertTrue(this.surefireArchiver.isTestMojo(mojo));
+        
+        mojo = builder.copy().configValue("skip", "true").build();
+        assertFalse(this.surefireArchiver.isTestMojo(mojo));
+    }
+
+    @Test
+    public void shouldDetectSoapUiExtensionMavenPlugin() {
+        MojoInfoBuilder builder = mojoBuilder("com.github.redfish4ktc.soapui", "maven-soapui-extension-plugin", "test");
         
         MojoInfo mojo = builder.build();
         assertTrue(this.surefireArchiver.isTestMojo(mojo));
