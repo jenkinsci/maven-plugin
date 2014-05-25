@@ -52,8 +52,9 @@ enum TestMojo {
             
     GWT_MAVEN_PLUGIN("org.codehaus.mojo", "gwt-maven-plugin", "test","reportsDirectory","1.2"),
     
-    MAVEN_SOAPUI_PLUGIN("eviware", "maven-soapui-plugin", "test", "outputFolder"),
-    MAVEN_SOAPUI_PRO_PLUGIN("eviware", "maven-soapui-pro-plugin", "test","outputFolder"),
+    MAVEN_SOAPUI_PLUGIN("com.smartbear.soapui", "soapui-maven-plugin", "test", "outputFolder"),
+    MAVEN_SOAPUI_PRO_PLUGIN("com.smartbear.soapui", "soapui-pro-maven-plugin", "test","outputFolder"),
+    MAVEN_SOAPUI_EXTENSION_PLUGIN("com.github.redfish4ktc.soapui", "maven-soapui-extension-plugin", "test","outputFolder"),
     
     JASMINE("com.github.searls","jasmine-maven-plugin","test",null) {
         @Override
