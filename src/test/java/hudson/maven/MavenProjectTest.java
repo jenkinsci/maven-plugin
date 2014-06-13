@@ -58,6 +58,9 @@ public class MavenProjectTest extends HudsonTestCase {
         project.setGoals("validate");
 
         buildAndAssertSuccess(project);
+        String xml = project.getModules().iterator().next().getConfigFile().asString();
+        assertTrue(xml, xml.contains("<maven2"));
+        assertFalse(xml, xml.contains("<maven2-module-set"));
     }
     
     @Bug(16499)
