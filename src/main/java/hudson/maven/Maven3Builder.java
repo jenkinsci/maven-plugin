@@ -634,6 +634,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
                 } catch ( InterruptedException e ) {
                     e.printStackTrace();
                 } catch ( IOException e ) {
+                    mavenBuildProxy2.setResult(Result.FAILURE);
                     e.printStackTrace();
                 }
             }
