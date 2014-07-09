@@ -79,6 +79,7 @@ final class SplittableBuildListener extends AbstractTaskListener implements Buil
     
     private int markCount = 0;
     private final Object markCountLock = new Object();
+    private final Object synchronizeLock = new Object();
 
     public SplittableBuildListener(BuildListener core) {
         this.core = core;
@@ -141,21 +142,27 @@ final class SplittableBuildListener extends AbstractTaskListener implements Buil
      * we will not receive any extra bytes after the marker string.
      */
     public void synchronizeOnMark(Channel ch) throws IOException, InterruptedException {
-        synchronized (markCountLock) {
-            int start = markCount;
-            
-            // have the remote send us a mark
-            Future<Void> f = ch.callAsync(new SendMark());
+        // this lock ensures that multiple concurrent executions of synchronizeOnMark get serialized
+        // and happens one at a time
+        synchronized (synchronizeLock) {
 
-            // and block until we receive a mark
-            while (markCount==start && !f.isDone())
-                markCountLock.wait(10*1000);
+            // this lock is for wait/notify idiom
+            synchronized (markCountLock) {
+                int start = markCount;
 
-            // if SendMark fails, then we fail
-            try {
-                f.get();
-            } catch (ExecutionException e) {
-                throw new IOException2(e);
+                // have the remote send us a mark
+                Future<Void> f = ch.callAsync(new SendMark());
+
+                // and block until we receive a mark
+                while (markCount == start && !f.isDone())
+                    markCountLock.wait(10 * 1000);
+
+                // if SendMark fails, then we fail
+                try {
+                    f.get();
+                } catch (ExecutionException e) {
+                    throw new IOException2(e);
+                }
             }
         }
     }
