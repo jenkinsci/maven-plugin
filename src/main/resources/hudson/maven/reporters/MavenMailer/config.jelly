@@ -27,13 +27,13 @@ THE SOFTWARE.
     <f:entry field="recipients" title="${%Recipients}">
         <f:textbox/>
     </f:entry>
-    <f:entry field="notifyEveryUnstableBuild" title="${%Send e-mail for every unstable build}">
-        <f:checkbox default="true"/>
+    <f:entry field="notifyEveryUnstableBuild">
+        <f:checkbox default="true" title="${%Send e-mail for every unstable build}"/>
     </f:entry>
-    <f:entry field="sendToIndividuals" title="${%Send separate e-mails to individuals who broke the build}">
-        <f:checkbox/>
+    <f:entry field="sendToIndividuals">
+        <f:checkbox title="${%Send separate e-mails to individuals who broke the build}"/>
     </f:entry>
-    <f:entry field="perModuleEmail" title="${%Send e-mail for each failed module}" help="/plugin/maven-plugin/per-module-email.html">
-        <f:checkbox default="true"/>
+    <f:entry field="perModuleEmail" help="/plugin/maven-plugin/per-module-email.html">
+        <f:checkbox default="true" title="${%Send e-mail for each failed module}"/>
     </f:entry>
 </j:jelly>
