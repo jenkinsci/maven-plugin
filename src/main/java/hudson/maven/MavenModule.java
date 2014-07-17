@@ -486,7 +486,15 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
     }
 
     protected void buildDependencyGraph(DependencyGraph graph) {
-        if(!isBuildable() || getParent().ignoreUpstremChanges())        return;
+        LOGGER.log(Level.FINER, "buildDependencyGraph called on {0} with {1}", new Object[] {this, dependencies});
+        if (!isBuildable()) {
+            LOGGER.finer("…but it is not buildable");
+            return;
+        }
+        if (getParent().ignoreUpstremChanges()) {
+            LOGGER.finer("…but it is configured to ignore upstream changes");
+            return;
+        }
 
         MavenDependencyComputationData data = graph.getComputationalData(MavenDependencyComputationData.class);
 
@@ -543,6 +551,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
             
             //data.modulesPerParent.put(getParent(), myParentsModules);
         //}
+        LOGGER.log(Level.FINER, "allModules: {0} myParentsModules: {1}", new Object[] {data.allModules, myParentsModules});
 
         //Create a map of groupId:artifact id keys to modules for faster look ups in findMatchingDependentModule
         Multimap<ModuleName,ModuleDependency> mapModules = data.byName();
@@ -562,12 +571,24 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
                 src = data.allModules.get(winner);
             }
 
-            if(src!=null && !src.getParent().isDisableTriggerDownstreamProjects()) {
-                DependencyGraph.Dependency dep = new MavenModuleDependency(nodeOf(src),nodeOf(this));
-                if (!dep.pointsItself())
-                    graph.addDependency(dep);
+            if (src != null) {
+                MavenModuleSet parent = src.getParent();
+                if (!parent.isDisableTriggerDownstreamProjects()) {
+                    DependencyGraph.Dependency dep = new MavenModuleDependency(nodeOf(src), nodeOf(this));
+                    if (!dep.pointsItself()) {
+                        graph.addDependency(dep);
+                        LOGGER.log(Level.FINER, "adding {0}", dep);
+                    } else {
+                        LOGGER.log(Level.FINER, "{0} points to itself", dep);
+                    }
+                } else {
+                    LOGGER.log(Level.FINER, "{0} isDisableTriggerDownstreamProjects", parent);
+                }
+            } else {
+                LOGGER.log(Level.FINER, "no source for {0}", d);
             }
         }
+        LOGGER.finer("finished adding to dependency graph");
     }
 
     /**
