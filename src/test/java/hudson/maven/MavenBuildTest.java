@@ -196,7 +196,7 @@ public class MavenBuildTest {
         MavenModuleSetBuild mmsb = j.buildAndAssertSuccess(mavenProject);
         
         // THEN we have a testresult recorded
-        AggregatedTestResultAction aggregatedTestResultAction = mmsb.getAggregatedTestResultAction();
+        AggregatedTestResultAction aggregatedTestResultAction = mmsb.getAction(AggregatedTestResultAction.class);
         assertNotNull(aggregatedTestResultAction);
         assertEquals(1, aggregatedTestResultAction.getTotalCount());
         
