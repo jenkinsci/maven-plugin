@@ -203,7 +203,7 @@ public class MavenBuildTest {
         Map<MavenModule, MavenBuild> moduleBuilds = mmsb.getModuleLastBuilds();
         assertEquals(1, moduleBuilds.size());
         MavenBuild moduleBuild = moduleBuilds.values().iterator().next();
-         AbstractTestResultAction<?> testResultAction = moduleBuild.getTestResultAction();
+         AbstractTestResultAction<?> testResultAction = moduleBuild.getAction(AbstractTestResultAction.class);
         assertNotNull(testResultAction);
         assertEquals(1, testResultAction.getTotalCount());
     }

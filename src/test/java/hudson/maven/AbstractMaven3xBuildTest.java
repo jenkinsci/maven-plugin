@@ -219,7 +219,7 @@ public abstract class AbstractMaven3xBuildTest
             if ("org.foobar:org.foobar.test".equals( mavenModule.getName() )) testModule = mavenModule;
         }
 
-        AbstractTestResultAction trpa = testModule.getLastBuild().getTestResultAction();
+        AbstractTestResultAction trpa = testModule.getLastBuild().getAction(AbstractTestResultAction.class);
 
         int totalCount = trpa.getTotalCount();
         assertEquals(1, totalCount);
@@ -245,7 +245,7 @@ public abstract class AbstractMaven3xBuildTest
             if ("org.foobar:org.foobar.test".equals( mavenModule.getName() )) testModule = mavenModule;
         }
 
-        AbstractTestResultAction trpa = testModule.getLastBuild().getTestResultAction();
+        AbstractTestResultAction trpa = testModule.getLastBuild().getAction(AbstractTestResultAction.class);
 
         int totalCount = trpa.getTotalCount();
         assertEquals(1, totalCount);
