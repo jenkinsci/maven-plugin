@@ -54,7 +54,7 @@ THE SOFTWARE.
           ${%Recent Changes}
         </t:summary>
 
-        <j:set var="tr" value="${it.lastBuild.testResultAction}"/>
+        <j:set var="tr" value="${it.testResultAction}"/>
         <j:if test="${tr!=null}">
           <t:summary icon="clipboard.png">
             <a href="lastBuild/testReport/">${%Latest Test Result}</a>

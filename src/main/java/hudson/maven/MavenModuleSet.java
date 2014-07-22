@@ -68,6 +68,7 @@ import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Publisher;
 import hudson.tasks.junit.JUnitResultArchiver;
+import hudson.tasks.test.AbstractTestResultAction;
 import hudson.util.AlternativeUiTextProvider;
 import hudson.util.CopyOnWriteMap;
 import hudson.util.DescribableList;
@@ -1213,6 +1214,11 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         return HttpResponses.redirectToDot();
     }
     
+    public AbstractTestResultAction<?> getTestResultAction() {
+        MavenModuleSetBuild b = getLastBuild();
+        return b != null ? b.getAction(AbstractTestResultAction.class) : null;
+    }
+
     /**
      * Check the location of the POM, alternate settings file, etc - any file.
      */
