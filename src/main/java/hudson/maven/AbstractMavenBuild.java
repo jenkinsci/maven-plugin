@@ -37,11 +37,6 @@ import java.util.logging.Logger;
 
 public abstract class AbstractMavenBuild<P extends AbstractMavenProject<P,B>,B extends AbstractMavenBuild<P,B>> extends AbstractBuild<P, B>  {
 
-    /**
-     * Extra verbose debug switch.
-     */
-    public static boolean debug = false;
-    
     protected AbstractMavenBuild(P job) throws IOException {
         super(job);
     }

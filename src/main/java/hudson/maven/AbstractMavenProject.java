@@ -70,25 +70,20 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     		if (build.getResult().isWorseThan(Result.SUCCESS)) return false;
     		// trigger dependency builds
     		AbstractProject<?,?> downstreamProject = getDownstreamProject();
-    		if(AbstractMavenBuild.debug)
-    			listener.getLogger().println("Considering whether to trigger "+downstreamProject+" or not");
 
     		// if the downstream module depends on multiple modules,
     		// only trigger them when all the upstream dependencies are updated.
-    		boolean trigger = true;
 
     		// Check to see if any of its upstream dependencies are already building or in queue.
     		AbstractMavenProject<?,?> parent = (AbstractMavenProject<?,?>) getUpstreamProject();
     		if (areUpstreamsBuilding(downstreamProject, parent)) {
-    			if(AbstractMavenBuild.debug)
-    				listener.getLogger().println(" -> No, because downstream has dependencies already building or in queue");
-    			trigger = false;
+                listener.getLogger().println("Not triggering " + downstreamProject.getFullDisplayName() + " because it has dependencies already building or in queue");
+    			return false;
     		}
     		// Check to see if any of its upstream dependencies are in this list of downstream projects.
     		else if (inDownstreamProjects(downstreamProject)) {
-    			if(AbstractMavenBuild.debug)
-    				listener.getLogger().println(" -> No, because downstream has dependencies in the downstream projects list");
-    			trigger = false;
+                listener.getLogger().println("Not triggering " + downstreamProject.getFullDisplayName() + " because it has dependencies in the downstream project list");
+    			return false;
     		}
     		else {
     			AbstractBuild<?,?> dlb = downstreamProject.getLastBuild(); // can be null.
@@ -106,10 +101,8 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     				if(ulb==null) {
     					// if no usable build is available from the upstream,
     					// then we have to wait at least until this build is ready
-    					if(AbstractMavenBuild.debug)
-    						listener.getLogger().println(" -> No, because another upstream "+up+" for "+downstreamProject+" has no successful build");
-    					trigger = false;
-    					break;
+                        listener.getLogger().println("Not triggering " + downstreamProject.getFullDisplayName() + " because another upstream " + up.getFullDisplayName() + " has no successful build");
+    					return false;
     				}
 
     				// if no record of the relationship in the last build
@@ -122,7 +115,8 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     				assert ulb.getNumber()>=n;
     			}
     		}			    
-    		return trigger;
+            listener.getLogger().println("Decided to trigger " + downstreamProject.getFullDisplayName());
+    		return true;
     	}
 
 		/**
