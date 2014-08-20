@@ -24,6 +24,7 @@
 package hudson.maven;
 
 import hudson.Util;
+import hudson.console.ModelHyperlinkNote;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
@@ -76,13 +77,12 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
 
     		// Check to see if any of its upstream dependencies are already building or in queue.
     		AbstractMavenProject<?,?> parent = (AbstractMavenProject<?,?>) getUpstreamProject();
-    		if (areUpstreamsBuilding(downstreamProject, parent)) {
-                listener.getLogger().println("Not triggering " + downstreamProject.getFullDisplayName() + " because it has dependencies already building or in queue");
+    		if (areUpstreamsBuilding(downstreamProject, parent, listener)) {
     			return false;
     		}
     		// Check to see if any of its upstream dependencies are in this list of downstream projects.
     		else if (inDownstreamProjects(downstreamProject)) {
-                listener.getLogger().println("Not triggering " + downstreamProject.getFullDisplayName() + " because it has dependencies in the downstream project list");
+                listener.getLogger().println("Not triggering " + ModelHyperlinkNote.encodeTo(downstreamProject) + " because it has dependencies in the downstream project list");
     			return false;
     		}
     		else {
@@ -101,7 +101,7 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     				if(ulb==null) {
     					// if no usable build is available from the upstream,
     					// then we have to wait at least until this build is ready
-                        listener.getLogger().println("Not triggering " + downstreamProject.getFullDisplayName() + " because another upstream " + up.getFullDisplayName() + " has no successful build");
+                        listener.getLogger().println("Not triggering " + ModelHyperlinkNote.encodeTo(downstreamProject) + " because another upstream " + ModelHyperlinkNote.encodeTo(up) + " has no successful build");
     					return false;
     				}
 
@@ -115,7 +115,7 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     				assert ulb.getNumber()>=n;
     			}
     		}			    
-            listener.getLogger().println("Decided to trigger " + downstreamProject.getFullDisplayName());
+            // No real need to print a message that downstreamProject is being triggered, since BuildTrigger will note this anyway
     		return true;
     	}
 
@@ -138,12 +138,19 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
 		 */
 		@SuppressWarnings("rawtypes")
         private boolean areUpstreamsBuilding(AbstractProject<?,?> downstreamProject,
-				AbstractProject<?,?> excludeProject) {
+				AbstractProject<?,?> excludeProject, TaskListener listener) {
 			DependencyGraph graph = Jenkins.getInstance().getDependencyGraph();
 			Set<AbstractProject> tups = graph.getTransitiveUpstream(downstreamProject);
 			for (AbstractProject tup : tups) {
-				if(tup!=excludeProject && (tup.isBuilding() || tup.isInQueue()))
-					return true;
+                if (tup != excludeProject && (tup.isBuilding() || tup.isInQueue())) {
+                    if (downstreamProject.getRootProject().blockBuildWhenUpstreamBuilding()) {
+                        listener.getLogger().println("Not triggering " + ModelHyperlinkNote.encodeTo(downstreamProject) + " because it has a dependency " + ModelHyperlinkNote.encodeTo(tup) + " already building or in queue");
+                        return true;
+                    } else {
+                        listener.getLogger().println("Could be blocking trigger of " + ModelHyperlinkNote.encodeTo(downstreamProject) + " (due to a dependency on " + ModelHyperlinkNote.encodeTo(tup) + ") but it is not configured to block when upstream is building.");
+                        return false; // do not bother printing messages about other upstreams
+                    }
+                }
 			}
 			return false;
 		}
