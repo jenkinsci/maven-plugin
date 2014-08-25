@@ -61,6 +61,20 @@ THE SOFTWARE.
       <url>http://www.opensource.org/licenses/mit-license.php</url>
     </license>
   </licenses>
+  
+  <dependencyManagement>
+    <dependencies>
+      <!-- Newer version of plexus-utils is required for artifact deployment to 
+           work using scpexe wagon (see JENKINS-4861). This may be removed when
+           the effective version of the transitive plexus-utils dependency is 3.0.16+. -->
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.0.17</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
   <dependencies>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
