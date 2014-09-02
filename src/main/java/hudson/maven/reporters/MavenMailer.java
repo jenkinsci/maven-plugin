@@ -32,6 +32,8 @@ import hudson.maven.MavenReporterDescriptor;
 import hudson.model.BuildListener;
 import hudson.tasks.MailSender;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -39,6 +41,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Kohsuke Kawaguchi
  */
 public class MavenMailer extends MavenReporter {
+
+    private static final Logger LOGGER = Logger.getLogger(MavenMailer.class.getName());
+
     public String recipients;
     /** not data-bound; set by {@link MavenModule} */
     public String mavenRecipients;
@@ -62,6 +67,10 @@ public class MavenMailer extends MavenReporter {
 
     public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         if(perModuleEmail) {
+            LOGGER.log(Level.FINE, "for {0} potentially mailing to {1} plus {2}", new Object[] {build, recipients, mavenRecipients});
+            if (sendToIndividuals) {
+                LOGGER.log(Level.FINE, "would also include {0}", build.getCulprits());
+            }
             new MailSender(getAllRecipients(),dontNotifyEveryUnstableBuild,sendToIndividuals).execute(build,listener);
         }
         return true;
