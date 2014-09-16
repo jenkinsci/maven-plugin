@@ -53,12 +53,16 @@ import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Publisher;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.DescribableList;
+import jenkins.maven3.agent.Maven31Main;
 import org.apache.maven.BuildFailureException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.execution.ReactorManager;
 import org.apache.maven.lifecycle.LifecycleExecutionException;
 import org.apache.maven.monitor.event.EventDispatcher;
 import org.apache.maven.project.MavenProject;
+import org.jvnet.hudson.maven3.agent.Maven3Main;
+import org.jvnet.hudson.maven3.launcher.Maven31Launcher;
+import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -546,6 +550,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         long startTime;
         private final OutputStream log;
         private final MavenModuleSetBuild parentBuild;
+        private boolean blockBuildEvents;
 
         ProxyImpl2(MavenModuleSetBuild parentBuild,SplittableBuildListener listener) throws FileNotFoundException {
             this.parentBuild = parentBuild;
@@ -554,7 +559,8 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         }
 
         public void start() {
-            onStartBuilding();
+            if(!blockBuildEvents)
+                onStartBuilding();
             startTime = System.currentTimeMillis();
             try {
                 sync();
@@ -568,7 +574,8 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         public void end() {
             if(result==null)
                 setResult(Result.SUCCESS);
-            onEndBuilding();
+            if(!blockBuildEvents)
+                onEndBuilding();
             duration += System.currentTimeMillis()- startTime;
             parentBuild.notifyModuleBuild(MavenBuild.this);
             try {
@@ -735,6 +742,10 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             return Channel.current().export(MavenBuildProxy2.class,
                 Executor.currentExecutor().newImpersonatingProxy(MavenBuildProxy2.class,this));
         }
+
+        protected void setBlockBuildEvents(boolean blockBuildEvents) {
+            this.blockBuildEvents = blockBuildEvents;
+        }
     }
     
     
@@ -758,6 +769,8 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         }
 
         protected Result doRun(BuildListener listener) throws Exception {
+            SplittableBuildListener slistener = new SplittableBuildListener(listener);
+
             // pick up a list of reporters to run
             reporters = getProject().createReporters();
             MavenModuleSet mms = getProject().getParent();
@@ -783,7 +796,8 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             String mavenVersion = mavenInformation.getVersion();
 
             LOGGER.fine(getFullDisplayName()+" is building with mavenVersion " + mavenVersion + " from file " + mavenInformation.getVersionResourcePath());
-            
+
+            MavenBuildInformation mavenBuildInformation = new MavenBuildInformation( mavenVersion );
 
             MavenUtil.MavenVersion mavenVersionType = MavenUtil.getMavenVersion( mavenVersion );
 
@@ -804,7 +818,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
             }
 
-            ProcessCache.MavenProcess process = MavenBuild.mavenProcessCache.get( launcher.getChannel(), listener, factory);
+            ProcessCache.MavenProcess process = MavenBuild.mavenProcessCache.get( launcher.getChannel(), slistener, factory);
 
             ArgumentListBuilder margs = new ArgumentListBuilder("-N","-B");
             FilePath localRepo = mms.getLocalRepository().locate(MavenBuild.this);
@@ -824,38 +838,74 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             // backward compatibility
             systemProps.put("hudson.build.number",String.valueOf(getNumber()));
 
-            if (mavenVersionType == MavenUtil.MavenVersion.MAVEN_3_0_X || mavenVersionType == MavenUtil.MavenVersion.MAVEN_3_1)
-            { 
-                // FIXME here for maven 3 builds
-                listener.getLogger().println("Building single Maven modules is not implemented for Maven 3, yet!");
-                return Result.ABORTED;
-            }
-            else
+            ProxyImpl proxy;
+            AbstractMavenBuilder builder;
+            if (mavenBuildInformation.isMaven3OrLater())
             {
-                boolean normalExit = false;
-                try {
-                    ProxyImpl proxy = new ProxyImpl();
-                    Result r = process.call(new Builder(
-                        listener, proxy,
-                        getProject(), margs.toList(), systemProps));
-                    proxy.performArchiving(launcher, listener);
-                    normalExit = true;
-                    return r;
-                } finally {
-                    if(normalExit)  process.recycle();
-                    else            process.discard();
-    
-                    // tear down in reverse order
-                    boolean failed=false;
-                    for( int i=buildEnvironments.size()-1; i>=0; i-- ) {
-                        if (!buildEnvironments.get(i).tearDown(MavenBuild.this,listener)) {
-                            failed=true;
-                        }                    
-                    }
-                    // WARNING The return in the finally clause will trump any return before
-                    if (failed) return Result.FAILURE;
-                }
+                ProxyImpl2 proxy2 = new ProxyImpl2(mms.getLastCompletedBuild(), slistener);
+                proxy2.setBlockBuildEvents(true);
+                proxy = proxy2;
+                builder = new Maven3Builder(createRequest(proxy2,
+                        getProject(), margs.toList(), systemProps,
+                        mavenBuildInformation));
             }
+            else {
+                proxy = new ProxyImpl();
+                builder = new Builder(
+                        listener, proxy,
+                        getProject(), margs.toList(), systemProps);
+            }
+            boolean normalExit = false;
+            try {
+                Result r = process.call(builder);
+                proxy.performArchiving(launcher, listener);
+                normalExit = true;
+                return r;
+            } finally {
+                builder.end(launcher);
+                if(normalExit)  process.recycle();
+                else            process.discard();
+    
+                // tear down in reverse order
+                boolean failed=false;
+                for( int i=buildEnvironments.size()-1; i>=0; i-- ) {
+                    if (!buildEnvironments.get(i).tearDown(MavenBuild.this,slistener)) {
+                        failed=true;
+                    }
+                }
+                // WARNING The return in the finally clause will trump any return before
+                if (failed) return Result.FAILURE;
+            }
+        }
+
+        private Maven3Builder.Maven3BuilderRequest createRequest(ProxyImpl2 buildProxy,
+                                                                 MavenModule module,
+                                                                 List<String> goals,
+                                                                 Map<String,String> systemProps,
+                                                                 MavenBuildInformation mavenBuildInformation) {
+            String  mavenVersion = mavenBuildInformation.getMavenVersion();
+
+            Maven3Builder.Maven3BuilderRequest request = new Maven3Builder.Maven3BuilderRequest();
+            request.listener = buildProxy.listener;
+            request.modules = Collections.singleton(module);
+            request.goals = goals;
+            request.systemProps = systemProps;
+            request.proxies = new HashMap<ModuleName, ProxyImpl2>();
+            request.proxies.put(module.getModuleName(), buildProxy);
+            request.mavenBuildInformation = mavenBuildInformation;
+            request.supportEventSpy = MavenUtil.supportEventSpy(mavenVersion);
+
+            switch(MavenUtil.getMavenVersion(mavenVersion)) {
+                case MAVEN_3_0_X:
+                    request.maven3MainClass = Maven3Main.class;
+                    request.maven3LauncherClass = Maven3Launcher.class;
+                    break;
+                default:
+                    request.maven3MainClass = Maven31Main.class;
+                    request.maven3LauncherClass = Maven31Launcher.class;
+            }
+
+            return request;
         }
 
         public void post2(BuildListener listener) throws Exception {
