@@ -24,6 +24,8 @@
 package hudson.maven;
 
 import static hudson.Util.fixNull;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.maven.MavenBuild.ProxyImpl2;
 import hudson.maven.reporters.TestFailureDetector;
 import hudson.maven.util.ExecutionEventLogger;
@@ -390,7 +392,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             return hasTestFailures.get();
         }
 
-        private MavenBuildProxy2 getMavenBuildProxy2(MavenProject mavenProject) {
+        private @CheckForNull MavenBuildProxy2 getMavenBuildProxy2(MavenProject mavenProject) {
             for (Entry<ModuleName,FilterImpl> entry : proxies.entrySet()) {
                if (entry.getKey().compareTo( new ModuleName( mavenProject ) ) == 0) {
                    return entry.getValue();
@@ -513,8 +515,9 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             List<MavenReporter> mavenReporters = getMavenReporters( mavenProject );
 
             MavenBuildProxy2 mavenBuildProxy2 = getMavenBuildProxy2( mavenProject );
-            mavenBuildProxy2.start();
+            if (mavenBuildProxy2 == null) return;
 
+            mavenBuildProxy2.start();
 
             for (MavenReporter mavenReporter : fixNull(mavenReporters)) {
                 try {
@@ -547,6 +550,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
         private void recordProjectEnded(ExecutionEvent event, Result result) {
             MavenBuildProxy2 mavenBuildProxy2 = getMavenBuildProxy2( event.getProject() );
+            if (mavenBuildProxy2 == null) return;
             mavenBuildProxy2.setResult(result);
 
             List<MavenReporter> mavenReporters = getMavenReporters( event.getProject() );
@@ -590,6 +594,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             List<MavenReporter> mavenReporters = getMavenReporters( mavenProject );
 
             MavenBuildProxy2 mavenBuildProxy2 = getMavenBuildProxy2( mavenProject );
+            if (mavenBuildProxy2 == null) return;
 
             for (MavenReporter mavenReporter : fixNull(mavenReporters)) {
                 try {
@@ -620,6 +625,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             List<MavenReporter> mavenReporters = getMavenReporters( mavenProject );
 
             MavenBuildProxy2 mavenBuildProxy2 = getMavenBuildProxy2( mavenProject );
+            if (mavenBuildProxy2 == null) return;
 
             mavenBuildProxy2.setExecutedMojos( this.executedMojosPerModule.get( new ModuleName(event) ) );
 
