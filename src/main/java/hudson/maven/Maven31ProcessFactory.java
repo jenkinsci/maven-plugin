@@ -27,10 +27,10 @@ import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
-import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.tasks.Maven.MavenInstallation;
 import jenkins.maven3.agent.Maven31Main;
+import jenkins.security.MasterToSlaveCallable;
 import org.jvnet.hudson.maven3.launcher.Maven31Interceptor;
 import org.jvnet.hudson.maven3.listeners.HudsonMavenExecutionResult;
 
@@ -73,7 +73,7 @@ public class Maven31ProcessFactory extends Maven3ProcessFactory
         channel.call(new InstallPlexusModulesTask(context));
     }
 
-    private static final class InstallPlexusModulesTask implements Callable<Void,IOException>
+    private static final class InstallPlexusModulesTask extends MasterToSlaveCallable<Void,IOException>
     {
         PlexusModuleContributor c;
 

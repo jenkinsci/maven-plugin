@@ -43,13 +43,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 
 import jenkins.model.Jenkins;
+import jenkins.security.MasterToSlaveCallable;
 
 /**
  * @author Olivier Lamy
  * @author Christoph Kutzinski
  *
  */
-public abstract class AbstractMavenBuilder implements DelegatingCallable<Result,IOException> {
+public abstract class AbstractMavenBuilder extends MasterToSlaveCallable<Result,IOException> implements DelegatingCallable<Result,IOException> {
     
     private static final long serialVersionUID = -2687215937784908860L;
     /**
@@ -146,7 +147,7 @@ public abstract class AbstractMavenBuilder implements DelegatingCallable<Result,
     public ClassLoader getClassLoader() {
         return Jenkins.getInstance().getPluginManager().uberClassLoader;
     }
-    
+
     /**
      * Initialize the collection of the asynchronous executions.
      * The method must be called in the Maven jail process i.e. inside the call method!

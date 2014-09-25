@@ -26,11 +26,11 @@ package hudson.maven;
 
 import hudson.AbortException;
 import hudson.Util;
-import hudson.remoting.Callable;
 
 import java.io.File;
 import java.io.IOException;
 
+import jenkins.security.MasterToSlaveCallable;
 import org.kohsuke.stapler.framework.io.IOException2;
 
 /**
@@ -40,7 +40,7 @@ import org.kohsuke.stapler.framework.io.IOException2;
  *
  */
 public class MavenVersionCallable
-    implements Callable<MavenInformation, IOException>
+        extends MasterToSlaveCallable<MavenInformation, IOException>
 {
     private static final long serialVersionUID = -2644951622080930034L;
     

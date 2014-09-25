@@ -17,7 +17,6 @@ import hudson.model.JDK;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.model.Run.RunnerAbortedException;
-import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.remoting.RemoteInputStream;
 import hudson.remoting.RemoteOutputStream;
@@ -45,6 +44,7 @@ import java.util.Arrays;
 
 import javax.annotation.CheckForNull;
 import jenkins.model.Jenkins;
+import jenkins.security.MasterToSlaveCallable;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Zip;
 
@@ -159,7 +159,7 @@ public abstract class AbstractMavenProcessFactory
      * Opens a server socket and returns {@link Acceptor} so that
      * we can accept a connection later on it.
      */
-    private static final class SocketHandler implements Callable<Acceptor,IOException> {
+    private static final class SocketHandler extends MasterToSlaveCallable<Acceptor,IOException> {
         public Acceptor call() throws IOException {
             return new AcceptorImpl();
         }
@@ -201,7 +201,7 @@ public abstract class AbstractMavenProcessFactory
         }
     }
     
-    private static final class GetCharset implements Callable<String,IOException> {
+    private static final class GetCharset extends MasterToSlaveCallable<String,IOException> {
         private static final long serialVersionUID = 3459269768733083577L;
 
         public String call() throws IOException {
@@ -286,7 +286,7 @@ public abstract class AbstractMavenProcessFactory
     }
 
     /** Verifies that the channel is open and functioning, and (if the second time around) sets properties for the original JDK. */
-    private static final class ConfigureOriginalJDK implements Callable<Void,Error> {
+    private static final class ConfigureOriginalJDK extends MasterToSlaveCallable<Void,Error> {
         private static final long serialVersionUID = 1;
         private final JDK jdk;
         ConfigureOriginalJDK(JDK jdk) {
@@ -304,7 +304,7 @@ public abstract class AbstractMavenProcessFactory
     }
 
     /** Locates JRE this slave agent is running on, or null. */
-    private static final class FindJavaHome implements Callable<JDK,Error> {
+    private static final class FindJavaHome extends MasterToSlaveCallable<JDK,Error> {
         private static final long serialVersionUID = 1;
         @Override public JDK call() throws Error {
             JDK jdk = new JDK("this", System.getProperty("java.home"));
@@ -491,7 +491,7 @@ public abstract class AbstractMavenProcessFactory
     }
 
     
-    protected static final class GetRemotingJar implements Callable<String,IOException> {
+    protected static final class GetRemotingJar extends MasterToSlaveCallable<String,IOException> {
         private static final long serialVersionUID = 6022357183425911351L;
 
         public String call() throws IOException {

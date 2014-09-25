@@ -28,9 +28,9 @@ import hudson.model.BuildListener;
 import hudson.model.Cause;
 import hudson.model.Result;
 import hudson.model.StreamBuildListener;
-import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.util.AbstractTaskListener;
+import jenkins.security.MasterToSlaveCallable;
 import jenkins.util.MarkFindingOutputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.DeferredFileOutputStream;
@@ -233,7 +233,7 @@ final class SplittableBuildListener extends AbstractTaskListener implements Buil
         }
     }
 
-    private static class SendMark implements Callable<Void, IOException> {
+    private static class SendMark extends MasterToSlaveCallable<Void, IOException> {
         public Void call() throws IOException {
             // write a mark
             System.out.write(MARK);

@@ -52,6 +52,7 @@ import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Publisher;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.DescribableList;
+import jenkins.MasterToSlaveFileCallable;
 import org.apache.maven.BuildFailureException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.execution.ReactorManager;
@@ -520,7 +521,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         }
     }
 
-    private static final class CanonicalPath implements FilePath.FileCallable<String> {
+    private static final class CanonicalPath extends MasterToSlaveFileCallable<String> {
         private static final long serialVersionUID = 1;
         @Override public String invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
             return f.getCanonicalPath().replace(File.separatorChar, '/');
