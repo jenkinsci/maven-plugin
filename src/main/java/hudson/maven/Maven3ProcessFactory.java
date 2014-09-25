@@ -29,9 +29,9 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Run.RunnerAbortedException;
 import hudson.model.TaskListener;
-import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.tasks.Maven.MavenInstallation;
+import jenkins.security.MasterToSlaveCallable;
 import org.jvnet.hudson.maven3.agent.Maven3Main;
 import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
 import org.jvnet.hudson.maven3.listeners.HudsonMavenExecutionResult;
@@ -87,7 +87,7 @@ public class Maven3ProcessFactory extends AbstractMavenProcessFactory implements
         channel.call(new InstallPlexusModulesTask(context));
     }
 
-    private static final class InstallPlexusModulesTask implements Callable<Void,IOException> {
+    private static final class InstallPlexusModulesTask extends MasterToSlaveCallable<Void,IOException> {
         PlexusModuleContributor c;
 
         public InstallPlexusModulesTask(AbstractMavenBuild<?, ?> context) throws IOException, InterruptedException {
@@ -106,7 +106,7 @@ public class Maven3ProcessFactory extends AbstractMavenProcessFactory implements
     /**
      * Finds classworlds.jar
      */
-    protected static final class GetClassWorldsJar implements Callable<String,IOException> {
+    protected static final class GetClassWorldsJar extends MasterToSlaveCallable<String,IOException> {
         private static final long serialVersionUID = -2599434124883557137L;
         private final String mvnHome;
         private final TaskListener listener;

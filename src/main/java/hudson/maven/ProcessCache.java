@@ -35,6 +35,7 @@ import hudson.remoting.RequestAbortedException;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.util.DelegatingOutputStream;
 import hudson.util.NullStream;
+import jenkins.security.MasterToSlaveCallable;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -248,7 +249,7 @@ public final class ProcessCache {
     /**
      * Noop callable used for checking the sanity of the maven process in the cache.
      */
-    private static class SetSystemProperties implements Callable<Object,RuntimeException> {
+    private static class SetSystemProperties extends MasterToSlaveCallable<Object,RuntimeException> {
         private final Properties properties;
 
         public SetSystemProperties(Properties properties) {
@@ -262,7 +263,7 @@ public final class ProcessCache {
         private static final long serialVersionUID = 1L;
     }
 
-    private static class GetSystemProperties implements Callable<Properties,RuntimeException> {
+    private static class GetSystemProperties extends MasterToSlaveCallable<Properties,RuntimeException> {
         public Properties call() {
             return System.getProperties();
         }

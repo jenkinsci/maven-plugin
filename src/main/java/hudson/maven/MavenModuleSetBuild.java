@@ -29,7 +29,6 @@ import static org.apache.maven.model.building.ModelBuildingRequest.VALIDATION_LE
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
-import hudson.FilePath.FileCallable;
 import hudson.Util;
 import hudson.maven.MavenBuild.ProxyImpl2;
 import hudson.maven.reporters.MavenAggregatedArtifactRecord;
@@ -85,6 +84,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jenkins.MasterToSlaveFileCallable;
 import jenkins.model.Jenkins;
 import jenkins.mvn.GlobalSettingsProvider;
 import jenkins.mvn.SettingsProvider;
@@ -1088,7 +1088,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
      * Executed on the slave to parse POM and extract information into {@link PomInfo},
      * which will be then brought back to the master.
      */
-    private static final class PomParser implements FileCallable<PomParser.Result> {
+    private static final class PomParser extends MasterToSlaveFileCallable<PomParser.Result> {
         private final BuildListener listener;
         private final String rootPOM;
         /**
