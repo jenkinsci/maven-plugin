@@ -367,7 +367,7 @@ THE SOFTWARE.
 
     <dependency>
       <groupId>org.jenkins-ci</groupId>
-      <artifactId>security144-compatibility</artifactId>
+      <artifactId>SECURITY-144-compat</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
 
