@@ -143,11 +143,12 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
 			Set<AbstractProject> tups = graph.getTransitiveUpstream(downstreamProject);
 			for (AbstractProject tup : tups) {
                 if (tup != excludeProject && (tup.isBuilding() || tup.isInQueue())) {
-                    if (downstreamProject.getRootProject().blockBuildWhenUpstreamBuilding()) {
+                    AbstractProject<?,?> tupr = tup.getRootProject();
+                    if (tupr instanceof MavenModuleSet && ((MavenModuleSet) tupr).getBlockTriggerWhenBuilding()) {
                         listener.getLogger().println("Not triggering " + ModelHyperlinkNote.encodeTo(downstreamProject) + " because it has a dependency " + ModelHyperlinkNote.encodeTo(tup) + " already building or in queue");
                         return true;
                     } else {
-                        listener.getLogger().println("Could be blocking trigger of " + ModelHyperlinkNote.encodeTo(downstreamProject) + " (due to a dependency on " + ModelHyperlinkNote.encodeTo(tup) + ") but it is not configured to block when upstream is building.");
+                        listener.getLogger().println("Could be blocking trigger of " + ModelHyperlinkNote.encodeTo(downstreamProject) + " (due to a dependency on " + ModelHyperlinkNote.encodeTo(tup) + ") but the upstream is not configured to block while building.");
                         return false; // do not bother printing messages about other upstreams
                     }
                 }

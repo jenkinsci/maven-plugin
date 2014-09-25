@@ -67,4 +67,26 @@ public class MavenModuleSetTest extends HudsonTestCase {
         assertNull(jenkins.getDescriptorByType(MavenFingerprinter.DescriptorImpl.class).newAutoInstance(m.getRootModule()));
     }
 
+    @Bug(21903)
+    public void testConfigRoundtripTriggers() throws Exception {
+        // New project defaults to trigger with blocks:
+        MavenModuleSet m = createMavenProject();
+        assertFalse(m.isDisableTriggerDownstreamProjects());
+        assertTrue(m.getBlockTriggerWhenBuilding());
+        configRoundtrip(m);
+        assertFalse(m.isDisableTriggerDownstreamProjects());
+        assertTrue(m.getBlockTriggerWhenBuilding());
+        // No trigger:
+        m.setDisableTriggerDownstreamProjects(true);
+        configRoundtrip(m);
+        assertTrue(m.isDisableTriggerDownstreamProjects());
+        // blockTriggerWhenBuilding irrelevant in this case, I think (perhaps not in exotic case involving multiple upstreams)
+        // Unconditional trigger:
+        m.setDisableTriggerDownstreamProjects(false);
+        m.setBlockTriggerWhenBuilding(false);
+        configRoundtrip(m);
+        assertFalse(m.isDisableTriggerDownstreamProjects());
+        assertFalse(m.getBlockTriggerWhenBuilding());
+    }
+
 }
