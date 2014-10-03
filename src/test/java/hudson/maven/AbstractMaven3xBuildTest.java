@@ -20,6 +20,7 @@ package hudson.maven;
  * under the License.
  */
 
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.ParametersDefinitionProperty;
@@ -28,6 +29,7 @@ import hudson.model.StringParameterDefinition;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TestResultProjectAction;
+import jenkins.model.ArtifactManagerConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.Email;
@@ -37,6 +39,9 @@ import org.jvnet.hudson.test.HudsonTestCase;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Olivier Lamy
@@ -249,6 +254,31 @@ public abstract class AbstractMaven3xBuildTest
 
         int totalCount = trpa.getTotalCount();
         assertEquals(1, totalCount);
+    }
+
+    @Bug(11964)
+    public void testSingleModuleBuild() throws Exception {
+        // Given a multi-module build.
+        MavenInstallation mavenInstallation = configureMaven3x();
+        MavenModuleSet m = createMavenProject();
+        m.setMaven( mavenInstallation.getName() );
+        m.getReporters().add(new TestReporter());
+        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
+        m.setGoals("verify");
+        buildAndAssertSuccess(m);
+
+        // When building a single module within the given build.
+        MavenModule singleModule = m.getModule("org.jvnet.hudson.main.test.multimod$moduleA");
+        MavenBuild isolated = buildAndAssertSuccess(singleModule);
+
+        // Then only the single module should have been built.
+        Collection<MavenModule> expectedNonBuiltModules = new ArrayList<MavenModule>(m.getModules());
+        expectedNonBuiltModules.remove(singleModule);
+
+        assertEquals(2, isolated.number);
+        for(MavenModule module : expectedNonBuiltModules) {
+            assertEquals(1,module.getLastBuild().getNumber());
+        }
     }
     
     private static class TestReporter extends MavenReporter {
