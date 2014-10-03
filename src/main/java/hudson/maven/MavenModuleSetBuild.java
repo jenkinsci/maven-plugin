@@ -779,8 +779,9 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         // then do the Maven incremental build commands.
                         // If there are no changed modules, we're building everything anyway.
                         boolean maven2_1orLater = new ComparableVersion (mavenVersion).compareTo( new ComparableVersion ("2.1") ) >= 0;
-                        boolean needsFullBuild = getPreviousCompletedBuild() != null &&
-                            getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null;
+                        boolean needsFullBuild = getPreviousCompletedBuild() != null
+                                && getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null
+                                && getCause(UpstreamCause.class) != null;
                         if (project.isIncrementalBuild()) {
                             if (!needsFullBuild && maven2_1orLater && !changedModules.isEmpty()) {
                                 margs.add("-amd");
