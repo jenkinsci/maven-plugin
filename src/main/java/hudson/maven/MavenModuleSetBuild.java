@@ -656,15 +656,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                                 return r;
                             }
                             buildEnvironments.add(e);
-                            e.buildEnvVars(envVars); // #3502: too late for getEnvironment to do this
-                            Collection<? extends Action> actionsFromWrapper = w.getProjectActions(project);
-                            for (Action action : actionsFromWrapper) {
-                                if(action instanceof EnvironmentContributingAction){ // #17555
-                                    ((EnvironmentContributingAction) action).buildEnvVars(MavenModuleSetBuild.this, envVars);
-                                }
-                            }                            
                         }
-                        
+
                     	// run pre build steps
                     	if(!preBuild(listener,project.getPrebuilders())
                         || !preBuild(listener,project.getPostbuilders())
@@ -677,6 +670,9 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                     		setResult(r = FAILURE);
                             return r;
             			}
+
+                        // reflect changes made to environment variables via BuildWrappers and other EnvironmentContributingActions
+                        envVars = getEnvironment(listener);
 
                         parsePoms(listener, logger, envVars, mvn, mavenVersion, mavenBuildInformation); // #5428 : do pre-build *before* parsing pom
                         SplittableBuildListener slistener = new SplittableBuildListener(listener);

@@ -24,7 +24,9 @@
 package hudson.maven;
 
 import hudson.EnvVars;
+import hudson.Util;
 import hudson.model.AbstractBuild;
+import hudson.model.EnvironmentContributingAction;
 import hudson.model.TaskListener;
 import hudson.util.ReflectionUtils;
 
@@ -52,6 +54,9 @@ public abstract class AbstractMavenBuild<P extends AbstractMavenProject<P,B>,B e
     @Override
     public EnvVars getEnvironment(TaskListener log) throws IOException, InterruptedException {
         EnvVars envs = super.getEnvironment(log);
+
+        for (EnvironmentContributingAction a : Util.filter(getProject().getActions(), EnvironmentContributingAction.class))
+            a.buildEnvVars(this,envs);
 
         String opts = getMavenOpts(log,envs);
 
