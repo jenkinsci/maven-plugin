@@ -1,35 +1,24 @@
 package hudson.maven;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.kohsuke.stapler.StaplerRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import hudson.EnvVars;
-import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.Cause;
 import hudson.model.EnvironmentContributingAction;
 import hudson.model.InvisibleAction;
 import hudson.model.Result;
 import hudson.tasks.BuildWrapper;
-import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
-import net.sf.json.JSONObject;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.JenkinsRule;
+
+import java.io.IOException;
 
 /**
  * This test case verifies that a maven build also takes EnvironmentContributingAction into account to resolve variables on the command line
@@ -123,7 +112,7 @@ public class MavenEnvironmentContributingActionFromBuilderTest {
     }
 
     /**
-     * This builder returns an action with variable replacement to build process
+     * Simulates envinject plugin that does stuff and add an action to the build
      */
     public static class TestMvnBuilder extends Builder {
 
@@ -134,8 +123,9 @@ public class MavenEnvironmentContributingActionFromBuilderTest {
         }
 
         @Override
-        public Collection<? extends Action> getProjectActions(AbstractProject<?, ?> project) {
-            return Collections.singletonList(new TestAction("KEY", envVariableValue));
+        public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+            build.addAction(new TestAction("KEY", envVariableValue));
+            return true;
         }
     }
 }
