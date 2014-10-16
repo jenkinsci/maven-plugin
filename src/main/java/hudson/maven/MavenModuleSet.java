@@ -277,6 +277,8 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
      */
     private boolean disableTriggerDownstreamProjects;
 
+    private Boolean blockTriggerWhenBuilding;
+
     /**
      * used temporary during maven build to store file path
      * @since 1.426
@@ -910,6 +912,14 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
       this.disableTriggerDownstreamProjects = disableTriggerDownstreamProjects;
     }
 
+    public boolean getBlockTriggerWhenBuilding() {
+        return blockTriggerWhenBuilding == null || blockTriggerWhenBuilding;
+    }
+
+    public void setBlockTriggerWhenBuilding(boolean blockTriggerWhenBuilding) {
+        this.blockTriggerWhenBuilding = blockTriggerWhenBuilding;
+    }
+
     public MavenModule getRootModule() {
         if(rootModule==null)    return null;
         return modules.get(rootModule);
@@ -1197,7 +1207,14 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         reporters.rebuild(req,json,MavenReporters.getConfigurableList());
         publishers.rebuildHetero(req, json, Publisher.all(), "publisher");
         buildWrappers.rebuild(req, json, BuildWrappers.getFor(this));
-        disableTriggerDownstreamProjects = req.hasParameter("maven.disableTriggerDownstreamProjects");
+        JSONObject enableTriggerDownstreamProjects = json.optJSONObject("enableTriggerDownstreamProjects");
+        if (enableTriggerDownstreamProjects == null) {
+            disableTriggerDownstreamProjects = true;
+            blockTriggerWhenBuilding = null;
+        } else {
+            disableTriggerDownstreamProjects = false;
+            blockTriggerWhenBuilding = enableTriggerDownstreamProjects.has("blockTriggerWhenBuilding");
+        }
 
         runPostStepsIfResult = Result.fromString(req.getParameter( "post-steps.runIfResult"));
         prebuilders.rebuildHetero(req,json, Builder.all(), "prebuilder");

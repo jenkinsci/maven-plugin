@@ -656,15 +656,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                                 return r;
                             }
                             buildEnvironments.add(e);
-                            e.buildEnvVars(envVars); // #3502: too late for getEnvironment to do this
-                            Collection<? extends Action> actionsFromWrapper = w.getProjectActions(project);
-                            for (Action action : actionsFromWrapper) {
-                                if(action instanceof EnvironmentContributingAction){ // #17555
-                                    ((EnvironmentContributingAction) action).buildEnvVars(MavenModuleSetBuild.this, envVars);
-                                }
-                            }                            
                         }
-                        
+
                     	// run pre build steps
                     	if(!preBuild(listener,project.getPrebuilders())
                         || !preBuild(listener,project.getPostbuilders())
@@ -677,6 +670,9 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                     		setResult(r = FAILURE);
                             return r;
             			}
+
+                        // reflect changes made to environment variables via BuildWrappers and other EnvironmentContributingActions
+                        envVars = getEnvironment(listener);
 
                         parsePoms(listener, logger, envVars, mvn, mavenVersion, mavenBuildInformation); // #5428 : do pre-build *before* parsing pom
                         SplittableBuildListener slistener = new SplittableBuildListener(listener);
@@ -779,8 +775,9 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         // then do the Maven incremental build commands.
                         // If there are no changed modules, we're building everything anyway.
                         boolean maven2_1orLater = new ComparableVersion (mavenVersion).compareTo( new ComparableVersion ("2.1") ) >= 0;
-                        boolean needsFullBuild = getPreviousCompletedBuild() != null &&
-                            getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null;
+                        boolean needsFullBuild = getPreviousCompletedBuild() != null
+                                && getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null
+                                && getCause(UpstreamCause.class) != null;
                         if (project.isIncrementalBuild()) {
                             if (!needsFullBuild && maven2_1orLater && !changedModules.isEmpty()) {
                                 margs.add("-amd");
