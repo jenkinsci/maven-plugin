@@ -35,7 +35,6 @@ import hudson.model.BuildListener;
 import hudson.model.Node;
 import hudson.model.Result;
 import hudson.model.TaskListener;
-import hudson.remoting.Callable;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Maven.MavenInstallation;
@@ -53,6 +52,7 @@ import java.util.Properties;
 import jenkins.model.Jenkins;
 import jenkins.mvn.GlobalSettingsProvider;
 import jenkins.mvn.SettingsProvider;
+import jenkins.security.MasterToSlaveCallable;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
@@ -286,7 +286,7 @@ public class RedeployPublisher extends Recorder {
         }
     }
     
-    private static final class GetUserHome implements Callable<String,IOException> {
+    private static final class GetUserHome extends MasterToSlaveCallable<String,IOException> {
         private static final long serialVersionUID = -8755705771716056636L;
 
         public String call() throws IOException {
