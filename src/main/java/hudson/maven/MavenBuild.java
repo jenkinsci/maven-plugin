@@ -55,6 +55,8 @@ import hudson.util.ArgumentListBuilder;
 import hudson.util.DescribableList;
 import jenkins.MasterToSlaveFileCallable;
 import jenkins.maven3.agent.Maven31Main;
+import jenkins.maven3.agent.Maven32Main;
+
 import org.apache.maven.BuildFailureException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.execution.ReactorManager;
@@ -63,6 +65,7 @@ import org.apache.maven.monitor.event.EventDispatcher;
 import org.apache.maven.project.MavenProject;
 import org.jvnet.hudson.maven3.agent.Maven3Main;
 import org.jvnet.hudson.maven3.launcher.Maven31Launcher;
+import org.jvnet.hudson.maven3.launcher.Maven32Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
@@ -86,9 +89,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
-import jenkins.model.ArtifactManager;
 
+import javax.annotation.CheckForNull;
+
+import jenkins.model.ArtifactManager;
 import jenkins.mvn.SettingsProvider;
 
 /**
@@ -813,9 +817,13 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                     LOGGER.fine( "using maven 3 " + mavenVersion );
                     factory = new Maven3ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
                     break;
-                default:
+                case MAVEN_3_1:
                     LOGGER.fine( "using maven 3 " + mavenVersion );
                     factory = new Maven31ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
+                    break;
+                default:
+                    LOGGER.fine( "using maven 3 " + mavenVersion );
+                    factory = new Maven32ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
 
             }
 
@@ -901,9 +909,13 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                     request.maven3MainClass = Maven3Main.class;
                     request.maven3LauncherClass = Maven3Launcher.class;
                     break;
-                default:
+                case MAVEN_3_1:
                     request.maven3MainClass = Maven31Main.class;
                     request.maven3LauncherClass = Maven31Launcher.class;
+                    break;
+                default:
+                    request.maven3MainClass = Maven32Main.class;
+                    request.maven3LauncherClass = Maven32Launcher.class;
             }
 
             return request;
