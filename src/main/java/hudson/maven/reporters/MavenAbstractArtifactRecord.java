@@ -169,7 +169,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
     }
 
     public final String getIconFileName() {
-        return "redo.png";
+        return getACL().hasPermission(getPermission()) ? "redo.png" : null;
     }
 
     public final String getDisplayName() {
