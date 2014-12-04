@@ -36,6 +36,24 @@ enum TestMojo {
     },
     
     MAVEN_SUREFIRE("org.apache.maven.plugins", "maven-surefire-plugin","test","reportsDirectory"),
+    MAVEN_QUNIT("net.kennychua", "phantomjs-qunit-runner","test","null"){
+        @Override
+        public Iterable<File> getReportFiles(MavenProject pom, MojoInfo mojo)
+                throws ComponentConfigurationException {
+
+            String buildDirectory = mojo.getConfigurationValue("buildDirectory", String.class);
+
+            if (buildDirectory == null || buildDirectory.trim().length() == 0) {
+                return null;
+            }
+
+            File junitDir = new File(buildDirectory, "junitxml");
+            if (junitDir.exists()) {
+                return super.getReportFiles(junitDir, super.getFileSet(junitDir));
+            }
+            return null;
+        }
+    },
     MAVEN_FAILSAFE("org.apache.maven.plugins", "maven-failsafe-plugin", "integration-test","reportsDirectory"),
     MAVEN_FAILSAFE_B("org.apache.maven.plugins", "maven-failsafe-plugin", "verify","reportsDirectory"),
     

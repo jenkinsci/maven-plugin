@@ -204,4 +204,11 @@ public class SurefireArchiverDetectTestMojosTest {
         MojoInfo mojo = builder.build();
         assertFalse(this.surefireArchiver.isTestMojo(mojo));
     }
+
+
+    @Test
+    public void shouldDetectMavenQunit() {
+        MojoInfo mojo = mojoBuilder("net.kennychua", "phantomjs-qunit-runner","test").build();
+        assertTrue(this.surefireArchiver.isTestMojo(mojo));
+    }
 }
