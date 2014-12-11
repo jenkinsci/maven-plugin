@@ -679,8 +679,19 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         SplittableBuildListener slistener = new SplittableBuildListener(listener);
                         proxies = new HashMap<ModuleName, ProxyImpl2>();
                         List<ModuleName> changedModules = new ArrayList<ModuleName>();
+                        boolean incrementalBuild;
+                        if (project.isIncrementalBuild()) {
+                            if (getChangeSet().isEmptySet()) {
+                                incrementalBuild = true;
+                            } else {
+                                LOGGER.log(Level.FINER, "{0} has no changes and thus we are not doing an incremental build", MavenModuleSetBuild.this);
+                                incrementalBuild = false;
+                            }
+                        } else {
+                            incrementalBuild = false;
+                        }
                         
-                        if (project.isIncrementalBuild() && !getChangeSet().isEmptySet()) {
+                        if (incrementalBuild) {
                             changedModules.addAll(getUnbuiltModulesSinceLastSuccessfulBuild());
                         }
 
@@ -688,10 +699,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                             MavenBuild mb = m.newBuild();
                             // JENKINS-8418
                             mb.setBuiltOnStr( getBuiltOnStr() );
-                            // Check if incrementalBuild is selected and that there are changes -
-                            // we act as if incrementalBuild is not set if there are no changes.
-                            if (!MavenModuleSetBuild.this.getChangeSet().isEmptySet()
-                                && project.isIncrementalBuild()) {
+                            if (incrementalBuild) {
                                 //If there are changes for this module, add it.
                                 // Also add it if we've never seen this module before,
                                 // or if the previous build of this module failed or was unstable.
