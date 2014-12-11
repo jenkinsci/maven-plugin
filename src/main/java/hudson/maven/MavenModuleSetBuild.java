@@ -927,23 +927,20 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             Collection<ModuleName> unbuiltModules = new ArrayList<ModuleName>();
             MavenModuleSetBuild previousSuccessfulBuild = getPreviousSuccessfulBuild();
             if (previousSuccessfulBuild == null) {
-                // no successful build, yet. Just take the 1st build
+                LOGGER.log(Level.FINER, "no successful build from {0} yet; taking the first build instead", MavenModuleSetBuild.this);
                 previousSuccessfulBuild = getParent().getFirstBuild();
             }
-            
-            if (previousSuccessfulBuild != null) {
-                MavenModuleSetBuild previousBuild = previousSuccessfulBuild;
-                do {
-                    UnbuiltModuleAction unbuiltModuleAction = previousBuild.getAction(UnbuiltModuleAction.class);
-                    if (unbuiltModuleAction != null) {
-                        for (ModuleName name : unbuiltModuleAction.getUnbuildModules()) {
-                            unbuiltModules.add(name);
-                        }
-                    }
-                    
-                    previousBuild = previousBuild.getNextBuild();
-                } while (previousBuild != null && previousBuild != MavenModuleSetBuild.this);
+            for (MavenModuleSetBuild previousBuild = previousSuccessfulBuild; previousBuild != null && previousBuild != MavenModuleSetBuild.this; previousBuild = previousBuild.getNextBuild()) {
+                UnbuiltModuleAction unbuiltModuleAction = previousBuild.getAction(UnbuiltModuleAction.class);
+                if (unbuiltModuleAction != null) {
+                    Collection<ModuleName> newUnbuiltModules = unbuiltModuleAction.getUnbuildModules();
+                    LOGGER.log(Level.FINER, "considered {0} and consequently adding {1}", new Object[] {previousBuild, newUnbuiltModules});
+                    unbuiltModules.addAll(newUnbuiltModules);
+                } else {
+                    LOGGER.log(Level.FINER, "considered {0} but it has no list of unbuilt modules", previousBuild);
+                }
             }
+            LOGGER.log(Level.FINER, "unbuilt modules since last successful build of {0}: {1}", new Object[] {MavenModuleSetBuild.this, unbuiltModules});
             return unbuiltModules;
         }
 
