@@ -783,22 +783,17 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         FilePath remoteGlobalSettings = GlobalSettingsProvider.getSettingsFilePath(project.getGlobalSettings(), MavenModuleSetBuild.this, listener);
                         if (remoteGlobalSettings != null)
                             margs.add("-gs" , remoteGlobalSettings.getRemote());
-                        
-                        // If incrementalBuild is set
-                        // and the previous build didn't specify that we need a full build
-                        // and we're on Maven 2.1 or later
-                        // and there's at least one module listed in changedModules,
-                        // then do the Maven incremental build commands.
-                        // If there are no changed modules, we're building everything anyway.
-                        boolean maven2_1orLater = new ComparableVersion (mavenVersion).compareTo( new ComparableVersion ("2.1") ) >= 0;
-                        boolean needsFullBuild = getPreviousCompletedBuild() != null
-                                && getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null
-                                && getCause(UpstreamCause.class) != null;
-                        if (!needsFullBuild && maven2_1orLater && !changedModules.isEmpty()) {
+
+                        if (changedModules.isEmpty()) {
+                            LOGGER.log(Level.FINER, "{0} was not configured to do incremental builds or had no changed modules, so skipping incremental build", MavenModuleSetBuild.this);
+                        } else if (new ComparableVersion(mavenVersion).compareTo(new ComparableVersion("2.1")) < 0) {
+                            LOGGER.log(Level.FINER, "{0} is using Maven {1} but need 2.1+ for incremental builds", new Object[] {MavenModuleSetBuild.this, mavenVersion});
+                        } else if (getPreviousCompletedBuild() != null && getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null && /* PR #31 */getCause(UpstreamCause.class) != null) {
+                            LOGGER.log(Level.FINER, "{0} had a previous build asking for this one to not be incremental", MavenModuleSetBuild.this);
+                        } else {
+                            LOGGER.log(Level.FINER, "{0} can do an incremental build on {1}", new Object[] {MavenModuleSetBuild.this, changedModules});
                             margs.add("-amd");
                             margs.add("-pl", Util.join(changedModules, ","));
-                        } else {
-                            LOGGER.log(Level.FINE, "Skipping incremental build: needsFullBuild={0}, maven2.1orLater={1}, changedModules={2}", new Object[] {needsFullBuild, maven2_1orLater, changedModules});
                         }
 
 
