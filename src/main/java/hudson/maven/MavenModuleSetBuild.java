@@ -699,19 +699,25 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                             MavenBuild mb = m.newBuild();
                             // JENKINS-8418
                             mb.setBuiltOnStr( getBuiltOnStr() );
+                            ModuleName moduleName = m.getModuleName();
+
                             if (incrementalBuild) {
-                                //If there are changes for this module, add it.
-                                // Also add it if we've never seen this module before,
-                                // or if the previous build of this module failed or was unstable.
-                                if ((mb.getPreviousBuiltBuild() == null) ||
-                                    (!getChangeSetFor(m).isEmpty()) 
-                                    || (mb.getPreviousBuiltBuild().getResult().isWorseThan(Result.SUCCESS))) {
-                                    changedModules.add(m.getModuleName());
+                                if (!getChangeSetFor(m).isEmpty()) {
+                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because it has changes", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    changedModules.add(moduleName);
+                                } else if (mb.getPreviousBuiltBuild() == null) {
+                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because we have never seen this module before", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    changedModules.add(moduleName);
+                                } else if (mb.getPreviousBuiltBuild().getResult().isWorseThan(Result.SUCCESS)) {
+                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because the previous build failed or was unstable", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    changedModules.add(moduleName);
+                                } else {
+                                    LOGGER.log(Level.FINER, "no reason to add {0} to changedModules for {1}", new Object[] {moduleName, MavenModuleSetBuild.this});
                                 }
                             }
 
                             mb.setWorkspace(getModuleRoot().child(m.getRelativePath()));
-                            proxies.put(m.getModuleName(), mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener));
+                            proxies.put(moduleName, mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener));
                         }
 
                         // run the complete build here
