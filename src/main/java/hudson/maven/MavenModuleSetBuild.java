@@ -681,7 +681,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         List<ModuleName> changedModules = new ArrayList<ModuleName>();
                         
                         if (project.isIncrementalBuild() && !getChangeSet().isEmptySet()) {
-                            changedModules.addAll(getUnbuildModulesSinceLastSuccessfulBuild());
+                            changedModules.addAll(getUnbuiltModulesSinceLastSuccessfulBuild());
                         }
 
                         for (MavenModule m : project.sortedActiveModules) {
@@ -923,7 +923,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
          * 
          * See JENKINS-5764
          */
-        private Collection<ModuleName> getUnbuildModulesSinceLastSuccessfulBuild() {
+        private Collection<ModuleName> getUnbuiltModulesSinceLastSuccessfulBuild() {
             Collection<ModuleName> unbuiltModules = new ArrayList<ModuleName>();
             MavenModuleSetBuild previousSuccessfulBuild = getPreviousSuccessfulBuild();
             if (previousSuccessfulBuild == null) {
