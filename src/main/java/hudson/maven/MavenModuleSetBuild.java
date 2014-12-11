@@ -252,20 +252,27 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 List<MavenModule> subsidiaries = null;
 
                 for (ChangeLogSet.Entry e : getChangeSet()) {
-                    if(isDescendantOf(e, mod)) {
-                        if(subsidiaries==null)
-                            subsidiaries = mod.getSubsidiaries();
-
-                        // make sure at least one change belongs to this module proper,
-                        // and not its subsidiary module
-                        if (notInSubsidiary(subsidiaries, e))
-                            add(e);
+                    Collection<String> affectedPaths = e.getAffectedPaths();
+                    if (!isDescendantOf(affectedPaths, mod)) {
+                        LOGGER.log(Level.FINEST, "{0} are not a descendant of {1}", new Object[] {affectedPaths, mod});
+                        continue;
+                    }
+                    if (subsidiaries == null) {
+                        subsidiaries = mod.getSubsidiaries();
+                    }
+                    // make sure at least one change belongs to this module proper,
+                    // and not its subsidiary module
+                    if (notInSubsidiary(subsidiaries, affectedPaths)) {
+                        LOGGER.log(Level.FINEST, "{0} are indeed in the change set for {1}", new Object[] {affectedPaths, mod});
+                        add(e);
+                    } else {
+                        LOGGER.log(Level.FINEST, "{0} are in subsidiaries {1} of {2}", new Object[] {affectedPaths, subsidiaries, mod});
                     }
                 }
             }
 
-            private boolean notInSubsidiary(List<MavenModule> subsidiaries, ChangeLogSet.Entry e) {
-                for (String path : e.getAffectedPaths())
+            private boolean notInSubsidiary(List<MavenModule> subsidiaries, Collection<String> affectedPaths) {
+                for (String path : affectedPaths)
                     if(isDescendantOf(path, mod) && !belongsToSubsidiary(subsidiaries, path))
                         return true;
                 return false;
@@ -281,8 +288,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             /**
              * Does this change happen somewhere in the given module or its descendants?
              */
-            private boolean isDescendantOf(ChangeLogSet.Entry e, MavenModule mod) {
-                for (String path : e.getAffectedPaths()) {
+            private boolean isDescendantOf(Collection<String> affectedPaths, MavenModule mod) {
+                for (String path : affectedPaths) {
                     if (isDescendantOf(path, mod))
                         return true;
                 }
