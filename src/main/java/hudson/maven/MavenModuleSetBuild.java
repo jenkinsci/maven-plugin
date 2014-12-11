@@ -689,10 +689,10 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         boolean incrementalBuild;
                         if (project.isIncrementalBuild()) {
                             if (getChangeSet().isEmptySet()) {
-                                incrementalBuild = true;
-                            } else {
                                 LOGGER.log(Level.FINER, "{0} has no changes and thus we are not doing an incremental build", MavenModuleSetBuild.this);
                                 incrementalBuild = false;
+                            } else {
+                                incrementalBuild = true;
                             }
                         } else {
                             incrementalBuild = false;
