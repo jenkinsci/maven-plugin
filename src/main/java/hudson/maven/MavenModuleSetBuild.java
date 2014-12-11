@@ -791,7 +791,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                                 margs.add("-amd");
                                 margs.add("-pl", Util.join(changedModules, ","));
                             } else {
-                                LOGGER.log(Level.FINE, "Skipping incremental build: needsFullBuild={0}, maven2.1orLater={1}, changedModulesEmpty?={2}", new Object[] {needsFullBuild, maven2_1orLater, changedModules.isEmpty()});
+                                LOGGER.log(Level.FINE, "Skipping incremental build: needsFullBuild={0}, maven2.1orLater={1}, changedModules={2}", new Object[] {needsFullBuild, maven2_1orLater, changedModules});
                             }
                         }
 
