@@ -794,13 +794,11 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         boolean needsFullBuild = getPreviousCompletedBuild() != null
                                 && getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null
                                 && getCause(UpstreamCause.class) != null;
-                        if (project.isIncrementalBuild()) {
-                            if (!needsFullBuild && maven2_1orLater && !changedModules.isEmpty()) {
-                                margs.add("-amd");
-                                margs.add("-pl", Util.join(changedModules, ","));
-                            } else {
-                                LOGGER.log(Level.FINE, "Skipping incremental build: needsFullBuild={0}, maven2.1orLater={1}, changedModules={2}", new Object[] {needsFullBuild, maven2_1orLater, changedModules});
-                            }
+                        if (!needsFullBuild && maven2_1orLater && !changedModules.isEmpty()) {
+                            margs.add("-amd");
+                            margs.add("-pl", Util.join(changedModules, ","));
+                        } else {
+                            LOGGER.log(Level.FINE, "Skipping incremental build: needsFullBuild={0}, maven2.1orLater={1}, changedModules={2}", new Object[] {needsFullBuild, maven2_1orLater, changedModules});
                         }
 
 
