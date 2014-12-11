@@ -38,7 +38,6 @@ import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Build;
 import hudson.model.BuildListener;
-import hudson.model.EnvironmentContributingAction;
 import hudson.model.Cause.UpstreamCause;
 import hudson.model.Computer;
 import hudson.model.Environment;
@@ -792,10 +791,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                                 margs.add("-amd");
                                 margs.add("-pl", Util.join(changedModules, ","));
                             } else {
-                                if (LOGGER.isLoggable(Level.FINE)) {
-                                    LOGGER.fine(String.format("Skipping incremental build: needsFullBuild=%s, maven2.1orLater=%s, changedModulesEmpty?=%s",
-                                            needsFullBuild, maven2_1orLater, changedModules.isEmpty()));
-                                }
+                                LOGGER.log(Level.FINE, "Skipping incremental build: needsFullBuild={0}, maven2.1orLater={1}, changedModulesEmpty?={2}", new Object[] {needsFullBuild, maven2_1orLater, changedModules.isEmpty()});
                             }
                         }
 
