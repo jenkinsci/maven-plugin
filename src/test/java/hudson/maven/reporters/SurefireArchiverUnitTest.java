@@ -15,6 +15,7 @@ import hudson.maven.MavenProjectActionBuilder;
 import hudson.maven.MavenReporter;
 import hudson.maven.MojoInfo;
 import hudson.maven.MojoInfoBuilder;
+import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.Cause;
 import hudson.model.Result;
@@ -26,6 +27,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -36,6 +38,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hudson.test.RandomlyFails;
 import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * Unit test for the JUnit result parsing in {@link SurefireArchiver}.
@@ -54,8 +58,19 @@ public class SurefireArchiverUnitTest {
     public void before() throws ComponentConfigurationException, URISyntaxException {
         this.archiver = new SurefireArchiver();
         this.build = mock(MavenBuild.class);
-        when(build.getAction(Matchers.any(Class.class))).thenCallRealMethod();
-        when(build.getActions()).thenCallRealMethod();
+        final List<Action> actions = new ArrayList<Action>();
+        when(build.getAction(Matchers.any(Class.class))).thenAnswer(new Answer<Action>() {
+            @Override public Action answer(InvocationOnMock invocation) throws Throwable {
+                Class<?> type = (Class<?>) invocation.getArguments()[0];
+                for (Action action : actions) {
+                    if (type.isInstance(action)) {
+                        return action;
+                    }
+                }
+                return null;
+            }
+        });
+        when(build.getActions()).thenReturn(actions);
         when(build.getRootDir()).thenReturn(new File("target"));
         
         this.buildProxy = new TestBuildProxy(build);
