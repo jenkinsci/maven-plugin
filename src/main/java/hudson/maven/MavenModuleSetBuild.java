@@ -800,7 +800,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         if (changedModules.isEmpty()) {
                             LOGGER.log(Level.FINER, "{0} was not configured to do incremental builds or had no changed modules, so skipping incremental build", MavenModuleSetBuild.this);
                         } else if (new ComparableVersion(mavenVersion).compareTo(new ComparableVersion("2.1")) < 0) {
-                            LOGGER.log(Level.WARNING, "{0} is using Maven {1} but need 2.1+ for incremental builds", new Object[] {MavenModuleSetBuild.this, mavenVersion});
+                            LOGGER.log(Level.FINER, "{0} is using Maven {1} but need 2.1+ for incremental builds", new Object[] {MavenModuleSetBuild.this, mavenVersion});
                         } else if (getPreviousCompletedBuild() != null && getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null && /* PR #31 */getCause(UpstreamCause.class) != null) {
                             LOGGER.log(Level.FINER, "{0} had a previous build asking for this one to not be incremental", MavenModuleSetBuild.this);
                         } else {
