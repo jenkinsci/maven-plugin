@@ -30,7 +30,6 @@ import java.io.FilenameFilter;
 import java.util.Arrays;
 import org.apache.commons.lang.StringUtils;
 import static org.junit.Assert.*;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -38,6 +37,7 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.Email;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.RandomlyFails;
 import org.jvnet.hudson.test.SingleFileSCM;
 
 /**
@@ -48,10 +48,10 @@ public class RedeployPublisherTest {
     @Rule public JenkinsRule j = new JenkinsRule();
     @Rule public TemporaryFolder tmp = new TemporaryFolder();
 
+    @RandomlyFails("Not a v4.0.0 POM. for project org.jvnet.maven-antrun-extended-plugin:maven-antrun-extended-plugin at /home/jenkins/.m2/repository/org/jvnet/maven-antrun-extended-plugin/maven-antrun-extended-plugin/1.39/maven-antrun-extended-plugin-1.39.pom")
     @Bug(2593)
     @Test
     public void testBug2593() throws Exception {
-        Assume.assumeFalse("Not a v4.0.0 POM. for project org.jvnet.maven-antrun-extended-plugin:maven-antrun-extended-plugin at /home/jenkins/.m2/repository/org/jvnet/maven-antrun-extended-plugin/maven-antrun-extended-plugin/1.39/maven-antrun-extended-plugin-1.39.pom", "https://jenkins.ci.cloudbees.com/job/plugins/job/maven-plugin/".equals(System.getenv("JOB_URL"))); // TODO 1.547+: @RandomlyFails
         j.configureDefaultMaven();
         MavenModuleSet m2 = j.createMavenProject();
         File repo = tmp.getRoot();
