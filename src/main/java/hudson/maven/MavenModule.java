@@ -456,10 +456,8 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
      * so it always needs to be built on the same slave as the parent.
      */
     @Override
-    public Label getAssignedLabel() {
-        Node n = getParent().getLastBuiltOn();
-        if(n==null) return null;
-        return n.getSelfLabel();
+    public Object getSameNodeConstraint() {
+        return getRootProject();
     }
 
     /**
