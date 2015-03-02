@@ -24,8 +24,8 @@ import hudson.remoting.RemoteInputStream;
 import hudson.remoting.RemoteOutputStream;
 import hudson.remoting.SocketInputStream;
 import hudson.remoting.SocketOutputStream;
+import hudson.remoting.VirtualChannel;
 import hudson.remoting.Which;
-import hudson.slaves.Channels;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks._maven.MavenConsoleAnnotator;
 import hudson.util.ArgumentListBuilder;
@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.lang.ref.WeakReference;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -45,6 +46,9 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.CheckForNull;
 
@@ -240,8 +244,87 @@ public abstract class AbstractMavenProcessFactory
         public String call() throws IOException {
             return System.getProperty("file.encoding");
         }
-    }    
+    }
 
+    private static final class LinkedChannelCleaner extends Channel.Listener {
+        final WeakReference<LinkedChannel> weakChannel;
+
+        private LinkedChannelCleaner(LinkedChannel channel) {
+            this.weakChannel = new WeakReference<LinkedChannel>(channel);
+        }
+
+        public void onClosed(Channel upstreamChannel, IOException cause) {
+            LinkedChannel channel = weakChannel.get();
+            if (channel != null) {
+                channel.terminateNow(cause);
+            }
+        }
+    }
+
+    private static class LinkedChannel extends Channel {
+        private static final Logger LOGGER = Logger.getLogger(LinkedChannel.class.getName());
+
+        protected final LinkedChannelCleaner cleanerListener;
+
+        protected final Channel upstreamChannel;
+
+        public LinkedChannel(VirtualChannel upstreamChannel, String name, ExecutorService exec, InputStream is, OutputStream os, OutputStream header) throws IOException {
+            super(name, exec, is, os, header);
+
+            if(upstreamChannel instanceof Channel) {
+                this.cleanerListener = new LinkedChannelCleaner(this);
+                this.upstreamChannel = (Channel) upstreamChannel;
+                this.upstreamChannel.addListener(cleanerListener);
+            } else {
+                this.cleanerListener = null;
+                this.upstreamChannel = null;
+            }
+        }
+
+        public void terminateNow(IOException e) {
+            super.terminate(e);
+        }
+        
+        /**
+         * copy/paste of Channels.forProcess
+         */
+        public static LinkedChannel forProcess(VirtualChannel upstreamChannel, String name, ExecutorService execService, InputStream in, OutputStream out, OutputStream header, final Proc proc) throws IOException {
+            return new LinkedChannel(upstreamChannel, name, execService, in, out, header) {
+                /**
+                 * Kill the process when the channel is severed.
+                 */
+                @Override
+                public synchronized void terminate(IOException e) {
+                    super.terminate(e);
+                    try {
+                        proc.kill();
+                    } catch (IOException x) {
+                        // we are already in the error recovery mode, so just record it and move on
+                        LOGGER.log(Level.INFO, "Failed to terminate the severed connection",x);
+                    } catch (InterruptedException x) {
+                        // process the interrupt later
+                        Thread.currentThread().interrupt();
+                    }
+                    if (upstreamChannel != null) {
+                        upstreamChannel.removeListener(cleanerListener);
+                    }
+                }
+
+                @Override
+                public synchronized void close() throws IOException {
+                    super.close();
+                    // wait for the child process to complete
+                    try {
+                        proc.join();
+                    } catch (InterruptedException e) {
+                        // process the interrupt later
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            };
+        }
+    }
+    
     /**
      * Starts maven process.
      */
@@ -292,9 +375,9 @@ public abstract class AbstractMavenProcessFactory
                 throw e;
             }
 
-            Channel ch;
+            LinkedChannel ch;
             try {
-                ch = Channels.forProcess("Channel to Maven " + Arrays.toString(cmds),
+                ch = LinkedChannel.forProcess(launcher.getChannel(), "Channel to Maven " + Arrays.toString(cmds),
                         Computer.threadPoolForRemoting, new BufferedInputStream(con.in), new BufferedOutputStream(con.out),
                         listener.getLogger(), proc);
                 ch.call(new ConfigureOriginalJDK(originalJdk));
