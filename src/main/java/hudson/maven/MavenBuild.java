@@ -495,6 +495,10 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         }
 
         public void setResult(Result result) {
+            if (!isBuilding()) {
+                LOGGER.log(Level.WARNING, "JENKINS-25406: illegal attempt to change result from {0} to {1} after {2} finished building", new Object[] {getResult(), result, MavenBuild.this});
+                return;
+            }
             MavenBuild.this.setResult(result);
         }
 
