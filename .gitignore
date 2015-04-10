@@ -5,3 +5,4 @@ work
 /.project
 *.iml
 .idea/
+.java-version

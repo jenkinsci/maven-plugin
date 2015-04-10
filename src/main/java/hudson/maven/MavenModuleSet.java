@@ -87,6 +87,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
@@ -809,8 +810,17 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
                 if(children!=null) {
                     for (MavenModule m : children)
                         m.nestLevel = p.nestLevel+1;
-                    for( int i=children.size()-1; i>=0; i--)    // add them in the reverse order
-                        q.push(children.get(i));
+                    for( int i=children.size()-1; i>=0; i--) {   // add them in the reverse order
+                        MavenModule item = children.get(i);
+                        // If the maven project exists already then we should not reload it.
+                        if (!sortedList.contains(item)) {
+                            q.push(item);
+                        }
+                        else {
+                            LOGGER.log(Level.SEVERE, "Maven project " + name +
+                                    " already contains a module called " + item.getName());
+                        }
+                    }
                 }
             }
             this.sortedActiveModules = sortedList;

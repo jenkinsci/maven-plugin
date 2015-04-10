@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Olivier Lamy
@@ -281,6 +283,18 @@ public abstract class AbstractMaven3xBuildTest
         }
     }
     
+    @Bug(12109)
+    public void testMultiModuleInvalidRecursivePom() throws Exception {
+        MavenInstallation mavenInstallation = configureMaven3x();
+        MavenModuleSet m = createMavenProject("JENKINS-12109");
+        m.setMaven(mavenInstallation.getName());
+        m.getReporters().add(new TestReporter());
+        m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-12109.zip")));
+        assertBuildStatus(Result.FAILURE, m.scheduleBuild2(0).get());
+        jenkins.reload();
+        assertNotNull(jenkins.getItemByFullName("JENKINS-12109"));
+    }
+
     private static class TestReporter extends MavenReporter {
         @Override
         public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {

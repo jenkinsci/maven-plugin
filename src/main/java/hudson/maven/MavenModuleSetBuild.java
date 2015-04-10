@@ -199,7 +199,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
     }
 
     private void envs(EnvVars env, String key, String value) {
-        // TODO: switch to EnvVars.putIfNotNull when we pick up a newer core
+        // TODO: switch to EnvVars.putIfNotNull when on 1.556+
         if (value!=null)
             env.put(key,value);
     }
