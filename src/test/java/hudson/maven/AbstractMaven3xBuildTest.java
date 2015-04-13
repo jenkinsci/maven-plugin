@@ -20,7 +20,6 @@ package hudson.maven;
  * under the License.
  */
 
-import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.ParametersDefinitionProperty;
@@ -29,7 +28,6 @@ import hudson.model.StringParameterDefinition;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TestResultProjectAction;
-import jenkins.model.ArtifactManagerConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.Email;
@@ -40,10 +38,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Olivier Lamy
@@ -98,7 +92,7 @@ public abstract class AbstractMaven3xBuildTest
         m.setMaven( mavenInstallation.getName() );        
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
-        m.setGoals( "clean site" );
+        m.setGoals("-e clean site");
         MavenModuleSetBuild b = buildAndAssertSuccess(m);
         assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
     }    
