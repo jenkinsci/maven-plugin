@@ -38,7 +38,6 @@ import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Build;
 import hudson.model.BuildListener;
-import hudson.model.EnvironmentContributingAction;
 import hudson.model.Cause.UpstreamCause;
 import hudson.model.Computer;
 import hudson.model.Environment;
@@ -253,20 +252,27 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 List<MavenModule> subsidiaries = null;
 
                 for (ChangeLogSet.Entry e : getChangeSet()) {
-                    if(isDescendantOf(e, mod)) {
-                        if(subsidiaries==null)
-                            subsidiaries = mod.getSubsidiaries();
-
-                        // make sure at least one change belongs to this module proper,
-                        // and not its subsidiary module
-                        if (notInSubsidiary(subsidiaries, e))
-                            add(e);
+                    Collection<String> affectedPaths = e.getAffectedPaths();
+                    if (!isDescendantOf(affectedPaths, mod)) {
+                        LOGGER.log(Level.FINEST, "{0} are not a descendant of {1}", new Object[] {affectedPaths, mod});
+                        continue;
+                    }
+                    if (subsidiaries == null) {
+                        subsidiaries = mod.getSubsidiaries();
+                    }
+                    // make sure at least one change belongs to this module proper,
+                    // and not its subsidiary module
+                    if (notInSubsidiary(subsidiaries, affectedPaths)) {
+                        LOGGER.log(Level.FINEST, "{0} are indeed in the change set for {1}", new Object[] {affectedPaths, mod});
+                        add(e);
+                    } else {
+                        LOGGER.log(Level.FINEST, "{0} are in subsidiaries {1} of {2}", new Object[] {affectedPaths, subsidiaries, mod});
                     }
                 }
             }
 
-            private boolean notInSubsidiary(List<MavenModule> subsidiaries, ChangeLogSet.Entry e) {
-                for (String path : e.getAffectedPaths())
+            private boolean notInSubsidiary(List<MavenModule> subsidiaries, Collection<String> affectedPaths) {
+                for (String path : affectedPaths)
                     if(isDescendantOf(path, mod) && !belongsToSubsidiary(subsidiaries, path))
                         return true;
                 return false;
@@ -282,8 +288,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             /**
              * Does this change happen somewhere in the given module or its descendants?
              */
-            private boolean isDescendantOf(ChangeLogSet.Entry e, MavenModule mod) {
-                for (String path : e.getAffectedPaths()) {
+            private boolean isDescendantOf(Collection<String> affectedPaths, MavenModule mod) {
+                for (String path : affectedPaths) {
                     if (isDescendantOf(path, mod))
                         return true;
                 }
@@ -680,31 +686,45 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         SplittableBuildListener slistener = new SplittableBuildListener(listener);
                         proxies = new HashMap<ModuleName, ProxyImpl2>();
                         List<ModuleName> changedModules = new ArrayList<ModuleName>();
+                        boolean incrementalBuild;
+                        if (project.isIncrementalBuild()) {
+                            if (getChangeSet().isEmptySet()) {
+                                LOGGER.log(Level.FINER, "{0} has no changes and thus we are not doing an incremental build", MavenModuleSetBuild.this);
+                                incrementalBuild = false;
+                            } else {
+                                incrementalBuild = true;
+                            }
+                        } else {
+                            incrementalBuild = false;
+                        }
                         
-                        if (project.isIncrementalBuild() && !getChangeSet().isEmptySet()) {
-                            changedModules.addAll(getUnbuildModulesSinceLastSuccessfulBuild());
+                        if (incrementalBuild) {
+                            changedModules.addAll(getUnbuiltModulesSinceLastSuccessfulBuild());
                         }
 
                         for (MavenModule m : project.sortedActiveModules) {
                             MavenBuild mb = m.newBuild();
                             // JENKINS-8418
                             mb.setBuiltOnStr( getBuiltOnStr() );
-                            // Check if incrementalBuild is selected and that there are changes -
-                            // we act as if incrementalBuild is not set if there are no changes.
-                            if (!MavenModuleSetBuild.this.getChangeSet().isEmptySet()
-                                && project.isIncrementalBuild()) {
-                                //If there are changes for this module, add it.
-                                // Also add it if we've never seen this module before,
-                                // or if the previous build of this module failed or was unstable.
-                                if ((mb.getPreviousBuiltBuild() == null) ||
-                                    (!getChangeSetFor(m).isEmpty()) 
-                                    || (mb.getPreviousBuiltBuild().getResult().isWorseThan(Result.SUCCESS))) {
-                                    changedModules.add(m.getModuleName());
+                            ModuleName moduleName = m.getModuleName();
+
+                            if (incrementalBuild) {
+                                if (!getChangeSetFor(m).isEmpty()) {
+                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because it has changes", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    changedModules.add(moduleName);
+                                } else if (mb.getPreviousBuiltBuild() == null) {
+                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because we have never seen this module before", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    changedModules.add(moduleName);
+                                } else if (mb.getPreviousBuiltBuild().getResult().isWorseThan(Result.SUCCESS)) {
+                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because the previous build failed or was unstable", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    changedModules.add(moduleName);
+                                } else {
+                                    LOGGER.log(Level.FINER, "no reason to add {0} to changedModules for {1}", new Object[] {moduleName, MavenModuleSetBuild.this});
                                 }
                             }
 
                             mb.setWorkspace(getModuleRoot().child(m.getRelativePath()));
-                            proxies.put(m.getModuleName(), mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener));
+                            proxies.put(moduleName, mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener));
                         }
 
                         // run the complete build here
@@ -776,27 +796,17 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         FilePath remoteGlobalSettings = GlobalSettingsProvider.getSettingsFilePath(project.getGlobalSettings(), MavenModuleSetBuild.this, listener);
                         if (remoteGlobalSettings != null)
                             margs.add("-gs" , remoteGlobalSettings.getRemote());
-                        
-                        // If incrementalBuild is set
-                        // and the previous build didn't specify that we need a full build
-                        // and we're on Maven 2.1 or later
-                        // and there's at least one module listed in changedModules,
-                        // then do the Maven incremental build commands.
-                        // If there are no changed modules, we're building everything anyway.
-                        boolean maven2_1orLater = new ComparableVersion (mavenVersion).compareTo( new ComparableVersion ("2.1") ) >= 0;
-                        boolean needsFullBuild = getPreviousCompletedBuild() != null
-                                && getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null
-                                && getCause(UpstreamCause.class) != null;
-                        if (project.isIncrementalBuild()) {
-                            if (!needsFullBuild && maven2_1orLater && !changedModules.isEmpty()) {
-                                margs.add("-amd");
-                                margs.add("-pl", Util.join(changedModules, ","));
-                            } else {
-                                if (LOGGER.isLoggable(Level.FINE)) {
-                                    LOGGER.fine(String.format("Skipping incremental build: needsFullBuild=%s, maven2.1orLater=%s, changedModulesEmpty?=%s",
-                                            needsFullBuild, maven2_1orLater, changedModules.isEmpty()));
-                                }
-                            }
+
+                        if (changedModules.isEmpty()) {
+                            LOGGER.log(Level.FINER, "{0} was not configured to do incremental builds or had no changed modules, so skipping incremental build", MavenModuleSetBuild.this);
+                        } else if (new ComparableVersion(mavenVersion).compareTo(new ComparableVersion("2.1")) < 0) {
+                            LOGGER.log(Level.FINER, "{0} is using Maven {1} but need 2.1+ for incremental builds", new Object[] {MavenModuleSetBuild.this, mavenVersion});
+                        } else if (getPreviousCompletedBuild() != null && getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null && /* PR #31 */getCause(UpstreamCause.class) != null) {
+                            LOGGER.log(Level.FINER, "{0} had a previous build asking for this one to not be incremental", MavenModuleSetBuild.this);
+                        } else {
+                            LOGGER.log(Level.FINER, "{0} can do an incremental build on {1}", new Object[] {MavenModuleSetBuild.this, changedModules});
+                            margs.add("-amd");
+                            margs.add("-pl", Util.join(changedModules, ","));
                         }
 
 
@@ -927,27 +937,24 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
          * 
          * See JENKINS-5764
          */
-        private Collection<ModuleName> getUnbuildModulesSinceLastSuccessfulBuild() {
+        private Collection<ModuleName> getUnbuiltModulesSinceLastSuccessfulBuild() {
             Collection<ModuleName> unbuiltModules = new ArrayList<ModuleName>();
             MavenModuleSetBuild previousSuccessfulBuild = getPreviousSuccessfulBuild();
             if (previousSuccessfulBuild == null) {
-                // no successful build, yet. Just take the 1st build
+                LOGGER.log(Level.FINER, "no successful build from {0} yet; taking the first build instead", MavenModuleSetBuild.this);
                 previousSuccessfulBuild = getParent().getFirstBuild();
             }
-            
-            if (previousSuccessfulBuild != null) {
-                MavenModuleSetBuild previousBuild = previousSuccessfulBuild;
-                do {
-                    UnbuiltModuleAction unbuiltModuleAction = previousBuild.getAction(UnbuiltModuleAction.class);
-                    if (unbuiltModuleAction != null) {
-                        for (ModuleName name : unbuiltModuleAction.getUnbuildModules()) {
-                            unbuiltModules.add(name);
-                        }
-                    }
-                    
-                    previousBuild = previousBuild.getNextBuild();
-                } while (previousBuild != null && previousBuild != MavenModuleSetBuild.this);
+            for (MavenModuleSetBuild previousBuild = previousSuccessfulBuild; previousBuild != null && previousBuild != MavenModuleSetBuild.this; previousBuild = previousBuild.getNextBuild()) {
+                UnbuiltModuleAction unbuiltModuleAction = previousBuild.getAction(UnbuiltModuleAction.class);
+                if (unbuiltModuleAction != null) {
+                    Collection<ModuleName> newUnbuiltModules = unbuiltModuleAction.getUnbuildModules();
+                    LOGGER.log(Level.FINER, "considered {0} and consequently adding {1}", new Object[] {previousBuild, newUnbuiltModules});
+                    unbuiltModules.addAll(newUnbuiltModules);
+                } else {
+                    LOGGER.log(Level.FINER, "considered {0} but it has no list of unbuilt modules", previousBuild);
+                }
             }
+            LOGGER.log(Level.FINER, "unbuilt modules since last successful build of {0}: {1}", new Object[] {MavenModuleSetBuild.this, unbuiltModules});
             return unbuiltModules;
         }
 
