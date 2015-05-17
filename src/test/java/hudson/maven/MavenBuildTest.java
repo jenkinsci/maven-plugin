@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import hudson.Extension;
 import hudson.Launcher;
 import hudson.maven.MavenBuildProxy.BuildCallable;
+import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.BallColor;
@@ -14,19 +16,25 @@ import hudson.model.InvisibleAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Result;
 import hudson.model.StringParameterDefinition;
+import hudson.tasks.BuildWrapper;
+import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Builder;
+import hudson.tasks.BuildWrapper.Environment;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.AggregatedTestResultAction;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+
+import net.sf.json.JSONObject;
 
 import org.apache.maven.project.MavenProject;
 import org.junit.Rule;
@@ -35,7 +43,9 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.Email;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.JenkinsRule.TestBuildWrapper;
 import org.jvnet.hudson.test.SingleFileSCM;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -357,6 +367,23 @@ public class MavenBuildTest {
         final List<TestAction> actions = m.getActions(TestAction.class);
         assertEquals(2, actions.size());
     }     
+
+    @Test
+    public void testBuildWrappersTeardown() throws Exception {
+        j.configureDefaultMaven();
+        MavenModuleSet m = j.createMavenProject();
+        m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
+        m.setGoals("initialize");
+
+        TearingDownBuildWrapper testBuild1Wrapper = new TearingDownBuildWrapper();
+        TearingDownBuildWrapper testBuild2Wrapper = new TearingDownBuildWrapper();
+		m.getBuildWrappersList().addAll(Arrays.asList(testBuild1Wrapper, testBuild2Wrapper, new FailingBuildWrapper()));
+
+        j.assertBuildStatus(Result.FAILURE, m.scheduleBuild2(0).get());
+
+        assertTrue(testBuild1Wrapper.tearDown);
+        assertTrue(testBuild2Wrapper.tearDown);
+    } 
     
     private static class TestBuilder extends Builder {
 
@@ -380,4 +407,27 @@ public class MavenBuildTest {
     private static class TestAction extends InvisibleAction{
     }
 
+    private static class FailingBuildWrapper extends BuildWrapper {
+        @Override
+        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        	return null;
+        }
+    }
+
+    private static class TearingDownBuildWrapper extends BuildWrapper {
+        public boolean tearDown;
+
+		@Override
+        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        	return new Environment() {
+        		public boolean tearDown(AbstractBuild build, BuildListener listener) {
+        			tearDown = true;
+
+        			return true;
+        		}
+        	};
+        }
+		
+		
+    }
 }

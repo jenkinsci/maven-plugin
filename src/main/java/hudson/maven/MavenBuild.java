@@ -789,6 +789,15 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             for (BuildWrapper w : mms.getBuildWrappersList()) {
                 Environment e = w.setUp(MavenBuild.this, launcher, listener);
                 if (e == null) {
+                    for(int i = buildEnvironments.size()-1; i>=0; i--) {
+                        Environment environment = buildEnvironments.get(i);
+                        try {
+                        	environment.tearDown(MavenBuild.this, slistener);
+                        } catch (Exception ignored) {
+                        	// exceptions are ignored to give a chance to all environments to tear down
+                        }
+                    }
+
                     return Result.FAILURE;
                 }
                 buildEnvironments.add(e);
