@@ -189,24 +189,34 @@ public abstract class AbstractMavenProcessFactory
      * we can accept a connection later on it.
      */
     private static final class SocketHandler extends MasterToSlaveCallable<Acceptor,IOException> {
+    	
+    	private EnvVars envVars;
+    	
+    	private SocketHandler(EnvVars envVars) {
+    		this.envVars = envVars;
+    	}
+    	
         public Acceptor call() throws IOException {
-            return new AcceptorImpl();
+            return new AcceptorImpl(envVars);
         }
 
         private static final long serialVersionUID = 1L;
 
         static final class AcceptorImpl implements Acceptor, Serializable {
             private static final long serialVersionUID = -2226788819948521018L;
+            private EnvVars envVars;
             private transient final ServerSocket serverSocket;
             private transient Socket socket;
 
-            AcceptorImpl() throws IOException {
+            AcceptorImpl(EnvVars envVars) throws IOException {
+            	this.envVars = envVars;
+            	
                 // open a TCP socket to talk to the launched Maven process.
                 // let the OS pick up a random open port
                 this.serverSocket = new ServerSocket();
                 
                 // accept environment variable to determine what IP address to bind to instead of binding to all
-                String address = System.getenv("JENKINS_MAVEN_AGENT_ADDRESS");
+                String address = envVars.get("JENKINS_MAVEN_AGENT_ADDRESS");
                 if (address != null) {
                     serverSocket.bind(new InetSocketAddress(InetAddress.getByName(address), 0));
                 } else {
@@ -270,7 +280,7 @@ public abstract class AbstractMavenProcessFactory
             JDK jdk = getJava(listener);
             JDK originalJdk = null;
             JDK: while (true) {
-            final Acceptor acceptor = launcher.getChannel().call(new SocketHandler());
+            final Acceptor acceptor = launcher.getChannel().call(new SocketHandler(envVars));
             final ArgumentListBuilder cmdLine = buildMavenAgentCmdLine(listener, acceptor.getPort(), jdk);
             String[] cmds = cmdLine.toCommandArray();
             final Proc proc = launcher.launch().cmds(cmds).envs(envVars).stdout(mca).pwd(workDir).start();
