@@ -1,0 +1,3 @@
+[submodule "src/main/lib/maven-interceptors"]
+	path = src/main/lib/maven-interceptors
+	url = git@github.com:pub-burrito/maven-interceptors.git
