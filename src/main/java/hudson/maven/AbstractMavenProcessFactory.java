@@ -1,7 +1,6 @@
 package hudson.maven;
 
 import static hudson.Util.fixNull;
-
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
@@ -28,6 +27,7 @@ import hudson.slaves.Channels;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks._maven.MavenConsoleAnnotator;
 import hudson.util.ArgumentListBuilder;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,6 +36,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -48,9 +50,9 @@ import javax.annotation.CheckForNull;
 import hudson.util.StreamCopyThread;
 import jenkins.model.Jenkins;
 import jenkins.security.MasterToSlaveCallable;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Zip;
-
 import org.kohsuke.stapler.framework.io.IOException2;
 
 /*
@@ -202,7 +204,15 @@ public abstract class AbstractMavenProcessFactory
                 // open a TCP socket to talk to the launched Maven process.
                 // let the OS pick up a random open port
                 this.serverSocket = new ServerSocket();
-                serverSocket.bind(null); // new InetSocketAddress(InetAddress.getLocalHost(),0));
+                
+                // accept environment variable to determine what IP address to bind to instead of binding to all
+                String address = System.getenv("JENKINS_MAVEN_AGENT_ADDRESS");
+                if (address != null) {
+                    serverSocket.bind(new InetSocketAddress(InetAddress.getByName(address), 0));
+                } else {
+                    serverSocket.bind(null);
+                }
+                
                 // prevent a hang at the accept method in case the forked process didn't start successfully
                 serverSocket.setSoTimeout(MavenProcessFactory.socketTimeOut);
             }
