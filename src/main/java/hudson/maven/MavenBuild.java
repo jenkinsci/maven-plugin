@@ -789,12 +789,15 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             for (BuildWrapper w : mms.getBuildWrappersList()) {
                 Environment e = w.setUp(MavenBuild.this, launcher, listener);
                 if (e == null) {
-                    for(int i = buildEnvironments.size()-1; i>=0; i--) {
-                        Environment environment = buildEnvironments.get(i);
+                    for(final Environment environment : buildEnvironments) {
                         try {
-                        	environment.tearDown(MavenBuild.this, slistener);
-                        } catch (Exception ignored) {
-                        	// exceptions are ignored to give a chance to all environments to tear down
+                            environment.tearDown(MavenBuild.this, slistener);
+                        } catch (Throwable inTearDown) {
+                            // exceptions are ignored to give a chance to all environments to tear down
+                            listener.error("Unable to tear down: " + inTearDown.getMessage());
+                            if (debug) {
+                                inTearDown.printStackTrace(listener.getLogger());
+                            }
                         }
                     }
 

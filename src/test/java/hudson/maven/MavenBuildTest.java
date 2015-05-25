@@ -377,7 +377,7 @@ public class MavenBuildTest {
 
         TearingDownBuildWrapper testBuild1Wrapper = new TearingDownBuildWrapper();
         TearingDownBuildWrapper testBuild2Wrapper = new TearingDownBuildWrapper();
-		m.getBuildWrappersList().addAll(Arrays.asList(testBuild1Wrapper, testBuild2Wrapper, new FailingBuildWrapper()));
+        m.getBuildWrappersList().addAll(Arrays.asList(testBuild1Wrapper, testBuild2Wrapper, new FailingBuildWrapper()));
 
         j.assertBuildStatus(Result.FAILURE, m.scheduleBuild2(0).get());
 
@@ -410,24 +410,22 @@ public class MavenBuildTest {
     private static class FailingBuildWrapper extends BuildWrapper {
         @Override
         public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
-        	return null;
+            return null;
         }
     }
 
     private static class TearingDownBuildWrapper extends BuildWrapper {
         public boolean tearDown;
 
-		@Override
+        @Override
         public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
-        	return new Environment() {
-        		public boolean tearDown(AbstractBuild build, BuildListener listener) {
-        			tearDown = true;
+            return new Environment() {
+                public boolean tearDown(AbstractBuild build, BuildListener listener) {
+                    tearDown = true;
 
-        			return true;
-        		}
-        	};
+                    return true;
+                }
+            };
         }
-		
-		
     }
 }
