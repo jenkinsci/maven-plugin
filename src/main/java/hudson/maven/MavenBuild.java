@@ -778,128 +778,134 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         }
 
         protected Result doRun(BuildListener listener) throws Exception {
-            SplittableBuildListener slistener = new SplittableBuildListener(listener);
-
-            // pick up a list of reporters to run
-            reporters = getProject().createReporters();
-            MavenModuleSet mms = getProject().getParent();
-            if(debug)
-                listener.getLogger().println("Reporters="+reporters);
-
-            for (BuildWrapper w : mms.getBuildWrappersList()) {
-                Environment e = w.setUp(MavenBuild.this, launcher, listener);
-                if (e == null) {
-                    for(final Environment environment : buildEnvironments) {
-                        try {
-                            environment.tearDown(MavenBuild.this, slistener);
-                        } catch (Throwable inTearDown) {
-                            // exceptions are ignored to give a chance to all environments to tear down
-                            listener.error("Unable to tear down: " + inTearDown.getMessage());
-                            if (debug) {
-                                inTearDown.printStackTrace(listener.getLogger());
-                            }
-                        }
-                    }
-
-                    return Result.FAILURE;
-                }
-                buildEnvironments.add(e);
-            }
-
-            EnvVars envVars = getEnvironment(listener); // buildEnvironments should be set up first
-            
-            MavenInstallation mvn = getProject().getParent().getMaven();
-            
-            mvn = mvn.forEnvironment(envVars).forNode(Computer.currentComputer().getNode(), listener);
-            
-            MavenInformation mavenInformation = getModuleRoot().act( new MavenVersionCallable( mvn.getHome() ));
-            
-            String mavenVersion = mavenInformation.getVersion();
-
-            LOGGER.fine(getFullDisplayName()+" is building with mavenVersion " + mavenVersion + " from file " + mavenInformation.getVersionResourcePath());
-
-            MavenBuildInformation mavenBuildInformation = new MavenBuildInformation( mavenVersion );
-
-            MavenUtil.MavenVersion mavenVersionType = MavenUtil.getMavenVersion( mavenVersion );
-
-            final ProcessCache.Factory factory;
-
-            switch ( mavenVersionType ){
-                case MAVEN_2:
-                    LOGGER.fine( "using maven 2 " + mavenVersion );
-                    factory = new MavenProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
-                    break;
-                case MAVEN_3_0_X:
-                    LOGGER.fine( "using maven 3 " + mavenVersion );
-                    factory = new Maven3ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
-                    break;
-                case MAVEN_3_1:
-                    LOGGER.fine( "using maven 3 " + mavenVersion );
-                    factory = new Maven31ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
-                    break;
-                default:
-                    LOGGER.fine( "using maven 3 " + mavenVersion );
-                    factory = new Maven32ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
-
-            }
-
-            ProcessCache.MavenProcess process = MavenBuild.mavenProcessCache.get( launcher.getChannel(), slistener, factory);
-
-            ArgumentListBuilder margs = new ArgumentListBuilder("-N","-B");
-            FilePath localRepo = mms.getLocalRepository().locate(MavenBuild.this);
-            if(localRepo!=null)
-                // the workspace must be on this node, so getRemote() is safe.
-                margs.add("-Dmaven.repo.local="+localRepo.getRemote());
-            
-            String settingsPath = SettingsProvider.getSettingsRemotePath(mms.getSettings(), MavenBuild.this, listener);
-            if (settingsPath != null) {
-                margs.add("-s").add(settingsPath);
-            }
-
-            margs.add("-f",getModuleRoot().child("pom.xml").getRemote());
-            margs.addTokenized(getProject().getGoals());
-
-            Map<String,String> systemProps = new HashMap<String, String>(envVars);
-            // backward compatibility
-            systemProps.put("hudson.build.number",String.valueOf(getNumber()));
-
-            ProxyImpl proxy;
-            AbstractMavenBuilder builder;
-            if (mavenBuildInformation.isMaven3OrLater())
-            {
-                ProxyImpl2 proxy2 = new ProxyImpl2(mms.getLastCompletedBuild(), slistener);
-                proxy2.setBlockBuildEvents(true);
-                proxy = proxy2;
-                builder = new Maven3Builder(createRequest(proxy2,
-                        getProject(), margs.toList(), systemProps,
-                        mavenBuildInformation));
-            }
-            else {
-                proxy = new ProxyImpl();
-                builder = new Builder(
-                        listener, proxy,
-                        getProject(), margs.toList(), systemProps);
-            }
+            AbstractMavenBuilder builder = null;
+            ProcessCache.MavenProcess process = null;
             boolean normalExit = false;
+
+            final SplittableBuildListener slistener = new SplittableBuildListener(listener);
+
             try {
+                // pick up a list of reporters to run
+                reporters = getProject().createReporters();
+                MavenModuleSet mms = getProject().getParent();
+                if(debug)
+                    listener.getLogger().println("Reporters="+reporters);
+
+                for (BuildWrapper w : mms.getBuildWrappersList()) {
+                    Environment e = w.setUp(MavenBuild.this, launcher, listener);
+                    if (e == null) {
+                        return Result.FAILURE;
+                    }
+                    buildEnvironments.add(e);
+                }
+
+                EnvVars envVars = getEnvironment(listener); // buildEnvironments should be set up first
+
+                MavenInstallation mvn = getProject().getParent().getMaven();
+
+                mvn = mvn.forEnvironment(envVars).forNode(Computer.currentComputer().getNode(), listener);
+
+                MavenInformation mavenInformation = getModuleRoot().act( new MavenVersionCallable( mvn.getHome() ));
+
+                String mavenVersion = mavenInformation.getVersion();
+
+                LOGGER.fine(getFullDisplayName()+" is building with mavenVersion " + mavenVersion + " from file " + mavenInformation.getVersionResourcePath());
+
+                MavenBuildInformation mavenBuildInformation = new MavenBuildInformation( mavenVersion );
+
+                MavenUtil.MavenVersion mavenVersionType = MavenUtil.getMavenVersion( mavenVersion );
+
+                final ProcessCache.Factory factory;
+
+                switch ( mavenVersionType ){
+                    case MAVEN_2:
+                        LOGGER.fine( "using maven 2 " + mavenVersion );
+                        factory = new MavenProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
+                        break;
+                    case MAVEN_3_0_X:
+                        LOGGER.fine( "using maven 3 " + mavenVersion );
+                        factory = new Maven3ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
+                        break;
+                    case MAVEN_3_1:
+                        LOGGER.fine( "using maven 3 " + mavenVersion );
+                        factory = new Maven31ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
+                        break;
+                    default:
+                        LOGGER.fine( "using maven 3 " + mavenVersion );
+                        factory = new Maven32ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
+
+                }
+
+                process = MavenBuild.mavenProcessCache.get( launcher.getChannel(), slistener, factory);
+
+                ArgumentListBuilder margs = new ArgumentListBuilder("-N","-B");
+                FilePath localRepo = mms.getLocalRepository().locate(MavenBuild.this);
+                if(localRepo!=null)
+                    // the workspace must be on this node, so getRemote() is safe.
+                    margs.add("-Dmaven.repo.local="+localRepo.getRemote());
+
+                String settingsPath = SettingsProvider.getSettingsRemotePath(mms.getSettings(), MavenBuild.this, listener);
+                if (settingsPath != null) {
+                    margs.add("-s").add(settingsPath);
+                }
+
+                margs.add("-f",getModuleRoot().child("pom.xml").getRemote());
+                margs.addTokenized(getProject().getGoals());
+
+                Map<String,String> systemProps = new HashMap<String, String>(envVars);
+                // backward compatibility
+                systemProps.put("hudson.build.number",String.valueOf(getNumber()));
+
+                ProxyImpl proxy;
+                if (mavenBuildInformation.isMaven3OrLater())
+                {
+                    ProxyImpl2 proxy2 = new ProxyImpl2(mms.getLastCompletedBuild(), slistener);
+                    proxy2.setBlockBuildEvents(true);
+                    proxy = proxy2;
+                    builder = new Maven3Builder(createRequest(proxy2,
+                            getProject(), margs.toList(), systemProps,
+                            mavenBuildInformation));
+                }
+                else {
+                    proxy = new ProxyImpl();
+                    builder = new Builder(
+                            listener, proxy,
+                            getProject(), margs.toList(), systemProps);
+                }
                 Result r = process.call(builder);
                 proxy.performArchiving(launcher, listener);
                 normalExit = true;
                 return r;
             } finally {
-                builder.end(launcher);
-                if(normalExit)  process.recycle();
-                else            process.discard();
-    
+                if (builder != null) {
+                    builder.end(launcher);
+                }
+
+                if (process != null) {
+                    if(normalExit)  process.recycle();
+                    else            process.discard();
+                }
+
                 // tear down in reverse order
                 boolean failed=false;
                 for( int i=buildEnvironments.size()-1; i>=0; i-- ) {
-                    if (!buildEnvironments.get(i).tearDown(MavenBuild.this,slistener)) {
+                    final Environment environment = buildEnvironments.get(i);
+                    try {
+                        if (!environment.tearDown(MavenBuild.this,slistener)) {
+                            failed=true;
+                        }
+                    } catch (Throwable inTearDown) {
                         failed=true;
+
+                        // exceptions are ignored to give a chance to all environments to tear down
+                        listener.error("Unable to tear down: " + inTearDown.getMessage());
+                        if (debug) {
+                            inTearDown.printStackTrace(listener.getLogger());
+                        }
                     }
                 }
                 // WARNING The return in the finally clause will trump any return before
-                if (failed) return Result.FAILURE;
+                if (!normalExit && failed) return Result.FAILURE;
             }
         }
 
