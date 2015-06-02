@@ -899,9 +899,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
                         // exceptions are ignored to give a chance to all environments to tear down
                         listener.error("Unable to tear down: " + inTearDown.getMessage());
-                        if (debug) {
-                            inTearDown.printStackTrace(listener.getLogger());
-                        }
+                        inTearDown.printStackTrace(listener.getLogger());
                     }
                 }
                 // WARNING The return in the finally clause will trump any return before
