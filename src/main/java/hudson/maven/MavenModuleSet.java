@@ -907,7 +907,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
 //          m.buildDependencyGraph(graph);
 //      }
         
-        triggers().buildDependencyGraph(this, graph); // TODO 1.558+ just call super.buildDependencyGraph(graph)
+        super.buildDependencyGraph(graph);
         publishers.buildDependencyGraph(this,graph);
         buildWrappers.buildDependencyGraph(this,graph);
         prebuilders.buildDependencyGraph(this,graph);

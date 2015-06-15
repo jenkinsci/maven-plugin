@@ -188,20 +188,14 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         MavenModule root = getProject().getRootModule();
         if (root!=null) {// I don't think it can ever be null but let's be defensive
             // TODO: this needs to be documented but where?
-            envs(envs, "POM_DISPLAYNAME", root.getDisplayName());
-            envs(envs, "POM_VERSION", root.getVersion());
-            envs(envs, "POM_GROUPID", root.getGroupId());
-            envs(envs, "POM_ARTIFACTID", root.getArtifactId());
-            envs(envs, "POM_PACKAGING", root.getPackaging());
+            envs.putIfNotNull("POM_DISPLAYNAME", root.getDisplayName());
+            envs.putIfNotNull("POM_VERSION", root.getVersion());
+            envs.putIfNotNull("POM_GROUPID", root.getGroupId());
+            envs.putIfNotNull("POM_ARTIFACTID", root.getArtifactId());
+            envs.putIfNotNull("POM_PACKAGING", root.getPackaging());
         }
 
         return envs;
-    }
-
-    private void envs(EnvVars env, String key, String value) {
-        // TODO: switch to EnvVars.putIfNotNull when on 1.556+
-        if (value!=null)
-            env.put(key,value);
     }
 
     /**
