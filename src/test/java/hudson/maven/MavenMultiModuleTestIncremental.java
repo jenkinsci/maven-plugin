@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractChangeLogSet;
-import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
@@ -23,7 +22,7 @@ public class MavenMultiModuleTestIncremental extends HudsonTestCase {
         MavenModuleSet m = createMavenProject();
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod-rel-base.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-rel-base.zip"),
 						   getClass().getResource("maven-multimod-changes.zip")));
         
     	buildAndAssertSuccess(m);

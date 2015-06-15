@@ -4,14 +4,10 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.tasks.Maven.MavenInstallation;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractChangeLogSet;
-import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 import org.jvnet.hudson.test.For;
-import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
@@ -49,7 +45,7 @@ public class MavenMultiLevelModuleTest {
         j.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
         MavenModuleSet m = j.createMavenProject();
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithAllChangesSCM(getClass().getResource("maven-multilevelmod.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multilevelmod.zip"),
                 getClass().getResource("maven-multilevelmod-changes.zip")));
 
         j.buildAndAssertSuccess(m);
