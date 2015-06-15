@@ -1,6 +1,9 @@
 package hudson.maven;
 
+import hudson.Extension;
 import hudson.Util;
+import hudson.scm.RepositoryBrowser;
+import hudson.scm.SCMDescriptor;
 import org.jvnet.hudson.test.ExtractChangeLogParser;
 import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 
@@ -49,5 +52,16 @@ public class ExtractResourceWithAllChangesSCM extends ExtractResourceWithChanges
         stream.close();
     }
 
+    @Extension public static class DescriptorImpl extends SCMDescriptor<ExtractResourceWithAllChangesSCM> {
+
+        public DescriptorImpl() {
+            super(RepositoryBrowser.class);
+        }
+
+        @Override public String getDisplayName() {
+            return "ExtractResourceWithAllChangesSCM";
+        }
+
+    }
 
 }
