@@ -348,14 +348,14 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         @Override
         void preBuild(MavenSession session, ReactorManager rm, EventDispatcher dispatcher) throws BuildFailureException, LifecycleExecutionException, IOException, InterruptedException {
             for (MavenReporter r : reporters.get(moduleName))
-                r.preBuild(buildProxy,rm.getTopLevelProject(),listener);
+                r.preBuild(buildProxy, session.getTopLevelProject(), listener);
         }
 
         @Override
         void postBuild(MavenSession session, ReactorManager rm, EventDispatcher dispatcher) throws BuildFailureException, LifecycleExecutionException, IOException, InterruptedException {
             buildProxy.setExecutedMojos(executedMojos);
             for (MavenReporter r : reporters.get(moduleName))
-                r.postBuild(buildProxy,rm.getTopLevelProject(),listener);
+                r.postBuild(buildProxy, session.getTopLevelProject(), listener);
         }
 
         @Override
