@@ -28,7 +28,7 @@ import hudson.scm.SCMDescriptor;
 import java.net.URL;
 import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 
-/** TODO workaround for https://github.com/jenkinsci/jenkins/pull/1740 in core */
+/** TODO delete in 1.618+ */
 public class ExtractResourceWithChangesSCM2 extends ExtractResourceWithChangesSCM {
 
     public ExtractResourceWithChangesSCM2(URL firstZip, URL secondZip) {
