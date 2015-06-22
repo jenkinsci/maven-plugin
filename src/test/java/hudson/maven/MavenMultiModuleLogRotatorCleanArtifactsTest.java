@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 import org.jvnet.hudson.test.For;
 import org.jvnet.hudson.test.JenkinsRule;
 
@@ -64,7 +63,7 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest {
 		m.setBuildDiscarder(new LogRotator("-1", "2", "-1", "1"));
 		m.getReporters().add(new TestReporter());
 		m.getReporters().add(new MavenFingerprinter());
-		m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource(
+		m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource(
 				"maven-multimod.zip"), getClass().getResource(
 				"maven-multimod-changes.zip")));
 		j.buildAndAssertSuccess(m);

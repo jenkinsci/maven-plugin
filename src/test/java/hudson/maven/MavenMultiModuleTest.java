@@ -6,7 +6,6 @@ import hudson.Functions;
 import org.junit.Assert;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 import org.jvnet.hudson.test.ExtractChangeLogSet;
 
 import hudson.Launcher;
@@ -95,7 +94,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.createMavenProject();
         m.getReporters().add(new TestReporter());
         m.getReporters().add(new MavenFingerprinter());
-    	m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod.zip"),
+    	m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod.zip"),
     						   getClass().getResource("maven-multimod-changes.zip")));
     
     	j.buildAndAssertSuccess(m);
@@ -170,7 +169,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.createMavenProject();
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod-rel-base.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-rel-base.zip"),
 						   getClass().getResource("maven-multimod-changes.zip")));
         
         j.buildAndAssertSuccess(m);
@@ -213,7 +212,7 @@ public class MavenMultiModuleTest {
         j.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
         MavenModuleSet m = j.createMavenProject();
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource(
+        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource(
                 "maven-multimod.zip"), getClass().getResource(
                 "maven-multimod-changes.zip")));
 
@@ -246,7 +245,7 @@ public class MavenMultiModuleTest {
         j.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
         MavenModuleSet m = j.createMavenProject();
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod.zip"),
                 getClass().getResource("maven-multimod-changes.zip")));
 
         m.setIncrementalBuild(true);
@@ -297,7 +296,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.createMavenProject();
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod-incr.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-incr.zip"),
 						   getClass().getResource("maven-multimod-changes.zip")));
 
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
@@ -361,7 +360,7 @@ public class MavenMultiModuleTest {
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
         m.getPublishers().add(new DummyRedeployPublisher());
-        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod-incr.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-incr.zip"),
                            getClass().getResource("maven-multimod-changes.zip")));
 
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());

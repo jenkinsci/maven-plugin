@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
+import org.jvnet.hudson.test.Issue;
 
 /**
  * @author Olivier Lamy
@@ -200,7 +201,7 @@ public abstract class AbstractMaven3xBuildTest
         assertEquals(4, totalCount);
     }
 
-    @Bug(9326)
+    @Issue("JENKINS-9326")
     public void testTychoTestResults() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = createMavenProject();
