@@ -51,7 +51,7 @@ THE SOFTWARE.
     <wagonVersion>2.4</wagonVersion>
     <findbugs-maven-plugin.version>3.0.1</findbugs-maven-plugin.version>
     <!--TODO: change to true after the code cleanup-->
-    <maven.findbugs.failure.strict>false</maven.findbugs.failure.strict>
+    <findbugs.failOnError>false</findbugs.failOnError>
   </properties>
 
   <issueManagement>
@@ -536,9 +536,8 @@ THE SOFTWARE.
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>${findbugs-maven-plugin.version}</version>
         <configuration>
-          <failOnError>${maven.findbugs.failure.strict}</failOnError>
+          <failOnError>${findbugs.failOnError}</failOnError>
           <xmlOutput>true</xmlOutput>
-          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
         </configuration>
         <executions>
           <execution>
