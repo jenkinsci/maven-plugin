@@ -49,6 +49,9 @@ THE SOFTWARE.
     <aetherVersion>0.9.0.M3</aetherVersion>
     <sisuInjectVersion>0.0.0.M5</sisuInjectVersion>
     <wagonVersion>2.4</wagonVersion>
+    <findbugs-maven-plugin.version>3.0.1</findbugs-maven-plugin.version>
+    <!--TODO: change to true after the code cleanup-->
+    <findbugs.failOnError>false</findbugs.failOnError>
   </properties>
 
   <issueManagement>
@@ -527,6 +530,24 @@ THE SOFTWARE.
               <java.awt.headless>true</java.awt.headless>
           </systemPropertyVariables>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>${findbugs-maven-plugin.version}</version>
+        <configuration>
+          <failOnError>${findbugs.failOnError}</failOnError>
+          <xmlOutput>true</xmlOutput>
+        </configuration>
+        <executions>
+          <execution>
+            <id>run-findbugs</id>
+            <phase>verify</phase> 
+            <goals>
+              <goal>check</goal> 
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
