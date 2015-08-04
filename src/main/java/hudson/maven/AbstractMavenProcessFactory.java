@@ -46,6 +46,7 @@ import java.util.Arrays;
 import javax.annotation.CheckForNull;
 
 import hudson.util.StreamCopyThread;
+import java.net.SocketException;
 import jenkins.model.Jenkins;
 import jenkins.security.MasterToSlaveCallable;
 import org.apache.tools.ant.Project;
@@ -277,15 +278,16 @@ public abstract class AbstractMavenProcessFactory
                 throw e;
             }
 
-            Channel ch = Channels.forProcess("Channel to Maven " + Arrays.toString(cmds),
-                    Computer.threadPoolForRemoting, new BufferedInputStream(con.in), new BufferedOutputStream(con.out),
-                    listener.getLogger(), proc);
+            Channel ch;
             try {
+                ch = Channels.forProcess("Channel to Maven " + Arrays.toString(cmds),
+                        Computer.threadPoolForRemoting, new BufferedInputStream(con.in), new BufferedOutputStream(con.out),
+                        listener.getLogger(), proc);
                 ch.call(new ConfigureOriginalJDK(originalJdk));
             } catch (IOException x) {
                 if (originalJdk == null) { // so we only try this once
                     for (Throwable t = x; t != null; t = t.getCause()) {
-                        if (t instanceof UnsupportedClassVersionError) {
+                        if (t instanceof UnsupportedClassVersionError || t instanceof SocketException) {
                             listener.error("[JENKINS-18403] JDK 5 not supported to run Maven; retrying with slave Java and setting compile/test properties to point to " + jdk.getHome());
                             originalJdk = jdk;
                             jdk = launcher.getChannel().call(new FindJavaHome());
