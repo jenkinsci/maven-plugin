@@ -4,6 +4,7 @@ import static hudson.Util.fixNull;
 
 import hudson.AbortException;
 import hudson.EnvVars;
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Platform;
@@ -36,9 +37,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
@@ -138,7 +141,7 @@ public abstract class AbstractMavenProcessFactory
      * and buffer data on the master. What we need to avoid here is to have channel input stream be a
      * {@link RemoteInputStream}, as it'll turn every read into a remote read that has a large latency.
      */
-    private static final class Connection implements Serializable {
+    static final class Connection implements Serializable {
         // these two fields are non-null when Connection is in memory
         public InputStream in;
         public OutputStream out;
@@ -180,7 +183,8 @@ public abstract class AbstractMavenProcessFactory
 
     interface Acceptor {
         Connection accept() throws IOException;
-        int getPort();
+
+        int getPort() throws UnknownHostException;
     }
 
     /**
@@ -216,6 +220,7 @@ public abstract class AbstractMavenProcessFactory
                 return new Connection(socket);
             }
 
+            @Override
             public int getPort() {
                 return serverSocket.getLocalPort();
             }
@@ -255,14 +260,23 @@ public abstract class AbstractMavenProcessFactory
 
             MavenConsoleAnnotator mca = new MavenConsoleAnnotator(out,charset);
 
-            if ( mavenRemoteUseInet ) {
-                envVars.put(MAVEN_REMOTE_USEINET_ENV_VAR_NAME , "true" );
-            }
             JDK jdk = getJava(listener);
             JDK originalJdk = null;
             JDK: while (true) {
             final Acceptor acceptor = launcher.getChannel().call(new SocketHandler());
-            final ArgumentListBuilder cmdLine = buildMavenAgentCmdLine(listener, acceptor.getPort(), jdk);
+
+            String hostName = null;
+            for (TcpSocketHostLocator locator : TcpSocketHostLocator.all()) {
+                hostName = locator.getTcpSocketHost();
+                if (hostName != null) break;
+            }
+
+            final String socket = hostName != null ?
+                    hostName + ":" + acceptor.getPort() :
+                    String.valueOf(acceptor.getPort());
+            listener.getLogger().println("Established TCP socket on "+ socket);
+
+            final ArgumentListBuilder cmdLine = buildMavenAgentCmdLine(listener, socket, jdk);
             String[] cmds = cmdLine.toCommandArray();
             final Proc proc = launcher.launch().cmds(cmds).envs(envVars).stdout(mca).pwd(workDir).start();
 
@@ -356,11 +370,11 @@ public abstract class AbstractMavenProcessFactory
     /**
      * Builds the command line argument list to launch the maven process.
      */
-    protected ArgumentListBuilder buildMavenAgentCmdLine(BuildListener listener,int tcpPort) throws IOException, InterruptedException {
-        return buildMavenAgentCmdLine(listener, tcpPort, getJava(listener));
+    protected ArgumentListBuilder buildMavenAgentCmdLine(BuildListener listener, String tcpSocket) throws IOException, InterruptedException {
+        return buildMavenAgentCmdLine(listener, tcpSocket, getJava(listener));
     }
 
-    private ArgumentListBuilder buildMavenAgentCmdLine(BuildListener listener, int tcpPort, JDK jdk) throws IOException, InterruptedException {
+    private ArgumentListBuilder buildMavenAgentCmdLine(BuildListener listener, String tcpSocket, JDK jdk) throws IOException, InterruptedException {
         MavenInstallation mvn = getMavenInstallation(listener);
         if(mvn==null) {
             listener.error("Maven version is not configured for this project. Can't determine which Maven to run");
@@ -416,8 +430,8 @@ public abstract class AbstractMavenProcessFactory
             args.add( mavenInterceptorCommonClasspath );
         }
 
-        // TCP/IP port to establish the remoting infrastructure
-        args.add(tcpPort);
+        // TCP/IP socket to establish the remoting infrastructure
+        args.add(tcpSocket);
         
         String interceptorOverride = getMavenInterceptorOverride(mvn, slaveRoot, listener);
         if (interceptorOverride!=null) {
@@ -601,6 +615,19 @@ public abstract class AbstractMavenProcessFactory
     public static boolean mavenRemoteUseInet = Boolean.getBoolean("maven.remote.useinet");
 
     public static final String MAVEN_REMOTE_USEINET_ENV_VAR_NAME = "MAVEN_REMOTE_USEINET";
+
+    @Extension(ordinal=0)
+    public static class UserInetTcpSocketHostLocator extends TcpSocketHostLocator {
+
+        @Override
+        public String getTcpSocketHost() throws IOException {
+            if (mavenRemoteUseInet) {
+                InetAddress host = InetAddress.getLocalHost();
+                return host.getHostName();
+            }
+            return null;
+        }
+    }
     
     /**
      * If true, launch Maven with YJP offline profiler agent.
