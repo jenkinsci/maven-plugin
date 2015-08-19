@@ -17,6 +17,7 @@ import java.util.List;
  * to handle such network constraints
  *
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
+ * @since 2.12
  */
 public abstract class TcpSocketHostLocator implements ExtensionPoint {
 
