@@ -209,8 +209,7 @@ public class RedeployPublisher extends Recorder {
         String profiles = null;
         Properties systemProperties = null;
         String privateRepository = null;
-        FilePath remoteSettingsFromConfig = null;
-        
+
         File tmpSettings = File.createTempFile( "jenkins", "temp-settings.xml" );
         try {
             AbstractProject project = build.getProject();
