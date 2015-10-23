@@ -213,7 +213,14 @@ public class RedeployPublisher extends Recorder {
         File tmpSettings = File.createTempFile( "jenkins", "temp-settings.xml" );
         try {
             AbstractProject project = build.getProject();
-            
+
+            // JENKINS-7010: If the publisher is used inside a promotion
+            // we need to retrieve the settings from the parent project
+            // NOTE: Do not use instanceof to not have a dependency to the promotion plugin
+            if ("hudson.plugins.promoted_builds.PromotionProcess".equals(project.getClass().getName())) {
+                project = project.getRootProject();
+            }
+
             if (project instanceof MavenModuleSet) {
                 MavenModuleSet mavenModuleSet = ((MavenModuleSet) project);
                 profiles = mavenModuleSet.getProfiles();
