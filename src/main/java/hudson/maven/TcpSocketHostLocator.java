@@ -6,6 +6,7 @@ import jenkins.model.Jenkins;
 
 import javax.annotation.CheckForNull;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ import java.util.List;
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
  * @since 2.12
  */
-public abstract class TcpSocketHostLocator implements ExtensionPoint {
+public abstract class TcpSocketHostLocator implements ExtensionPoint, Serializable {
 
     /**
      * Try to identify the slave agent TCP socket host name or IP.

@@ -44,12 +44,15 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.annotation.CheckForNull;
 
 import hudson.util.StreamCopyThread;
 import java.net.SocketException;
+import java.util.List;
+
 import jenkins.model.Jenkins;
 import jenkins.security.MasterToSlaveCallable;
 import org.apache.tools.ant.Project;
@@ -265,11 +268,7 @@ public abstract class AbstractMavenProcessFactory
             JDK: while (true) {
             final Acceptor acceptor = launcher.getChannel().call(new SocketHandler());
 
-            String hostName = null;
-            for (TcpSocketHostLocator locator : TcpSocketHostLocator.all()) {
-                hostName = locator.getTcpSocketHost();
-                if (hostName != null) break;
-            }
+            String hostName = launcher.getChannel().call(new DetermineHostName());
 
             final String socket = hostName != null ?
                     hostName + ":" + acceptor.getPort() :
@@ -325,6 +324,24 @@ public abstract class AbstractMavenProcessFactory
                     throw new IOException2(mms.getDisplayName()+" is not configured with a JDK, but your PATH doesn't include Java",e);
             }
             throw e;
+        }
+    }
+
+    /**
+     * Determines hostname where this slave agent is running, or null.
+     */
+    private static final class DetermineHostName extends MasterToSlaveCallable<String, IOException> {
+        private static final long serialVersionUID = 1;
+        private final List<TcpSocketHostLocator> locators = new ArrayList<TcpSocketHostLocator>(TcpSocketHostLocator.all());
+        @Override
+        public String call() throws IOException {
+            String hostName;
+            for (TcpSocketHostLocator locator : locators) {
+                hostName = locator.getTcpSocketHost();
+                if (hostName != null)
+                    return hostName;
+            }
+            return null;
         }
     }
 
