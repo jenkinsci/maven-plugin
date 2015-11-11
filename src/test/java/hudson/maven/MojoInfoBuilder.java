@@ -19,6 +19,19 @@ public class MojoInfoBuilder {
     private String artifactId;
     private String goalName;
     private String version = "1.0";
+    private String executionId;
+    private ExpressionEvaluator evaluator = new ExpressionEvaluator() {
+        @Override
+        public Object evaluate(String expression) {
+            return expression;
+        }
+        
+        @Override
+        public File alignToBaseDirectory(File file) {
+            return file;
+        }
+    };
+
     private Map<String, String> configValues = new HashMap<String, String>();
     private long startTime = System.currentTimeMillis();
     
@@ -34,7 +47,7 @@ public class MojoInfoBuilder {
     
     public MojoInfoBuilder copy() {
         MojoInfoBuilder copy = new MojoInfoBuilder(this.groupId, this.artifactId, this.goalName)
-            .version(this.version);
+            .version(this.version).executionId(this.executionId).evaluator(this.evaluator);
         copy.configValues.putAll(this.configValues);
         return copy;
     }
@@ -44,12 +57,22 @@ public class MojoInfoBuilder {
         return this;
     }
     
+    public MojoInfoBuilder executionId(String executionId) {
+        this.executionId = executionId;
+        return this;
+    }
+    
+    public MojoInfoBuilder evaluator(ExpressionEvaluator evaluator) {
+        this.evaluator = evaluator;
+        return this;
+    }
+    
     public MojoInfoBuilder startTime(long startTime) {
         this.startTime = startTime;
         return this;
     }
     
-    public MojoInfoBuilder configValue(String key,String value) {
+    public MojoInfoBuilder configValue(String key, String value) {
         configValues.put(key, value);
         return this;
     }
@@ -64,28 +87,14 @@ public class MojoInfoBuilder {
         mojoDescriptor.setPluginDescriptor(pluginDescriptor);
         mojoDescriptor.setGoal(goalName);
         
-        MojoExecution mojoExecution = new MojoExecution(mojoDescriptor);
+        MojoExecution mojoExecution = new MojoExecution(mojoDescriptor, executionId);
         
         PlexusConfiguration configuration = new DefaultPlexusConfiguration("configuration");
         for (Map.Entry<String, String> e : this.configValues.entrySet()) {
-            configuration.addChild(e.getKey(),e.getValue());
+            configuration.addChild(e.getKey(), e.getValue());
         }
         
-        ExpressionEvaluator evaluator = new ExpressionEvaluator() {
-            @Override
-            public Object evaluate(String expression) {
-                return expression;
-            }
-            
-            @Override
-            public File alignToBaseDirectory(File file) {
-                return file;
-            }
-        };
-        
-       MojoInfo info = new MojoInfo(mojoExecution, null, configuration, evaluator, startTime);
+        MojoInfo info = new MojoInfo(mojoExecution, null, configuration, evaluator, startTime);
         return info;
     }
-    
-    
 }
