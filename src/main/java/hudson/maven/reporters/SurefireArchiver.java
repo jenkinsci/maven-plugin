@@ -74,10 +74,10 @@ public class SurefireArchiver extends TestFailureDetector {
     private final AtomicBoolean hasTestFailures = new AtomicBoolean();
     
     /**
-     * Store result files already parsed, so we don't parse them again,
-     * if a later running mojo specifies the same reports directory.
+     * Store result files and modification timestamps already parsed, so we don't parse them again
+     * if a later running MOJO specifies the same reports directory.
      */
-    private transient ConcurrentMap<File, File> parsedFiles = new ConcurrentHashMap<File,File>();
+    private transient ConcurrentMap<File, Long> parsedFiles = new ConcurrentHashMap<File, Long>();
     
     @Override
     public boolean hasTestFailures() {
@@ -138,7 +138,7 @@ public class SurefireArchiver extends TestFailureDetector {
                 fileSet = Iterables.filter(fileSet, new Predicate<File>() {
                     @Override
                     public boolean apply(File input) {
-                        return !parsedFiles.containsKey(input);
+                        return !parsedFiles.containsKey(input) || parsedFiles.get(input) < input.lastModified();
                     }
                 });
                 
@@ -213,7 +213,7 @@ public class SurefireArchiver extends TestFailureDetector {
      */
     private void rememberCheckedFiles(Iterable<File> fileSet) {
         for (File f : fileSet) {
-            this.parsedFiles.put(f, f);
+            this.parsedFiles.put(f, f.lastModified());
         }
     }
 
@@ -330,7 +330,7 @@ public class SurefireArchiver extends TestFailureDetector {
     // I'm not sure if SurefireArchiver is actually ever (de-)serialized,
     // but just to be sure, set fileSets here
     protected Object readResolve() {
-        parsedFiles = new ConcurrentHashMap<File,File>();
+        parsedFiles = new ConcurrentHashMap<File, Long>();
         return this;
     }
 
