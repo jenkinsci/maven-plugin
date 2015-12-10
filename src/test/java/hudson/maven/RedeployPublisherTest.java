@@ -24,21 +24,23 @@
 package hudson.maven;
 
 import hudson.model.Result;
+import hudson.plugins.promoted_builds.JobPropertyImpl;
+import hudson.plugins.promoted_builds.PromotedBuildAction;
+import hudson.plugins.promoted_builds.PromotionProcess;
+import hudson.plugins.promoted_builds.conditions.SelfPromotionCondition;
+import hudson.plugins.promoted_builds.tasks.RedeployBatchTaskPublisher;
 import hudson.tasks.Maven.MavenInstallation;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.URL;
 import java.util.Arrays;
+import jenkins.mvn.FilePathSettingsProvider;
 import org.apache.commons.lang.StringUtils;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.Email;
-import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.RandomlyFails;
-import org.jvnet.hudson.test.SingleFileSCM;
+import org.jvnet.hudson.test.*;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -252,5 +254,54 @@ public class RedeployPublisherTest {
 
         assertTrue("Artifact should have been published even when the build is unstable",
                    new File(repo,"test/test/1.0-SNAPSHOT/test-1.0-SNAPSHOT.jar").exists());
+    }
+
+    @Bug(7010)
+    @Test
+    public void testSettingsInsidePromotion() throws Exception {
+        j.configureDefaultMaven();
+        MavenModuleSet m2 = j.createMavenProject();
+        File repo = tmp.getRoot();
+        URL resource = RedeployPublisherTest.class.getResource("settings.xml");
+        File customUserSettings = new File(resource.toURI().getPath());
+
+        // Let's configure a maven build with a custom settings.xml file
+        m2.setScm(new SingleFileSCM("pom.xml", getClass().getResource("simple-pom.xml")));
+        m2.setSettings(new FilePathSettingsProvider(customUserSettings.getAbsolutePath()));
+
+        // Let's configure a promotion step automatically executed after the build and launching a RedeployBatchTaskPublisher
+        JobPropertyImpl property = new JobPropertyImpl(m2);
+        PromotionProcess promotionProcess = property.addProcess("deploy");
+        promotionProcess.conditions.add(new SelfPromotionCondition(false));
+        promotionProcess.getBuildSteps().add(new RedeployBatchTaskPublisher("", repo.toURI().toString(), false));
+        m2.addProperty(property);
+
+        // Let's launch the build
+        MavenModuleSetBuild b = m2.scheduleBuild2(0).get();
+        // It should pass
+        j.assertBuildStatus(Result.SUCCESS, b);
+
+        // Let's verify the promotion
+        PromotedBuildAction promotedBuildAction = b.getAction(PromotedBuildAction.class);
+
+        while (promotedBuildAction.getPromotion("deploy").getLast() == null ||
+                promotedBuildAction.getPromotion("deploy").getLast().isBuilding()) {
+            // Let's wait for the end of the promotion
+            Thread.sleep(100);
+        }
+
+        // We should have one promotion
+        assertEquals("1 promotion expected", 1, promotedBuildAction.getPromotions().size());
+
+        // The promotion should succeed
+        assertEquals("promotion succeeded", Result.SUCCESS, promotedBuildAction.getPromotion("deploy").getLast().getResult());
+
+        // It should have deployed the artifact
+        assertTrue("Artifact should have been published",
+                new File(repo,"test/maven/simple-pom/1.0-SNAPSHOT/simple-pom-1.0-SNAPSHOT.pom").exists());
+        // The RedeployPublisher should display the information that it used the custom settings.xml file
+        // There is no easy solution to test that the custom settings are used excepted the log
+        j.assertLogContains(customUserSettings.getAbsolutePath(),promotedBuildAction.getPromotion("deploy").getLast());
+
     }
 }
