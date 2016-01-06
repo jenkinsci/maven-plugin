@@ -219,6 +219,12 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     private boolean ignoreUpstremChanges = false;
 
     /**
+     * If true build will be scheduled when one of the project dependencies is built even if
+     * some other upstreams has no successful builds
+     */
+    private boolean ignoreUnsuccessfulUpstreams = false;
+
+    /**
      * If true, do not archive artifacts to the master.
      */
     private boolean archivingDisabled = false;
@@ -579,6 +585,10 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         return ignoreUpstremChanges;
     }
 
+    public boolean ignoreUnsuccessfulUpstreams() {
+        return ignoreUnsuccessfulUpstreams;
+    }
+
     public boolean runHeadless() {
         return runHeadless;
     }
@@ -646,6 +656,10 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
 
     public void setIgnoreUpstremChanges(boolean ignoreUpstremChanges) {
         this.ignoreUpstremChanges = ignoreUpstremChanges;
+    }
+
+    public void setIgnoreUnsuccessfulUpstreams(boolean ignoreUnsuccessfulUpstreams) {
+        this.ignoreUnsuccessfulUpstreams = ignoreUnsuccessfulUpstreams;
     }
 
     public void setRunHeadless(boolean runHeadless) {
@@ -1206,6 +1220,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         else
             localRepository = null;
         ignoreUpstremChanges = !json.has("triggerByDependency");
+        ignoreUnsuccessfulUpstreams = json.has("ignoreUnsuccessfulUpstreams");
         runHeadless = req.hasParameter("maven.runHeadless");
         incrementalBuild = req.hasParameter("maven.incrementalBuild");
         archivingDisabled = req.hasParameter("maven.archivingDisabled");

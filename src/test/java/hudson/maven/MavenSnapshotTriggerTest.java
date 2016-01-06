@@ -145,4 +145,98 @@ public class MavenSnapshotTriggerTest extends HudsonTestCase {
         assertEquals("Expected number of upstream project for project 'snap-dep-test-down' to be #2", 2, upstreamProjectNames.size());
         assertThat("Expected 'snap-dep-test-A1' and 'snap-dep-test-B2' as upstream project for project 'snap-dep-test-C'", upstreamProjectNames, hasItems("snap-dep-test-A1", "snap-dep-test-B2"));
     }
+
+    /**Verifies ignoreUnsuccessfulUpstreams configuration
+     *
+     * Dependency tree is the same as in {@code testMultipleDependencySnapshotTrigger()}.<br>
+     * All preparations are identical to {@code testMultipleDependencySnapshotTrigger()} after
+     * them all builds of project A1 (the upstream of project C) are deleted.
+     * Then verifes two scenarios:
+     * <ol>
+     *     <li>Schedule build of B2 - another upstream of C. Build of C should not be scheduled</li>
+     *     <li>Change configuration of C to ignore unsuccessful upstreams builds. Schedule build of B2.
+     *     Build of C should be scheduled</li>
+     * </ol>
+     *
+     */
+    public void testMultipleDependencySnapshotTriggerIgnoreUnsuccessfullUpstreams() throws Exception {
+        configureDefaultMaven();
+
+        // This is only executed to make sure that dependency A is available in repository
+        MavenModuleSet prepareProject = createMavenProject("prepareProject");
+        prepareProject.setGoals("clean install");
+        prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
+        buildAndAssertSuccess(prepareProject);
+        prepareProject.delete();
+
+        // This is only executed to make sure that dependency B is available in repository
+        prepareProject = createMavenProject("prepareProject");
+        prepareProject.setGoals("clean install");
+        prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
+        buildAndAssertSuccess(prepareProject);
+        prepareProject.delete();
+
+        MavenModuleSet projA1 = createMavenProject("snap-dep-test-A1");
+        projA1.setGoals("clean install");
+        projA1.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
+
+        MavenModuleSet projA2 = createMavenProject("snap-dep-test-A2");
+        projA2.setGoals("clean verify");
+        projA2.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
+
+        MavenModuleSet projB1 = createMavenProject("snap-dep-test-B1");
+        projB1.setGoals("clean compile");
+        projB1.setIgnoreUpstremChanges(false);
+        projB1.setQuietPeriod(0);
+        projB1.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
+
+        MavenModuleSet projB2 = createMavenProject("snap-dep-test-B2");
+        projB2.setGoals("clean verify");
+        projB2.setIgnoreUpstremChanges(false);
+        projB2.setQuietPeriod(0);
+        projB2.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
+
+        MavenModuleSet projC = createMavenProject("snap-dep-test-C");
+        projC.setGoals("clean compile");
+        projC.setIgnoreUpstremChanges(false);
+        projC.setQuietPeriod(0);
+        projC.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-C.zip")));
+
+        // Run all project at least once so that artifacts are known by Jenkins and SNAPSHOT dependencies are determined
+        buildAndAssertSuccess(projA1);
+        buildAndAssertSuccess(projA2);
+        buildAndAssertSuccess(projB1);
+        buildAndAssertSuccess(projB2);
+        buildAndAssertSuccess(projC);
+
+        final List<String> upstreamProjectNames = new ArrayList<String>();
+        for (AbstractProject project : projC.getUpstreamProjects()) {
+            upstreamProjectNames.add(project.getName());
+        }
+
+        assertEquals("Expected number of upstream project for project 'snap-dep-test-down' to be #2", 2, upstreamProjectNames.size());
+        assertThat("Expected 'snap-dep-test-A1' and 'snap-dep-test-B2' as upstream project for project 'snap-dep-test-C'", upstreamProjectNames, hasItems("snap-dep-test-A1", "snap-dep-test-B2"));
+
+        // Mark A1 builds as failed
+        for( MavenModuleSetBuild build : projA1._getRuns()) {
+            build.delete();
+        }
+
+        // building another upstream of project C
+        buildAndAssertSuccess(projB2);
+
+        waitUntilNoActivityUpTo(90*1000);  // wait until dependency build trickles down
+        // Expect default behaviour: build should not be scheduled because upstream A1 has no sucessfull builds
+        assertEquals("Expected legacy behaviour, most recent build of project C to be #1", 1, projC.getLastBuild().getNumber());
+
+        // change C configuration
+        projC.setIgnoreUnsuccessfulUpstreams(true);
+
+        // build upstream again
+        buildAndAssertSuccess(projB2);
+
+        waitUntilNoActivityUpTo(90*1000);  // wait until dependency build trickles down
+        // Expect build scheduling because C ignores upstreams without successful builds
+        assertEquals("Expected most recent build of project C to be #2", 2, projC.getLastBuild().getNumber());
+    }
 }

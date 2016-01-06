@@ -34,7 +34,16 @@ THE SOFTWARE.
     <f:optionalBlock name="maven.triggerByDependency"
         help="/plugin/maven-plugin/ignore-upstrem-changes.html"
         title="${%Build whenever a SNAPSHOT dependency is built}"
-        checked="${h.defaultToTrue(!it.ignoreUpstremChanges())}" />
+        checked="${h.defaultToTrue(!it.ignoreUpstremChanges())}">
+      <f:nested>
+          <table width="100%">
+              <f:optionalBlock name="maven.ignoreUnsuccessfulUpstreams"
+                               title="${%Schedule build when some upstream has no successful builds}"
+                               help="/plugin/maven-plugin/ignore-unsuccessful-upstreams.html"
+                               checked="${h.defaultToFalse(it.ignoreUnsuccessfulUpstreams())}"/>
+          </table>
+      </f:nested>
+    </f:optionalBlock>
     <p:config-upstream-pseudo-trigger />
   </p:config-trigger>
 
