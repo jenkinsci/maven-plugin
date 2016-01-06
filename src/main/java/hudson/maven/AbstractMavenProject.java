@@ -72,7 +72,7 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     		// trigger dependency builds
     		AbstractProject<?,?> downstreamProject = getDownstreamProject();
 
-			boolean ignoreUnsuccessfulUpstreams = ignoreUnsuccessfulUpstreams(downstreamProject);
+    		boolean ignoreUnsuccessfulUpstreams = ignoreUnsuccessfulUpstreams(downstreamProject);
 
     		// if the downstream module depends on multiple modules,
     		// only trigger them when all the upstream dependencies are updated.
@@ -101,14 +101,14 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     				} else
     					ulb = up.getLastSuccessfulBuild();
     				if(ulb==null) {
-						if( !ignoreUnsuccessfulUpstreams ) {
-							// if no usable build is available from the upstream,
-							// then we have to wait at least until this build is ready
-							listener.getLogger().println("Not triggering " + ModelHyperlinkNote.encodeTo(downstreamProject) + " because another upstream " + ModelHyperlinkNote.encodeTo(up) + " has no successful build");
-							return false;
-						} else {
-							listener.getLogger().println("Another upstream " + ModelHyperlinkNote.encodeTo(up) + " has no successful build but " + ModelHyperlinkNote.encodeTo(downstreamProject)+ " is configured to ignore this.");
-						}
+    					if( !ignoreUnsuccessfulUpstreams ) {
+    						// if no usable build is available from the upstream,
+    						// then we have to wait at least until this build is ready
+    						listener.getLogger().println("Not triggering " + ModelHyperlinkNote.encodeTo(downstreamProject) + " because another upstream " + ModelHyperlinkNote.encodeTo(up) + " has no successful build");
+    						return false;
+    					} else {
+    						listener.getLogger().println("Another upstream " + ModelHyperlinkNote.encodeTo(up) + " has no successful build but " + ModelHyperlinkNote.encodeTo(downstreamProject)+ " is configured to ignore this.");
+    					}
     				}
 
     				// if no record of the relationship in the last build
@@ -118,9 +118,9 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     				int n = dlb.getUpstreamRelationship(up);
     				if(n==-1)   continue;
 
-					if( !ignoreUnsuccessfulUpstreams ) {
-						assert ulb.getNumber() >= n;
-					}
+    				if( !ignoreUnsuccessfulUpstreams ) {
+    					assert ulb.getNumber() >= n;
+    				}
     			}
     		}			    
             // No real need to print a message that downstreamProject is being triggered, since BuildTrigger will note this anyway
@@ -164,29 +164,29 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
 			return false;
 		}
 
-		/**
-		 * Determines wheter upstream without successful builds should prevent downstream build
-		 * scheduling
-		 *
-		 * @param downstreamProject
-		 * @return false -  downstream build should not be scheduled when some of its upstreams has
-		 * 					no successfull builds. Default return.<br>
-		 * 		   true  - 	downstream build may be scheduled even if some or many of its upstreams
-		 * 		   			has no successful builds
-		 */
-		private boolean ignoreUnsuccessfulUpstreams(AbstractProject<?,?> downstreamProject) {
-			MavenModuleSet mavenModuleSet = null;
-			if( downstreamProject instanceof MavenModuleSet ) {
-				mavenModuleSet = (MavenModuleSet)downstreamProject;
-			}
-			if( downstreamProject instanceof MavenModule ) {
-				mavenModuleSet = ((MavenModule)downstreamProject).getParent();
-			}
-			if( mavenModuleSet != null ) {
-				return mavenModuleSet.ignoreUnsuccessfulUpstreams();
-			}
-			return false;
-		}
+    	/**
+    	 * Determines wheter upstream without successful builds should prevent downstream build
+    	 * scheduling
+    	 *
+    	 * @param downstreamProject
+    	 * @return false -  downstream build should not be scheduled when some of its upstreams has
+    	 * 					no successfull builds. Default return.<br>
+    	 * 		   true  - 	downstream build may be scheduled even if some or many of its upstreams
+    	 * 		   			has no successful builds
+    	 */
+    	private boolean ignoreUnsuccessfulUpstreams(AbstractProject<?,?> downstreamProject) {
+    		MavenModuleSet mavenModuleSet = null;
+    		if( downstreamProject instanceof MavenModuleSet ) {
+    			mavenModuleSet = (MavenModuleSet)downstreamProject;
+    		}
+    		if( downstreamProject instanceof MavenModule ) {
+    			mavenModuleSet = ((MavenModule)downstreamProject).getParent();
+    		}
+    		if( mavenModuleSet != null ) {
+    			return mavenModuleSet.ignoreUnsuccessfulUpstreams();
+    		}
+    		return false;
+    	}
 
 		private boolean inDownstreamProjects(AbstractProject<?,?> downstreamProject) {
 			DependencyGraph graph = Jenkins.getInstance().getDependencyGraph();
