@@ -36,6 +36,7 @@ import org.codehaus.plexus.component.configurator.ComponentConfigurationExceptio
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.RandomlyFails;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
@@ -147,6 +148,33 @@ public class SurefireArchiverUnitTest {
         assertEquals(2658, result.getTotalCount());
         
         // result count shouldn't increase if mojo is called again
+        this.archiver.postExecute(buildProxy, null, this.mojoInfo, new NullBuildListener(), null);
+        action = this.build.getAction(SurefireReport.class);
+        result = action.getResult();
+        assertEquals(2658, result.getTotalCount());
+    }
+    
+    @Test
+    @Issue("JENKINS-31524")
+    public void testUpdatedExistingResultsAreCounted() throws InterruptedException, IOException, URISyntaxException, ComponentConfigurationException {
+        URL resource = SurefireArchiverUnitTest.class.getResource("/surefire-archiver-test2");
+        File reportsDir = new File(resource.toURI().getPath());
+        doReturn(reportsDir).when(this.mojoInfo).getConfigurationValue("reportsDirectory", File.class);
+
+        File report1 = new File(reportsDir, "junit-report-1233.xml");
+        File report2 = new File(reportsDir, "junit-report-1472.xml");
+        long startTime = this.mojoInfo.getStartTime();
+
+        // Current report files should be counted and stale ones ignored.
+		report1.setLastModified(startTime);
+		report2.setLastModified(startTime - (60 * 1000));
+        this.archiver.postExecute(buildProxy, null, this.mojoInfo, new NullBuildListener(), null);
+        SurefireReport action = this.build.getAction(SurefireReport.class);
+        TestResult result = action.getResult();
+        assertEquals(5, result.getTotalCount());
+
+        // Updated existing report files should now be included.
+		report2.setLastModified(startTime);
         this.archiver.postExecute(buildProxy, null, this.mojoInfo, new NullBuildListener(), null);
         action = this.build.getAction(SurefireReport.class);
         result = action.getResult();

@@ -138,7 +138,7 @@ public class SurefireArchiver extends TestFailureDetector {
                 fileSet = Iterables.filter(fileSet, new Predicate<File>() {
                     @Override
                     public boolean apply(File input) {
-                        return !parsedFiles.containsKey(input) || parsedFiles.get(input) < input.lastModified();
+                        return !parsedFiles.containsKey(input) || parsedFiles.get(input) != input.lastModified();
                     }
                 });
                 

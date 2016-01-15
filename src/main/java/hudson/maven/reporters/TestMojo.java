@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 import org.apache.maven.project.MavenProject;
 import org.apache.tools.ant.types.FileSet;
@@ -169,8 +170,9 @@ enum TestMojo {
     
     @CheckForNull public Iterable<File> getReportFiles(MavenProject pom, MojoInfo mojo) throws ComponentConfigurationException {
         File reportsDir = getReportsDirectory(pom, mojo);
-        if (reportsDir != null && reportsDir.exists())
+        if (reportsDir.exists()) {
             return getReportFiles(reportsDir, getFileSet(reportsDir));
+        }
         
         return null;
     }
@@ -182,11 +184,11 @@ enum TestMojo {
      * @return The directory containing the test reports.
      * @throws ComponentConfigurationException if unable to retrieve the report directory from the MOJO configuration.
      */
-    protected File getReportsDirectory(MavenProject pom, MojoInfo mojo) throws ComponentConfigurationException {
-    	// [JENKINS-31258] Allow unknown MOJOs to contribute test results in arbitrary locations by setting a Maven property.
-		String reportsDirectoryOverride = getReportsDirectoryOverride(mojo);
-		if (reportsDirectoryOverride != null)
-			return mojo.expressionEvaluator.alignToBaseDirectory(new File(reportsDirectoryOverride));
+    @Nonnull protected File getReportsDirectory(MavenProject pom, MojoInfo mojo) throws ComponentConfigurationException {
+        // [JENKINS-31258] Allow unknown MOJOs to contribute test results in arbitrary locations by setting a Maven property.
+        String reportsDirectoryOverride = getReportsDirectoryOverride(mojo);
+        if (reportsDirectoryOverride != null)
+            return mojo.expressionEvaluator.alignToBaseDirectory(new File(reportsDirectoryOverride));
 
         if (this.reportDirectoryConfigKey != null) {
             File reportsDir = mojo.getConfigurationValue(this.reportDirectoryConfigKey, File.class);
@@ -247,7 +249,7 @@ enum TestMojo {
         TestMojo testMojo = lookup(mojo.pluginName.groupId, mojo.pluginName.artifactId, mojo.getGoal());
 
         if (testMojo == null && getReportsDirectoryOverride(mojo) != null) {
-			testMojo = FALLBACK;
+            testMojo = FALLBACK;
         }
 
         if (testMojo != null && testMojo.canRunTests(mojo)) {
@@ -262,10 +264,12 @@ enum TestMojo {
      * @param mojo An unknown MOJO.
      * @return the value of the expression <code>${jenkins.&lt;mojo-execution-id&gt;.reportsDirectory}</code>.
      */
-    private static String getReportsDirectoryOverride(MojoInfo mojo) {
+    @CheckForNull private static String getReportsDirectoryOverride(MojoInfo mojo) {
+    	// TODO: if and when this MOJO ceases to be tested against earlier Maven versions lacking MojoExecution.getLifecyclePhase(),
+    	// Reinstate the following validity check:
         // Validity of the override property should be constrained to "test" and "integration-test" phases but there seems to be no
         // way to check this, as MojoExecution.getLifecyclePhase() (added 2009-05-12) causes tests to throw NoSuchMethodError!!!
-        // So, we're obliged to assume that the property is configured for a valid test life cycle phase.
+        // Until then, we're obliged to assume that the property is configured for a valid test life cycle phase.
 //        String phase = mojo.mojoExecution.getLifecyclePhase();
 //        if ("test".equals(phase) || "integration-test".equals(phase)) {
         try {
@@ -274,7 +278,8 @@ enum TestMojo {
             if (result != null && !result.equals(reportsDirExpr) && !result.toString().trim().isEmpty())
                 return result.toString().trim();
         } catch (ExpressionEvaluationException e) {
-            // Ignore evaluation exceptions.
+            // Note: no access to private MavenProject.logger.
+        	e.printStackTrace();
         } 
 //        }
         return null;
