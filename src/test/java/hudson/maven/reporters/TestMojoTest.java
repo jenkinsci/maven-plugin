@@ -15,9 +15,12 @@ import java.io.FileWriter;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
+import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluator;
 import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 
 public class TestMojoTest {
     
@@ -219,4 +222,68 @@ public class TestMojoTest {
         public void run(MojoInfoBuilder mojoBuilder, MavenProject pom,
                         String testResultsName) throws Exception;
     }
+
+    @Test
+    @Issue("JENKINS-31258")
+    public void testGetReportFilesUnknownTestPlugin() throws Exception {
+        final String testResultsName = "TEST-some.test.results.xml";
+
+        final File baseDir = hudson.Util.createTempDir();
+        final File targetDir = new File(baseDir, "target");
+        final File reportsDir = new File(targetDir, "some-test-reports");
+        assertTrue(reportsDir.mkdirs());
+
+        MojoInfoBuilder builder = MojoInfoBuilder.mojoBuilder("com.some", "unknown-test-capable-plugin", "somegoal")
+                .evaluator(new ExpressionEvaluator() {
+                    @Override
+                    public Object evaluate(String expression) throws ExpressionEvaluationException {
+                        if ("${jenkins.some-test-execution-id.reportsDirectory}".equals(expression))
+                            return "target/some-test-reports";
+                        return expression;
+                    }
+
+                    @Override
+                    public File alignToBaseDirectory(File path) {
+                        return new File(baseDir, path.getPath());
+                    }
+                });
+
+        MojoInfo nonReportingMojo = builder.executionId("some-non-test-execution-id").build();
+        TestMojo testMojo = TestMojo.lookup(nonReportingMojo);
+        assertNull("misreported an unknown, unconfigured MOJO as test capable", testMojo);
+
+        MojoInfo reportingMojo = builder.executionId("some-test-execution-id").build();
+        testMojo = TestMojo.lookup(reportingMojo);
+        assertNotNull("failed to recognize correctly configured unknown test capable MOJO", testMojo);
+
+        MavenProject pom = mock(MavenProject.class);
+        when(pom.getBasedir()).thenReturn(baseDir);
+
+        Build build = mock(Build.class);
+        when(build.getDirectory()).thenReturn(targetDir.getAbsolutePath());
+        when(pom.getBuild()).thenReturn(build);
+
+        assertEquals("test mojo returned incorrect reports directory", new File(baseDir, "target/some-test-reports"),
+                testMojo.getReportsDirectory(pom, reportingMojo));
+
+        File testResults = new File(reportsDir, testResultsName);
+        try {
+            FileWriter fw = new FileWriter(testResults, false);
+            fw.write("this is a fake surefire reports output file");
+            fw.close();
+
+            Iterable<File> files = testMojo.getReportFiles(pom, reportingMojo);
+            assertNotNull("no report files returned", files);
+
+            boolean found = false;
+            for (File file : files) {
+                assertEquals(testResultsName, file.getName());
+                found = true;
+            }
+            assertTrue("report file not found", found);
+        } finally {
+            hudson.Util.deleteRecursive(baseDir);
+        }
+    }
+
 }

@@ -3,11 +3,18 @@ package hudson.maven.reporters;
 import static hudson.maven.MojoInfoBuilder.mojoBuilder;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
+import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
+import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluator;
+
 import hudson.maven.MojoInfo;
 import hudson.maven.MojoInfoBuilder;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 
 /**
  * Regression test for the detection of test mojos in {@link SurefireArchiver}.
@@ -196,6 +203,28 @@ public class SurefireArchiverDetectTestMojosTest {
         MojoInfo mojo = builder.build();
         assertTrue(this.surefireArchiver.isTestMojo(mojo));
     }
+    
+    @Test
+    @Issue("JENKINS-31258")
+	public void shouldDetectAnyMojoWithAJenkinsReportsDirectoryProperty() {
+		MojoInfoBuilder builder = mojoBuilder("some.weird.internal", "xxx-mojo", "xxx-goal")
+				.executionId("xxx-execution-id").evaluator(new ExpressionEvaluator() {
+					@Override
+					public Object evaluate(String expression) throws ExpressionEvaluationException {
+						if ("${jenkins.xxx-execution-id.reportsDirectory}".equals(expression))
+							return "target/xxx-test-reports";
+						return expression;
+					}
+
+					@Override
+					public File alignToBaseDirectory(File path) {
+						return path;
+					}
+				});
+
+		MojoInfo mojo = builder.build();
+		assertTrue(this.surefireArchiver.isTestMojo(mojo));
+	}
     
     @Test
     public void shouldNotDetectNonTestGoal() {
