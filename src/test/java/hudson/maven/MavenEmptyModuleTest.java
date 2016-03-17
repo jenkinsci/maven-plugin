@@ -9,6 +9,7 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 
 import java.io.IOException;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Andrew Bayer
@@ -19,8 +20,8 @@ public class MavenEmptyModuleTest extends HudsonTestCase {
      */
     @Bug(4442)
     public void testEmptyModuleParsesAndBuilds() throws Exception {
-        configureDefaultMaven();
-        MavenModuleSet m = createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-empty-mod.zip")));
         buildAndAssertSuccess(m);

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
-import hudson.Extension;
 import hudson.Launcher;
 import hudson.maven.MavenBuildProxy.BuildCallable;
 import hudson.model.AbstractBuild;
@@ -17,7 +16,6 @@ import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Result;
 import hudson.model.StringParameterDefinition;
 import hudson.tasks.BuildWrapper;
-import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Builder;
 import hudson.tasks.BuildWrapper.Environment;
 import hudson.tasks.Maven.MavenInstallation;
@@ -34,7 +32,6 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import net.sf.json.JSONObject;
 
 import org.apache.maven.project.MavenProject;
 import org.junit.Rule;
@@ -43,9 +40,8 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.Email;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.JenkinsRule.TestBuildWrapper;
 import org.jvnet.hudson.test.SingleFileSCM;
-import org.kohsuke.stapler.StaplerRequest;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -60,8 +56,8 @@ public class MavenBuildTest {
     @Bug(4192)
     @Test
     public void testMavenWorkspaceExists() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("HUDSON-4192.zip")));
         j.buildAndAssertSuccess(m);
@@ -74,8 +70,8 @@ public class MavenBuildTest {
     @Bug(4177)
     @Test
     public void testTestFailureInEarlyTaskSegment() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m = j.createMavenProject();
+        ToolInstallations.configureMaven3();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install findbugs:findbugs");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-test-failure-findbugs.zip")));
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
@@ -86,8 +82,8 @@ public class MavenBuildTest {
      */
     @Test
     public void testCompilationFailure() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-compilation-failure.zip")));
         j.assertBuildStatus(Result.FAILURE, m.scheduleBuild2(0).get());
@@ -99,8 +95,8 @@ public class MavenBuildTest {
     @Bug(4226)
     @Test
     public void testParallelModuleBuild() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
         
         j.buildAndAssertSuccess(m);
@@ -117,8 +113,8 @@ public class MavenBuildTest {
     public void testMaven2BuildWrongScope() throws Exception {
         
         File pom = new File(this.getClass().getResource("test-pom-8395.xml").toURI());
-        MavenModuleSet m = j.createMavenProject();
-        MavenInstallation mavenInstallation = j.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setRootPOM(pom.getAbsolutePath());
@@ -131,8 +127,8 @@ public class MavenBuildTest {
     @Test
     public void testMaven2BuildWrongInheritence() throws Exception {
         
-        MavenModuleSet m = j.createMavenProject();
-        MavenInstallation mavenInstallation = j.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("incorrect-inheritence-testcase.zip")));
@@ -145,8 +141,8 @@ public class MavenBuildTest {
     @Test
     public void testMaven2SeveralModulesInDirectory() throws Exception {
         
-        MavenModuleSet m = j.createMavenProject();
-        MavenInstallation mavenInstallation = j.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("several-modules-in-directory.zip")));
@@ -159,8 +155,8 @@ public class MavenBuildTest {
     @Test
     public void testMavenWithDependencyVersionInEnvVar() throws Exception {
         
-        MavenModuleSet m = j.createMavenProject();
-        MavenInstallation mavenInstallation = j.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
         ParametersDefinitionProperty parametersDefinitionProperty = 
             new ParametersDefinitionProperty(new StringParameterDefinition( "JUNITVERSION", "3.8.2" ));
         
@@ -176,8 +172,8 @@ public class MavenBuildTest {
     @Bug(8573)
     @Test
     public void testBuildTimeStampProperty() throws Exception {
-        MavenInstallation mavenInstallation = j.configureDefaultMaven();
-        MavenModuleSet m = j.createMavenProject();
+        MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-8573.zip")));
@@ -195,8 +191,8 @@ public class MavenBuildTest {
     public void testMavenFailsafePluginTestResultsAreRecorded() throws Exception {
         
         // GIVEN: a Maven project with maven-failsafe-plugin and Maven 2.2.1
-        MavenModuleSet mavenProject = j.createMavenProject();
-        MavenInstallation mavenInstallation = j.configureDefaultMaven();
+        MavenModuleSet mavenProject = j.jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
         mavenProject.setMaven(mavenInstallation.getName());
         mavenProject.getReporters().add(new TestReporter());
         mavenProject.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-15865.zip")));
@@ -221,8 +217,8 @@ public class MavenBuildTest {
     @Bug(18178)
     @Test
     public void testExtensionsConflictingWithCore() throws Exception {
-        MavenModuleSet m = j.createMavenProject();
-        m.setMaven(j.configureDefaultMaven().getName());
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
+        m.setMaven(ToolInstallations.configureDefaultMaven().getName());
         m.setScm(new SingleFileSCM("pom.xml",
                 "<project><modelVersion>4.0.0</modelVersion>" +
                 "<groupId>g</groupId><artifactId>a</artifactId><version>0</version>" +
@@ -235,8 +231,8 @@ public class MavenBuildTest {
     @Bug(19801)
     @Test
     public void stopBuildAndAllSubmoduleBuilds() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet project = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet project = j.jenkins.createProject(MavenModuleSet.class, "p");
         project.setGoals("clean package");
         project.setScm(new ExtractResourceSCM(
                 getClass().getResource("/hudson/maven/maven-multimod.zip")
@@ -307,8 +303,8 @@ public class MavenBuildTest {
     @Bug(16522)
     @Test
     public void testCorrectModuleBuildStatus() throws Exception {
-        MavenModuleSet mavenProject = j.createMavenProject();
-        MavenInstallation mavenInstallation = j.configureDefaultMaven();
+        MavenModuleSet mavenProject = j.jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
         mavenProject.setMaven(mavenInstallation.getName());
         mavenProject.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-16522.zip")));
         mavenProject.setGoals( "clean install" );
@@ -344,8 +340,8 @@ public class MavenBuildTest {
     @Bug(20506)
     @Test
     public void testActionsOfPreAndPostBuildersMustBeExposed() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
         m.setGoals("initialize");
 
@@ -370,8 +366,8 @@ public class MavenBuildTest {
 
     @Test
     public void testBuildWrappersTeardown() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
         m.setGoals("initialize");
 

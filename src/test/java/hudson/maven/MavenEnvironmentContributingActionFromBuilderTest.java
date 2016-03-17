@@ -19,6 +19,7 @@ import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * This test case verifies that a maven build also takes EnvironmentContributingAction into account to resolve variables on the command line
@@ -36,9 +37,9 @@ public class MavenEnvironmentContributingActionFromBuilderTest {
     public void builderInjectedVariableFromEnvironmentContributingActionMustBeAvailableInMavenModuleSetBuild() throws Exception {
         j.jenkins.getInjector().injectMembers(this);
 
-        final MavenModuleSet p = j.createMavenProject("mvn");
+        final MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "mvn");
 
-        p.setMaven(j.configureMaven3().getName());
+        p.setMaven(ToolInstallations.configureMaven3().getName());
         p.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
         p.setGoals("initialize -Dval=${KEY}");
 

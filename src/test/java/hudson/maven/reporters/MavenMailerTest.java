@@ -31,18 +31,17 @@ import hudson.tasks.Mailer.DescriptorImpl;
 
 import javax.mail.Address;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 
-import org.apache.commons.jexl.junit.Asserter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.ToolInstallations;
 import org.jvnet.mock_javamail.Mailbox;
 
 /**
@@ -90,8 +89,8 @@ public class MavenMailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        j.configureDefaultMaven();
-        MavenModuleSet mms = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setGoals("test");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/maven-multimodule-unit-failure.zip")));
         j.assertBuildStatus(Result.UNSTABLE, mms.scheduleBuild2(0).get());
@@ -126,8 +125,8 @@ public class MavenMailerTest {
         yourInbox.clear();
         jenkinsConfiguredInbox.clear();
 
-        j.configureDefaultMaven();
-        MavenModuleSet mms = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setGoals("test");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-parent-defined.zip")));
         
@@ -182,8 +181,8 @@ public class MavenMailerTest {
         someInbox.clear();
         jenkinsConfiguredInbox.clear();
 
-        j.configureDefaultMaven();
-        MavenModuleSet mms = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setGoals("test");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-module-defined.zip")));
         MavenMailer m = new MavenMailer();

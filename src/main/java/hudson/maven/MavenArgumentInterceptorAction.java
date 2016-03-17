@@ -55,10 +55,12 @@ public interface MavenArgumentInterceptorAction extends Action {
 	public String getGoalsAndOptions(MavenModuleSetBuild build);
 
 	/**
-	 * Change/add arguments to any needs, but special care has to be taken, as
+	 * Change/add arguments to any needs.
+     * Special care has to be taken, as
 	 * the list contains every argument needed for the default execution (e.g.
-	 * <code>-f /path/to/pom.xml</code> or <code>-B</code>). <br />
-	 * An easy example would be to add "<code>-DskipTests</code>" to skip the
+	 * <code>-f /path/to/pom.xml</code> or <code>-B</code>).
+	 * <p>
+     * An easy example would be to add "<code>-DskipTests</code>" to skip the
 	 * test execution on request.
 	 * 
 	 * <p>

@@ -14,6 +14,7 @@ import test.BogusPlexusComponent;
 
 import java.io.File;
 import java.io.IOException;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -29,8 +30,8 @@ public class PlexusModuleContributorTest {
      */
     @Test
     public void testCustomPlexusComponent() throws Exception {
-        j.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
-        MavenModuleSet p = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
         p.setScm(new SingleFileSCM("pom.xml",getClass().getResource("custom-plexus-component.pom")));
         p.setGoals("clean");
         j.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -38,8 +39,8 @@ public class PlexusModuleContributorTest {
 
     @Test
     public void testCustomPlexusComponent_Maven3() throws Exception {
-        j.configureDefaultMaven("apache-maven-3.0.1", MavenInstallation.MAVEN_30);
-        MavenModuleSet p = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven("apache-maven-3.0.1", MavenInstallation.MAVEN_30);
+        MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
         p.setScm(new SingleFileSCM("pom.xml",getClass().getResource("custom-plexus-component.pom")));
         p.setGoals("clean");
         j.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -47,11 +48,11 @@ public class PlexusModuleContributorTest {
 
     @Test
     public void testCustomPlexusComponent_Maven3_slave() throws Exception {
-        j.configureDefaultMaven("apache-maven-3.0.1", MavenInstallation.MAVEN_30);
+        ToolInstallations.configureDefaultMaven("apache-maven-3.0.1", MavenInstallation.MAVEN_30);
         DumbSlave s = j.createSlave();
         s.toComputer().connect(false).get();
 
-        MavenModuleSet p = j.createMavenProject();
+        MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
         p.setAssignedLabel(s.getSelfLabel());
 
         p.setScm(new SingleFileSCM("pom.xml",getClass().getResource("custom-plexus-component.pom")));

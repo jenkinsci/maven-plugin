@@ -138,7 +138,7 @@ public class MojoInfo {
      * Obtains the configuration value of the mojo.
      *
      * @param configName
-     *      The name of the child element in the &lt;configuration> of mojo.
+     *      The name of the child element in the {@code <configuration>} of mojo.
      * @param type
      *      The Java class of the configuration value. While every element
      *      can be read as {@link String}, often different types have a different
@@ -166,7 +166,7 @@ public class MojoInfo {
      * Obtains the configuration value of the mojo.
      *
      * @param configName
-     *      The name of the child element in the &lt;configuration> of mojo.
+     *      The name of the child element in the {@code <configuration>} of mojo.
      * @param type
      *      The Java class of the configuration value. While every element
      *      can be read as {@link String}, often different types have a different

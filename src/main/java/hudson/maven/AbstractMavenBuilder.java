@@ -127,7 +127,7 @@ public abstract class AbstractMavenBuilder extends MasterToSlaveCallable<Result,
      * Ignores {@link #systemProps jenkins environment variables} with empty keys.
      * @throws IllegalArgumentException if a {@link #systemProps jenkins environment variable} has null value
      *      as it blows up Maven.
-     * @see http://jenkins.361315.n4.nabble.com/Upgrade-to-1-424-broke-our-Maven-builds-due-to-empty-system-property-key-td3726460.html
+     * @see <a href="http://jenkins.361315.n4.nabble.com/Upgrade-to-1-424-broke-our-Maven-builds-due-to-empty-system-property-key-td3726460.html">Upgrade to 1.424 broke our Maven builds due to empty system property key</a>
      */
     protected void registerSystemProperties() {
         for (Map.Entry<String,String> e : systemProps.entrySet()) {

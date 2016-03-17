@@ -80,7 +80,7 @@ public final class MavenArtifact implements Serializable {
     /**
      * File name (without directory portion) of this artifact in the Hudson archive.
      * Remembered explicitly because some times this doesn't follow the
-     * standard naming convention, due to &lt;finalName> setting in POM.
+     * standard naming convention, due to {@code <finalName>} setting in POM.
      *
      * <p>
      * This name is taken directly from the name of the file as used during the build
@@ -182,7 +182,6 @@ public final class MavenArtifact implements Serializable {
 
     /**
      * Creates a Maven {@link Artifact} back from the persisted data.
-     * @param closeable pass in a reference which will be filled with something you should close when done
      */
     public CloseableArtifact toCloseableArtifact(ArtifactHandlerManager handlerManager, ArtifactFactory factory, MavenBuild build) throws IOException {
         // Hack: presence of custom ArtifactHandler during builds could influence the file extension
