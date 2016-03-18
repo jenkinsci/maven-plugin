@@ -211,6 +211,7 @@ public class RedeployPublisher extends Recorder {
         String privateRepository = null;
 
         File tmpSettings = File.createTempFile( "jenkins", "temp-settings.xml" );
+        File tmpSettingsGlobal = File.createTempFile( "jenkins", "temp-global-settings.xml" );
         try {
             AbstractProject project = build.getProject();
 
@@ -236,10 +237,6 @@ public class RedeployPublisher extends Recorder {
                 // TODO check if the remoteSettings has a localRepository configured and disabled it
 
                 String altSettingsPath = SettingsProvider.getSettingsRemotePath(((MavenModuleSet) project).getSettings(), build, listener);
-                String remoteGlobalSettingsPath = GlobalSettingsProvider.getSettingsRemotePath(((MavenModuleSet) project).getGlobalSettings(), build, listener);
-                if(remoteGlobalSettingsPath != null){
-                    remoteGlobalSettingsFromConfig = new File(remoteGlobalSettingsPath);
-                }
 
                 Node buildNode = build.getBuiltOn();
                 
@@ -268,6 +265,18 @@ public class RedeployPublisher extends Recorder {
                                               + " maven settings from : " + remoteSettings.getRemote() );
                 remoteSettings.copyTo( filePath );
                 settingsLoc = tmpSettings;
+
+                String remoteGlobalSettingsPath = GlobalSettingsProvider.getSettingsRemotePath(((MavenModuleSet) project).getGlobalSettings(), build, listener);
+                if(remoteGlobalSettingsPath != null){
+                    // copy global settings from slave's remoteGlobalSettingsPath to tmpSettingsGlobal
+                    FilePath filePathGlobal = new FilePath( tmpSettingsGlobal );
+                    FilePath remoteSettingsGlobal = build.getWorkspace().child( remoteGlobalSettingsPath );
+
+                    listener.getLogger().println( "Maven RedeployPublisher use remote " + (buildNode != null ? buildNode.getNodeName() : "local" )
+                              + " maven global settings from : " + remoteSettingsGlobal.getRemote() );
+                    remoteSettingsGlobal.copyTo( filePathGlobal );
+                    remoteGlobalSettingsFromConfig = tmpSettingsGlobal;
+                }
                 
             }
 
@@ -288,6 +297,9 @@ public class RedeployPublisher extends Recorder {
         } finally {
             if (tmpSettings != null) {
                 tmpSettings.delete();
+            }
+            if (tmpSettingsGlobal != null) {
+                tmpSettingsGlobal.delete();
             }
         }
     }
