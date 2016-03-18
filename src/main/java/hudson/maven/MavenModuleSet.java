@@ -1365,6 +1365,39 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
             return Messages.MavenModuleSet_DiplayName();
         }
 
+        /**
+         * Needed if it wants Maven projects are categorized in Jenkins 2.x.
+         *
+         * TODO: Override when the baseline is upgraded to 2.x
+         *
+         * @return A string it represents a ItemCategory identifier.
+         */
+        public String getCategoryId() {
+            return "itemcategory-standaloneprojects";
+        }
+
+        /**
+         * Needed if it wants Maven projects are categorized in Jenkins 2.x.
+         *
+         * TODO: Override when the baseline is upgraded to 2.x
+         *
+         * @return A string with the Item description.
+         */
+        public String getDescription() {
+            return Messages.MavenModuleSet_Description();
+        }
+
+        /**
+         * Needed if it wants Maven projects are categorized in Jenkins 2.x.
+         *
+         * TODO: Override when the baseline is upgraded to 2.x
+         *
+         * @return A string it represents a URL pattern to get the Item icon in different sizes.
+         */
+        public String getIconFilePathPattern() {
+            return "plugin/maven-plugin/images/:size/mavenmoduleset.png";
+        }
+
         public MavenModuleSet newInstance(ItemGroup parent, String name) {
             MavenModuleSet mms = new MavenModuleSet(parent,name);
             mms.setSettings(GlobalMavenConfig.get().getSettingsProvider());
