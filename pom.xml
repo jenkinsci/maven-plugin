@@ -44,6 +44,7 @@ THE SOFTWARE.
 
   <properties>
     <jenkins.version>1.580.1</jenkins.version>
+    <java.level>6</java.level>
     <mavenInterceptorsVersion>1.7</mavenInterceptorsVersion>  
     <mavenVersion>3.1.0</mavenVersion>
     <maven.version>${mavenVersion}</maven.version>
@@ -79,6 +80,12 @@ THE SOFTWARE.
   </dependencyManagement>
   
   <dependencies>
+    <dependency> <!-- TODO pending https://github.com/jenkinsci/plugin-pom/pull/17 -->
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>javadoc</artifactId>
