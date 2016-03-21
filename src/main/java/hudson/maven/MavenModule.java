@@ -431,7 +431,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
     }
 
     /**
-     * Gets all the child modules (that are listed in the &lt;module> element in our POM.)
+     * Gets all the child modules (that are listed in the {@code <module>} element in our POM).
      * <p>
      * This method returns null if this information is not recorded. This happens
      * for compatibility reason.
@@ -465,7 +465,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
     /**
      * Workspace of a {@link MavenModule} is a part of the parent's workspace.
      * <p>
-     * That is, {@Link MavenModuleSet} builds are incompatible with any {@link MavenModule}
+     * That is, {@link MavenModuleSet} builds are incompatible with any {@link MavenModule}
      * builds, whereas {@link MavenModule} builds are compatible with each other.
      *
      * @deprecated as of 1.319 in {@link AbstractProject}.

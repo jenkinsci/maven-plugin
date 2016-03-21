@@ -42,6 +42,7 @@ import net.sf.json.JSONObject;
 
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.ToolInstallations;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
@@ -51,8 +52,8 @@ public class MavenArgumentInterceptorTest extends HudsonTestCase {
 
 	public void testSimpleMaven3BuildWithArgInterceptor_Goals() throws Exception {
 
-		MavenModuleSet m = createMavenProject();
-		MavenInstallation mavenInstallation = configureMaven3();
+		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
+		MavenInstallation mavenInstallation = ToolInstallations.configureMaven3();
 		m.setMaven(mavenInstallation.getName());
 		m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
 		m.setGoals("dummygoal"); // build would fail with this goal
@@ -67,8 +68,8 @@ public class MavenArgumentInterceptorTest extends HudsonTestCase {
 
 	public void testSimpleMaven3BuildWithArgInterceptor_ArgBuilder() throws Exception {
 
-		MavenModuleSet m = createMavenProject();
-		MavenInstallation mavenInstallation = configureMaven3();
+		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
+		MavenInstallation mavenInstallation = ToolInstallations.configureMaven3();
 		m.setMaven(mavenInstallation.getName());
 		m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimodule-unit-failure.zip")));
 		m.setGoals("clean install"); // build would fail because of failing unit

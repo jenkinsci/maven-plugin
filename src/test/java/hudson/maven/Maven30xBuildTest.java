@@ -21,6 +21,7 @@ package hudson.maven;
  */
 
 import hudson.tasks.Maven.MavenInstallation;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Olivier Lamy
@@ -32,7 +33,7 @@ public class Maven30xBuildTest
     public MavenInstallation configureMaven3x()
         throws Exception
     {
-        return configureMaven3();
+        return ToolInstallations.configureMaven3();
     }
 
     @Override

@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.ToolInstallations;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
@@ -45,9 +46,9 @@ public class MavenEnvironmentContributingActionTest {
     public void envVariableFromEnvironmentContributingActionMustBeAvailableInMavenModuleSetBuild() throws Exception {
         j.jenkins.getInjector().injectMembers(this);
 
-        final MavenModuleSet p = j.createMavenProject("mvn");
+        final MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "mvn");
 
-        p.setMaven(j.configureMaven3().getName());
+        p.setMaven(ToolInstallations.configureMaven3().getName());
         p.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
         p.setGoals("initialize -Dval=${KEY}");
 

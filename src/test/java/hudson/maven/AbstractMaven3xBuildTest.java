@@ -50,7 +50,7 @@ public abstract class AbstractMaven3xBuildTest
 
     public void testSimpleMaven3Build() throws Exception {
         
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
@@ -62,7 +62,7 @@ public abstract class AbstractMaven3xBuildTest
     
     public void testSimpleMaven3BuildRedeployPublisher() throws Exception {
         
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
         m.setMaven( mavenInstallation.getName() );
         File repo = createTmpDir();
@@ -88,7 +88,7 @@ public abstract class AbstractMaven3xBuildTest
     }    
     
     public void testSiteBuildWithForkedMojo() throws Exception {
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
         m.setMaven( mavenInstallation.getName() );        
         m.getReporters().add(new TestReporter());
@@ -102,7 +102,7 @@ public abstract class AbstractMaven3xBuildTest
     public void testMaven3BuildWrongScope() throws Exception {
         
         File pom = new File(this.getClass().getResource("test-pom-8395.xml").toURI());
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
@@ -117,7 +117,7 @@ public abstract class AbstractMaven3xBuildTest
     @Bug(value=8390)
     public void testMaven3BuildWrongInheritence() throws Exception {
         
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
@@ -132,7 +132,7 @@ public abstract class AbstractMaven3xBuildTest
     @Bug(value=8445)
     public void testMavenSeveralModulesInDirectory() throws Exception {
         
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
@@ -145,7 +145,7 @@ public abstract class AbstractMaven3xBuildTest
     @Email("https://groups.google.com/d/msg/hudson-users/Xhw00UopVN0/FA9YqDAIsSYJ")
     public void testMavenWithDependencyVersionInEnvVar() throws Exception {
         
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
         ParametersDefinitionProperty parametersDefinitionProperty = 
             new ParametersDefinitionProperty(new StringParameterDefinition( "JUNITVERSION", "3.8.2" ));
@@ -162,7 +162,7 @@ public abstract class AbstractMaven3xBuildTest
     @Bug(8484)
     public void testMultiModMavenNonRecursive() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
@@ -175,7 +175,7 @@ public abstract class AbstractMaven3xBuildTest
     @Bug(8573)
     public void testBuildTimeStampProperty() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-8573.zip")));
@@ -189,7 +189,7 @@ public abstract class AbstractMaven3xBuildTest
     @Bug(1557)
     public void testDuplicateTestResults() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-1557.zip")));
@@ -204,7 +204,7 @@ public abstract class AbstractMaven3xBuildTest
     @Issue("JENKINS-9326")
     public void testTychoTestResults() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setRootPOM( "org.foobar.build/pom.xml" );
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
@@ -230,7 +230,7 @@ public abstract class AbstractMaven3xBuildTest
     @Bug(9326)
     public void testTychoEclipseTestResults() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setRootPOM( "org.foobar.build/pom.xml" );
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
@@ -257,7 +257,7 @@ public abstract class AbstractMaven3xBuildTest
     public void testSingleModuleBuild() throws Exception {
         // Given a multi-module build.
         MavenInstallation mavenInstallation = configureMaven3x();
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
@@ -281,7 +281,7 @@ public abstract class AbstractMaven3xBuildTest
     @Bug(12109)
     public void testMultiModuleInvalidRecursivePom() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
-        MavenModuleSet m = createMavenProject("JENKINS-12109");
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "JENKINS-12109");
         m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-12109.zip")));

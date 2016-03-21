@@ -10,6 +10,7 @@ import java.io.IOException;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractChangeLogSet;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Andrew Bayer
@@ -18,8 +19,8 @@ public class MavenMultiModuleTestIncremental extends HudsonTestCase {
 
     @Bug(7684)
     public void testRelRootPom() throws Exception {
-        configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
-        MavenModuleSet m = createMavenProject();
+        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-rel-base.zip"),

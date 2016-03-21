@@ -37,6 +37,7 @@ import java.util.Arrays;
 import jenkins.mvn.FilePathSettingsProvider;
 import org.apache.commons.lang.StringUtils;
 import static org.junit.Assert.*;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -47,6 +48,7 @@ import org.jvnet.hudson.test.*;
  */
 public class RedeployPublisherTest {
 
+    @ClassRule public static BuildWatcher buildWatcher = new BuildWatcher();
     @Rule public JenkinsRule j = new JenkinsRule();
     @Rule public TemporaryFolder tmp = new TemporaryFolder();
 
@@ -54,8 +56,8 @@ public class RedeployPublisherTest {
     @Bug(2593)
     @Test
     public void testBug2593() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m2 = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
 
         // a fake build
@@ -74,7 +76,7 @@ public class RedeployPublisherTest {
 
     @Test
     public void testConfigRoundtrip() throws Exception {
-        MavenModuleSet p = j.createMavenProject();
+        MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
         RedeployPublisher rp = new RedeployPublisher("theId", "http://some.url/", true, true);
         p.getPublishersList().add(rp);
         j.submit(j.new WebClient().getPage(p,"configure").getFormByName("config"));
@@ -85,8 +87,8 @@ public class RedeployPublisherTest {
 //     * Makes sure that the webdav wagon component we bundle is compatible.
 //     */
 //    public void testWebDavDeployment() throws Exception {
-//        configureDefaultMaven();
-//        MavenModuleSet m2 = createMavenProject();
+//        ToolInstallations.configureDefaultMaven();
+//        MavenModuleSet m2 = jenkins.createProject(MavenModuleSet.class, "p");
 //
 //        // a fake build
 //        m2.setScm(new SingleFileSCM("pom.xml",getClass().getResource("big-artifact.pom")));
@@ -103,8 +105,8 @@ public class RedeployPublisherTest {
     @Bug(3814)
     @Test
     public void testTarGz() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m2 = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
 
         // a fake build
@@ -119,8 +121,8 @@ public class RedeployPublisherTest {
     
     @Test
     public void testTarGzUniqueVersionTrue() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m2 = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
         
         // a fake build
@@ -168,8 +170,8 @@ public class RedeployPublisherTest {
     @Test
     public void testTarGzMaven3() throws Exception {
         
-        MavenModuleSet m3 = j.createMavenProject();
-        MavenInstallation mvn = j.configureMaven3();
+        MavenModuleSet m3 = j.jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mvn = ToolInstallations.configureMaven3();
         m3.setMaven( mvn.getName() );
         File repo = tmp.getRoot();
         // a fake build
@@ -195,8 +197,8 @@ public class RedeployPublisherTest {
     
     @Test
     public void testTarGzUniqueVersionTrueMaven3() throws Exception {
-        MavenModuleSet m3 = j.createMavenProject();
-        MavenInstallation mvn = j.configureMaven3();
+        MavenModuleSet m3 = j.jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mvn = ToolInstallations.configureMaven3();
         m3.setMaven( mvn.getName() );        
         File repo = tmp.getRoot();
         // a fake build
@@ -242,8 +244,8 @@ public class RedeployPublisherTest {
     @Bug(3773)
     @Test
     public void testDeployUnstable() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m2 = j.createMavenProject();
+        ToolInstallations.configureMaven3();
+        MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
         // a build with a failing unit tests
         m2.setScm(new ExtractResourceSCM(getClass().getResource("maven-test-failure-findbugs.zip")));
@@ -253,14 +255,15 @@ public class RedeployPublisherTest {
         j.assertBuildStatus(Result.UNSTABLE, b);
 
         assertTrue("Artifact should have been published even when the build is unstable",
-                   new File(repo,"test/test/1.0-SNAPSHOT/test-1.0-SNAPSHOT.jar").exists());
+            // exact filename unpreductable in M3, e.g. test-1.0-20160317.213607-1.jar
+                   new File(repo,"test/test/1.0-SNAPSHOT").isDirectory());
     }
 
     @Bug(7010)
     @Test
     public void testSettingsInsidePromotion() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m2 = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
         URL resource = RedeployPublisherTest.class.getResource("settings.xml");
         File customUserSettings = new File(resource.toURI().getPath());

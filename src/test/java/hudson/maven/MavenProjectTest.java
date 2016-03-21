@@ -46,6 +46,7 @@ import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 import java.net.HttpURLConnection;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author huybrechts
@@ -79,8 +80,8 @@ public class MavenProjectTest extends HudsonTestCase {
     }
 
     private MavenModuleSet createProject(final String scmResource) throws Exception {
-        MavenModuleSet project = createMavenProject();
-        MavenInstallation mi = configureDefaultMaven();
+        MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
         project.setScm(new ExtractResourceSCM(getClass().getResource(
                 scmResource)));
         project.setMaven(mi.getName());
@@ -202,8 +203,8 @@ public class MavenProjectTest extends HudsonTestCase {
     @Bug(7261)
     public void testAbsolutePathPom() throws Exception {
         File pom = new File(this.getClass().getResource("test-pom-7162.xml").toURI());
-        MavenModuleSet project = createMavenProject();
-        MavenInstallation mi = configureDefaultMaven();
+        MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
+        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
         project.setMaven(mi.getName());
         project.setRootPOM(pom.getAbsolutePath());
         project.setGoals("install");
@@ -213,7 +214,7 @@ public class MavenProjectTest extends HudsonTestCase {
     @Bug(17177)
     public void testCorrectResultInPostStepAfterFailedPreBuildStep() throws Exception {
         MavenModuleSet p = createSimpleProject();
-        MavenInstallation mi = configureDefaultMaven();
+        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
         p.setMaven(mi.getName());
         p.setGoals("initialize");
         
@@ -231,7 +232,7 @@ public class MavenProjectTest extends HudsonTestCase {
      * Config roundtrip test around pre/post build step
      */
     public void testConfigRoundtrip() throws Exception {
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         Shell b1 = new Shell("1");
         Shell b2 = new Shell("2");
         m.getPrebuilders().add(b1);
@@ -256,7 +257,7 @@ public class MavenProjectTest extends HudsonTestCase {
     
     public void testDefaultSettingsProvider() throws Exception {
         {
-            MavenModuleSet m = createMavenProject();
+            MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p1");
     
             assertNotNull(m);
             assertEquals(DefaultSettingsProvider.class, m.getSettings().getClass());
@@ -269,7 +270,7 @@ public class MavenProjectTest extends HudsonTestCase {
             globalMavenConfig.setSettingsProvider(new FilePathSettingsProvider("/tmp/settigns.xml"));
             globalMavenConfig.setGlobalSettingsProvider(new FilePathGlobalSettingsProvider("/tmp/global-settigns.xml"));
             
-            MavenModuleSet m = createMavenProject();
+            MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p2");
             assertEquals(FilePathSettingsProvider.class, m.getSettings().getClass());
             assertEquals("/tmp/settigns.xml", ((FilePathSettingsProvider)m.getSettings()).getPath());
             assertEquals("/tmp/global-settigns.xml", ((FilePathGlobalSettingsProvider)m.getGlobalSettings()).getPath());

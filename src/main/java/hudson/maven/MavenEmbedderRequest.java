@@ -108,7 +108,7 @@ public class MavenEmbedderRequest
      * @param profiles
      *      Profiles to activate/deactivate. Can be null.
      * @param systemProperties
-     *      The system properties that the embedded Maven sees. See {@link MavenEmbedder#setSystemProperties(Properties)}.
+     *      The system properties that the embedded Maven sees.
      * @param privateRepository
      *      Optional private repository to use as the local repository.
      * @param alternateSettings
