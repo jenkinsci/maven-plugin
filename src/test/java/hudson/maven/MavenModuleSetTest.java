@@ -4,17 +4,19 @@ import hudson.maven.local_repo.PerJobLocalRepositoryLocator;
 import hudson.maven.reporters.MavenFingerprinter;
 import hudson.model.Item;
 import hudson.tasks.Fingerprinter;
+import hudson.tasks.Maven;
 import java.util.TreeSet;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 public class MavenModuleSetTest extends HudsonTestCase {
     public void testConfigRoundtripLocalRepository() throws Exception {
-        MavenModuleSet p = createMavenProject();
+        MavenModuleSet p = jenkins.createProject(MavenModuleSet.class, "p");
         configRoundtrip((Item) p);
         
         assertNull(p.getExplicitLocalRepository());
@@ -29,12 +31,14 @@ public class MavenModuleSetTest extends HudsonTestCase {
 
     @Bug(17402)
     public void testGetItem() throws Exception {
-        assertNull(createMavenProject().getItem("invalid"));
+        assertNull(jenkins.createProject(MavenModuleSet.class, "p").getItem("invalid"));
     }
 
     public void testExplicitFingerprints() throws Exception {
-        configureMaven31();
-        MavenModuleSet m = createMavenProject();
+        Maven.MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.1.0", Maven.MavenInstallation.MAVEN_30);
+        Maven.MavenInstallation m3 = new Maven.MavenInstallation("apache-maven-3.1.0", mvn.getHome(), NO_PROPERTIES);
+        jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         assertFalse(m.isArchivingDisabled());
         assertFalse(m.isSiteArchivingDisabled());
@@ -70,7 +74,7 @@ public class MavenModuleSetTest extends HudsonTestCase {
     @Bug(21903)
     public void testConfigRoundtripTriggers() throws Exception {
         // New project defaults to trigger with blocks:
-        MavenModuleSet m = createMavenProject();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         assertFalse(m.isDisableTriggerDownstreamProjects());
         assertTrue(m.getBlockTriggerWhenBuilding());
         configRoundtrip(m);

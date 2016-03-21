@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.ToolInstallations;
 
 public class CaseResultTest {
 
@@ -44,8 +45,8 @@ public class CaseResultTest {
      */
     @Bug(4257)
     @Test public void mavenErrorMsgAndStacktraceRender() throws Exception {
-        j.configureDefaultMaven();
-        MavenModuleSet m = j.createMavenProject("maven-render-test");
+        ToolInstallations.configureMaven3();
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "maven-render-test");
         m.setScm(new ExtractResourceSCM(m.getClass().getResource("maven-test-failure-findbugs.zip")));
         m.setGoals("clean test");
         MavenModuleSetBuild b = j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());

@@ -1,7 +1,7 @@
 package hudson.maven;
 
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.Matchers.hasItems;
 
 import hudson.model.AbstractProject;
 import org.jvnet.hudson.test.ExtractResourceSCM;
@@ -9,6 +9,7 @@ import org.jvnet.hudson.test.HudsonTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * Tests that Maven jobs are triggered, when snapshot dependencies of them were build.
@@ -22,11 +23,11 @@ public class MavenSnapshotTriggerTest extends HudsonTestCase {
      */
     public void testSnapshotDependencyBuildTrigger() throws Exception {
 
-        configureDefaultMaven();
-        MavenModuleSet projA = createMavenProject("snap-dep-test-up");
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet projA = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-up");
         projA.setGoals("clean install");
         projA.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
-        MavenModuleSet projB = createMavenProject("snap-dep-test-down");
+        MavenModuleSet projB = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-down");
         projB.setGoals("clean install");
         projB.setIgnoreUpstremChanges(false);
         projB.setQuietPeriod(0);
@@ -49,19 +50,19 @@ public class MavenSnapshotTriggerTest extends HudsonTestCase {
      * B depends on A, C depends on A and B. Build order should be A->B->C.
      */
     public void testMixedTransitiveSnapshotTrigger() throws Exception {
-        configureDefaultMaven();
+        ToolInstallations.configureDefaultMaven();
 
-        MavenModuleSet projA = createMavenProject("snap-dep-test-up");
+        MavenModuleSet projA = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-up");
         projA.setGoals("clean install");
         projA.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
 
-        MavenModuleSet projB = createMavenProject("snap-dep-test-mid");
+        MavenModuleSet projB = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-mid");
         projB.setGoals("clean install");
         projB.setIgnoreUpstremChanges(false);
         projB.setQuietPeriod(0);
         projB.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
 
-        MavenModuleSet projC = createMavenProject("snap-dep-test-down");
+        MavenModuleSet projC = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-down");
         projC.setGoals("clean install");
         projC.setIgnoreUpstremChanges(false);
         projC.setQuietPeriod(0);
@@ -88,43 +89,43 @@ public class MavenSnapshotTriggerTest extends HudsonTestCase {
      * For artifact B there exists two projects. Projects B1 has compile and B2 has verify in its maven goal. B2 is preferred as upstream dependency for artifact B as the verify goal takes precedence over the name tiebreaker which would prefer project B1.
      */
     public void testMultipleDependencySnapshotTrigger() throws Exception {
-        configureDefaultMaven();
+        ToolInstallations.configureDefaultMaven();
 
         // This is only executed to make sure that dependency A is available in repository
-        MavenModuleSet prepareProject = createMavenProject("prepareProject");
+        MavenModuleSet prepareProject = jenkins.createProject(MavenModuleSet.class, "prepareProject");
         prepareProject.setGoals("clean install");
         prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
         buildAndAssertSuccess(prepareProject);
         prepareProject.delete();
 
         // This is only executed to make sure that dependency B is available in repository
-        prepareProject = createMavenProject("prepareProject");
+        prepareProject = jenkins.createProject(MavenModuleSet.class, "prepareProject");
         prepareProject.setGoals("clean install");
         prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
         buildAndAssertSuccess(prepareProject);
         prepareProject.delete();
 
-        MavenModuleSet projA1 = createMavenProject("snap-dep-test-A1");
+        MavenModuleSet projA1 = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-A1");
         projA1.setGoals("clean install");
         projA1.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
 
-        MavenModuleSet projA2 = createMavenProject("snap-dep-test-A2");
+        MavenModuleSet projA2 = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-A2");
         projA2.setGoals("clean verify");
         projA2.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
 
-        MavenModuleSet projB1 = createMavenProject("snap-dep-test-B1");
+        MavenModuleSet projB1 = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-B1");
         projB1.setGoals("clean compile");
         projB1.setIgnoreUpstremChanges(false);
         projB1.setQuietPeriod(0);
         projB1.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
 
-        MavenModuleSet projB2 = createMavenProject("snap-dep-test-B2");
+        MavenModuleSet projB2 = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-B2");
         projB2.setGoals("clean verify");
         projB2.setIgnoreUpstremChanges(false);
         projB2.setQuietPeriod(0);
         projB2.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
 
-        MavenModuleSet projC = createMavenProject("snap-dep-test-C");
+        MavenModuleSet projC = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-C");
         projC.setGoals("clean compile");
         projC.setIgnoreUpstremChanges(false);
         projC.setQuietPeriod(0);
@@ -160,43 +161,43 @@ public class MavenSnapshotTriggerTest extends HudsonTestCase {
      *
      */
     public void testMultipleDependencySnapshotTriggerIgnoreUnsuccessfullUpstreams() throws Exception {
-        configureDefaultMaven();
+        ToolInstallations.configureDefaultMaven();
 
         // This is only executed to make sure that dependency A is available in repository
-        MavenModuleSet prepareProject = createMavenProject("prepareProject");
+        MavenModuleSet prepareProject = jenkins.createProject(MavenModuleSet.class, "prepareProject");
         prepareProject.setGoals("clean install");
         prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
         buildAndAssertSuccess(prepareProject);
         prepareProject.delete();
 
         // This is only executed to make sure that dependency B is available in repository
-        prepareProject = createMavenProject("prepareProject");
+        prepareProject = jenkins.createProject(MavenModuleSet.class, "prepareProject");
         prepareProject.setGoals("clean install");
         prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
         buildAndAssertSuccess(prepareProject);
         prepareProject.delete();
 
-        MavenModuleSet projA1 = createMavenProject("snap-dep-test-A1");
+        MavenModuleSet projA1 = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-A1");
         projA1.setGoals("clean install");
         projA1.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
 
-        MavenModuleSet projA2 = createMavenProject("snap-dep-test-A2");
+        MavenModuleSet projA2 = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-A2");
         projA2.setGoals("clean verify");
         projA2.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
 
-        MavenModuleSet projB1 = createMavenProject("snap-dep-test-B1");
+        MavenModuleSet projB1 = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-B1");
         projB1.setGoals("clean compile");
         projB1.setIgnoreUpstremChanges(false);
         projB1.setQuietPeriod(0);
         projB1.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
 
-        MavenModuleSet projB2 = createMavenProject("snap-dep-test-B2");
+        MavenModuleSet projB2 = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-B2");
         projB2.setGoals("clean verify");
         projB2.setIgnoreUpstremChanges(false);
         projB2.setQuietPeriod(0);
         projB2.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
 
-        MavenModuleSet projC = createMavenProject("snap-dep-test-C");
+        MavenModuleSet projC = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-C");
         projC.setGoals("clean compile");
         projC.setIgnoreUpstremChanges(false);
         projC.setQuietPeriod(0);

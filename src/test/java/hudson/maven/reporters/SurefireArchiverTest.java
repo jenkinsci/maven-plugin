@@ -31,14 +31,15 @@ import hudson.maven.reporters.SurefireArchiver.FactoryImpl;
 import hudson.model.Result;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 public class SurefireArchiverTest extends HudsonTestCase {
     public void testSerialization() throws Exception {
-        configureDefaultMaven();
-        MavenModuleSet m = createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("../maven-surefire-unstable.zip")));
         m.setGoals("install");
 

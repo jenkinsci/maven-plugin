@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * Test incremental build for a project with modules and submodules.
@@ -42,8 +43,8 @@ public class MavenMultiLevelModuleTest {
     @For(MavenModuleSetBuild.class)
     @Test
     public void testIncrementalBuildWithMultiModuleChangeSet() throws Exception {
-        j.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
-        MavenModuleSet m = j.createMavenProject();
+        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multilevelmod.zip"),
                 getClass().getResource("maven-multilevelmod-changes.zip")));

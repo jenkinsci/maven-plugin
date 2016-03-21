@@ -20,24 +20,9 @@ package hudson.maven;
  * under the License.
  */
 
-import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.ParametersDefinitionProperty;
-import hudson.model.Result;
-import hudson.model.StringParameterDefinition;
 import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
-import hudson.tasks.test.AbstractTestResultAction;
-import hudson.tasks.test.TestResultProjectAction;
-import org.apache.commons.io.FileUtils;
-import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.Email;
-import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Olivier Lamy
@@ -49,6 +34,9 @@ public class Maven31xBuildTest
     public MavenInstallation configureMaven3x()
         throws Exception
     {
-        return configureMaven31();
+        MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.1.0", MavenInstallation.MAVEN_30);
+        MavenInstallation m3 = new MavenInstallation("apache-maven-3.1.0", mvn.getHome(), NO_PROPERTIES);
+        jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
+        return m3;
     }
 }

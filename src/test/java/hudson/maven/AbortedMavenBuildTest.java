@@ -8,12 +8,13 @@ import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 import java.io.IOException;
+import org.jvnet.hudson.test.ToolInstallations;
 
 public class AbortedMavenBuildTest extends HudsonTestCase {
     @Bug(8054)
     public void testBuildWrapperSeesAbortedStatus() throws Exception {
-        configureDefaultMaven();
-        MavenModuleSet project = createMavenProject();
+        ToolInstallations.configureDefaultMaven();
+        MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
         TestBuildWrapper wrapper = new TestBuildWrapper();
         project.getBuildWrappersList().add(wrapper);
         project.getReporters().add(new AbortingReporter());
