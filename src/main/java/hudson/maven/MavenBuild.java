@@ -830,9 +830,13 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                         LOGGER.fine( "using maven 3 " + mavenVersion );
                         factory = new Maven31ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
                         break;
-                    default:
+                    case MAVEN_3_2:
                         LOGGER.fine( "using maven 3 " + mavenVersion );
                         factory = new Maven32ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
+                        break;
+                    default:
+                        LOGGER.fine( "using maven 3 " + mavenVersion );
+                        factory = new Maven33ProcessFactory( getParent().getParent(), MavenBuild.this, launcher, envVars, getMavenOpts(listener, envVars), null );
 
                 }
 
