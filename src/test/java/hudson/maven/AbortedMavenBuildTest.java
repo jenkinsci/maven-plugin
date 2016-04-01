@@ -10,7 +10,7 @@ import org.jvnet.hudson.test.HudsonTestCase;
 import java.io.IOException;
 import org.jvnet.hudson.test.ToolInstallations;
 
-public class AbortedMavenBuildTest extends HudsonTestCase {
+public class AbortedMavenBuildTest extends AbstractMavenTestCase {
     @Bug(8054)
     public void testBuildWrapperSeesAbortedStatus() throws Exception {
         ToolInstallations.configureDefaultMaven();

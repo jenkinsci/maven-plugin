@@ -1,30 +1,25 @@
 package hudson.maven;
 
-import hudson.maven.MavenModuleSet.DescriptorImpl;
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.ExtractResourceSCM;
 import hudson.EnvVars;
+import hudson.maven.MavenModuleSet.DescriptorImpl;
 import hudson.model.Result;
 import hudson.tasks.Maven.MavenInstallation;
+import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Andrew Bayer
  */
-public class MavenOptsTest extends HudsonTestCase {
+public class MavenOptsTest extends AbstractMavenTestCase {
     DescriptorImpl d;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         d = jenkins.getDescriptorByType(DescriptorImpl.class);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
+        // Only in these tests we reset global MAVEN_OPTS
         d.setGlobalMavenOpts(null);
-        super.tearDown();
     }
 
     public void testEnvMavenOptsNoneInProject() throws Exception {
@@ -32,7 +27,7 @@ public class MavenOptsTest extends HudsonTestCase {
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
-        m.setAssignedLabel(createSlave(new EnvVars("MAVEN_OPTS", "-Dhudson.mavenOpt.test=foo")).getSelfLabel());
+        m.setAssignedLabel(createSlave(new EnvVars("MAVEN_OPTS", JAVA_HEADLESS_OPT + " -Dhudson.mavenOpt.test=foo")).getSelfLabel());
         
         buildAndAssertSuccess(m);
 
@@ -45,8 +40,8 @@ public class MavenOptsTest extends HudsonTestCase {
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
-        m.setMavenOpts("-Dhudson.mavenOpt.test=bar");
-        m.setAssignedLabel(createSlave(new EnvVars("MAVEN_OPTS", "-Dhudson.mavenOpt.test=foo")).getSelfLabel());
+        m.setMavenOpts(JAVA_HEADLESS_OPT + " -Dhudson.mavenOpt.test=bar");
+        m.setAssignedLabel(createSlave(new EnvVars("MAVEN_OPTS", JAVA_HEADLESS_OPT + " -Dhudson.mavenOpt.test=foo")).getSelfLabel());
         
         buildAndAssertSuccess(m);
 
@@ -58,9 +53,9 @@ public class MavenOptsTest extends HudsonTestCase {
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
-        d.setGlobalMavenOpts("-Dhudson.mavenOpt.test=bar");
-        m.setAssignedLabel(createSlave(new EnvVars("MAVEN_OPTS", "-Dhudson.mavenOpt.test=foo")).getSelfLabel());
-        m.setMavenOpts("-Dhudson.mavenOpt.test=baz");
+        d.setGlobalMavenOpts(JAVA_HEADLESS_OPT + " -Dhudson.mavenOpt.test=bar");
+        m.setAssignedLabel(createSlave(new EnvVars("MAVEN_OPTS", JAVA_HEADLESS_OPT + " -Dhudson.mavenOpt.test=foo")).getSelfLabel());
+        m.setMavenOpts(JAVA_HEADLESS_OPT + " -Dhudson.mavenOpt.test=baz");
 
         buildAndAssertSuccess(m);
 
@@ -73,7 +68,7 @@ public class MavenOptsTest extends HudsonTestCase {
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
-        d.setGlobalMavenOpts("-Dhudson.mavenOpt.test=bar");
+        d.setGlobalMavenOpts(JAVA_HEADLESS_OPT + " -Dhudson.mavenOpt.test=bar");
         
         buildAndAssertSuccess(m);
 
@@ -85,8 +80,8 @@ public class MavenOptsTest extends HudsonTestCase {
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
-        d.setGlobalMavenOpts("-Dhudson.mavenOpt.test=bar");
-        m.setMavenOpts("-Dhudson.mavenOpt.test=foo");
+        d.setGlobalMavenOpts(JAVA_HEADLESS_OPT + " -Dhudson.mavenOpt.test=bar");
+        m.setMavenOpts(JAVA_HEADLESS_OPT + " -Dhudson.mavenOpt.test=foo");
        
         buildAndAssertSuccess(m);
 
@@ -98,7 +93,7 @@ public class MavenOptsTest extends HudsonTestCase {
         ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
 	m.setScm(new ExtractResourceSCM(getClass().getResource("maven-surefire-unstable.zip")));
-        m.setMavenOpts("-XX:MaxPermSize=512m\r\n-Xms128m\r\n-Xmx512m");
+        m.setMavenOpts(JAVA_HEADLESS_OPT + " -XX:MaxPermSize=512m\r\n-Xms128m\r\n-Xmx512m");
         m.setGoals("install");
         
 	assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
@@ -114,7 +109,7 @@ public class MavenOptsTest extends HudsonTestCase {
     public void testEnvironmentVariableExpansion() throws Exception {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
-        m.setMavenOpts("$FOO");
+        m.setMavenOpts(JAVA_HEADLESS_OPT + " $FOO");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
         m.setAssignedLabel(createSlave(new EnvVars("FOO", "-Dhudson.mavenOpt.test=foo -Dhudson.mavenOpt.test2=bar")).getSelfLabel());

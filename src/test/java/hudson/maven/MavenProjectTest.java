@@ -51,7 +51,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 /**
  * @author huybrechts
  */
-public class MavenProjectTest extends HudsonTestCase {
+public class MavenProjectTest extends AbstractMavenTestCase {
     
 
     public void testOnMaster() throws Exception {

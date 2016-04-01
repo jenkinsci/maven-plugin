@@ -44,7 +44,7 @@ import org.jvnet.hudson.test.Issue;
  * @author Olivier Lamy
  */
 public abstract class AbstractMaven3xBuildTest
-    extends HudsonTestCase {
+    extends AbstractMavenTestCase {
 
     public abstract MavenInstallation configureMaven3x() throws Exception;
 

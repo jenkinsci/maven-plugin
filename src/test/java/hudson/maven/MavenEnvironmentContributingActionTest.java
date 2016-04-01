@@ -39,7 +39,7 @@ import org.kohsuke.stapler.StaplerRequest;
 public class MavenEnvironmentContributingActionTest {
 
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new MavenJenkinsRule();
 
     @Test
     @Bug(17555)

@@ -13,7 +13,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 /**
  * @author Olivier Lamy
  */
-public class MavenBuildSurefireFailedTest extends HudsonTestCase {
+public class MavenBuildSurefireFailedTest extends AbstractMavenTestCase {
 
     @Bug(8415)
     public void testMaven2Unstable() throws Exception {

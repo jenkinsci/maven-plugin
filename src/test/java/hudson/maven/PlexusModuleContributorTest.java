@@ -21,8 +21,7 @@ import org.jvnet.hudson.test.ToolInstallations;
  */
 public class PlexusModuleContributorTest {
     @Rule
-    public JenkinsRule j = new JenkinsRule();
-
+    public JenkinsRule j = new MavenJenkinsRule();
 
     /**
      * Tests the effect of PlexusModuleContributor by trying to parse a POM that uses a custom packaging

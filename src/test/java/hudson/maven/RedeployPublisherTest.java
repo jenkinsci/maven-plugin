@@ -49,7 +49,7 @@ import org.jvnet.hudson.test.*;
 public class RedeployPublisherTest {
 
     @ClassRule public static BuildWatcher buildWatcher = new BuildWatcher();
-    @Rule public JenkinsRule j = new JenkinsRule();
+    @Rule public JenkinsRule j = new MavenJenkinsRule();
     @Rule public TemporaryFolder tmp = new TemporaryFolder();
 
     @RandomlyFails("Not a v4.0.0 POM. for project org.jvnet.maven-antrun-extended-plugin:maven-antrun-extended-plugin at /home/jenkins/.m2/repository/org/jvnet/maven-antrun-extended-plugin/maven-antrun-extended-plugin/1.39/maven-antrun-extended-plugin-1.39.pom")

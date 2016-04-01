@@ -15,7 +15,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 /**
  * @author Andrew Bayer
  */
-public class MavenMultiModuleTestIncremental extends HudsonTestCase {
+public class MavenMultiModuleTestIncremental extends AbstractMavenTestCase {
 
     @Bug(7684)
     public void testRelRootPom() throws Exception {
