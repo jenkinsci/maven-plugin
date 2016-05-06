@@ -23,6 +23,7 @@
  */
 package hudson.maven.reporters;
 
+import hudson.maven.AbstractMavenTestCase;
 import hudson.maven.MavenBuild;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
@@ -36,7 +37,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class SurefireArchiverTest extends HudsonTestCase {
+public class SurefireArchiverTest extends AbstractMavenTestCase {
     public void testSerialization() throws Exception {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");

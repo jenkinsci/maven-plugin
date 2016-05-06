@@ -48,7 +48,7 @@ import org.kohsuke.stapler.StaplerRequest;
 /**
  * @author Dominik Bartholdi (imod)
  */
-public class MavenArgumentInterceptorTest extends HudsonTestCase {
+public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 
 	public void testSimpleMaven3BuildWithArgInterceptor_Goals() throws Exception {
 

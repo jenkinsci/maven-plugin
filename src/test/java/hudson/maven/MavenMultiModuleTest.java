@@ -45,7 +45,7 @@ import org.jvnet.hudson.test.ToolInstallations;
  */
 public class MavenMultiModuleTest {
 
-    @Rule public JenkinsRule j = new JenkinsRule();
+    @Rule public JenkinsRule j = new MavenJenkinsRule();
 
     /**
      * NPE in {@code build.getProject().getWorkspace()} for {@link MavenBuild}.

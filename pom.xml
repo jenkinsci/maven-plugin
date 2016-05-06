@@ -464,6 +464,18 @@ THE SOFTWARE.
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <!-- Prevent the annoying ForkedBooter process from stealing window focus on Mac OS -->
+            <!-- Must be defined as argLine and not as system property to be used -->
+            <argLine>-Djava.awt.headless=true</argLine>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

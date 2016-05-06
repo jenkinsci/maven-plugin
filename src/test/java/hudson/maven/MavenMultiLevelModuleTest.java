@@ -26,7 +26,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 public class MavenMultiLevelModuleTest {
 
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new MavenJenkinsRule();
 
     /**
      * Given a multi-module project:

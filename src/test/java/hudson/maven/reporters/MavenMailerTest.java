@@ -24,6 +24,8 @@
 package hudson.maven.reporters;
 
 import static org.junit.Assert.assertEquals;
+
+import hudson.maven.MavenJenkinsRule;
 import hudson.maven.MavenModuleSet;
 import hudson.model.Result;
 import hudson.tasks.Mailer;
@@ -57,7 +59,7 @@ public class MavenMailerTest {
 	private static final String EMAIL_SOME = "some.email@domain.org";
 	private static final String EMAIL_OTHER = "other.email@domain.org";
 	
-	@Rule public JenkinsRule j = new JenkinsRule();
+	@Rule public JenkinsRule j = new MavenJenkinsRule();
 
 	@Test
 	@Bug(5695)
