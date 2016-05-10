@@ -29,7 +29,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.4</version>
+    <version>2.8</version>
   </parent>
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
@@ -53,6 +53,8 @@ THE SOFTWARE.
     <wagonVersion>2.4</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <findbugs.failOnError>false</findbugs.failOnError>
+    <!-- well the parent pom could defined an empty one instead of causing failure!! -->
+    <argLine></argLine>
   </properties>
 
   <issueManagement>
@@ -469,9 +471,10 @@ THE SOFTWARE.
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
+            <!-- now defined in parent pom -->
             <!-- Prevent the annoying ForkedBooter process from stealing window focus on Mac OS -->
             <!-- Must be defined as argLine and not as system property to be used -->
-            <argLine>-Djava.awt.headless=true</argLine>
+            <!--argLine>-Djava.awt.headless=true</argLine-->
           </configuration>
         </plugin>
       </plugins>
