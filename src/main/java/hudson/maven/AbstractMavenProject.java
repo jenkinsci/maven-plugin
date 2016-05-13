@@ -74,6 +74,11 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
 
     		boolean ignoreUnsuccessfulUpstreams = ignoreUnsuccessfulUpstreams(downstreamProject);
 
+			MavenModuleSetBuild mavenModuleSetBuild = null;
+			if (build instanceof MavenModuleSetBuild) {
+				mavenModuleSetBuild = (MavenModuleSetBuild)build;
+			}
+
     		// if the downstream module depends on multiple modules,
     		// only trigger them when all the upstream dependencies are updated.
 
@@ -82,6 +87,10 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     		if (areUpstreamsBuilding(downstreamProject, parent, listener)) {
     			return false;
     		}
+			// Check to see if is a release so we don't trigger the downstream project
+			else if (mavenModuleSetBuild != null && mavenModuleSetBuild.isARelease()) {
+				return false;
+			}
     		// Check to see if any of its upstream dependencies are in this list of downstream projects.
     		else if (inDownstreamProjects(downstreamProject)) {
                 listener.getLogger().println("Not triggering " + ModelHyperlinkNote.encodeTo(downstreamProject) + " because it has dependencies in the downstream project list");
