@@ -176,11 +176,12 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
     }
 
     /**
-     * The same as {@link #getParentBuild()}.
+     * The same as {@link #getParentBuild()} except that returns itself when no parent.
      */
     @Override
     public AbstractBuild<?, ?> getRootBuild() {
-        return getParentBuild();
+        AbstractBuild<?, ?> parent = getParentBuild();
+        return (parent != null) ? parent : this;
     }
 
     /**
