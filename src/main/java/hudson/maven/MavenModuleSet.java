@@ -1220,7 +1220,12 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         else
             localRepository = null;
         ignoreUpstremChanges = !json.has("triggerByDependency");
-        ignoreUnsuccessfulUpstreams = json.has("ignoreUnsuccessfulUpstreams");
+        if ( !ignoreUpstremChanges ) {
+            JSONObject ignoreUpstremChangesConfig = json.optJSONObject("triggerByDependency");
+            ignoreUnsuccessfulUpstreams = null != ignoreUpstremChangesConfig && ignoreUpstremChangesConfig.has("ignoreUnsuccessfulUpstreams");
+        } else {
+            ignoreUnsuccessfulUpstreams = false;
+        }
         runHeadless = req.hasParameter("maven.runHeadless");
         incrementalBuild = req.hasParameter("maven.incrementalBuild");
         archivingDisabled = req.hasParameter("maven.archivingDisabled");
