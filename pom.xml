@@ -43,8 +43,7 @@ THE SOFTWARE.
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Maven+Project+Plugin</url>
 
   <properties>
-    <jenkins.version>2.4-SNAPSHOT</jenkins.version>
-    <java.level>7</java.level>
+    <jenkins.version>2.13-SNAPSHOT</jenkins.version>
     <mavenInterceptorsVersion>1.7</mavenInterceptorsVersion>  
     <mavenVersion>3.1.0</mavenVersion>
     <maven.version>${mavenVersion}</maven.version>
