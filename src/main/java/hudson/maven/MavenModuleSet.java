@@ -949,10 +949,6 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         return modules.get(rootModule);
     }
 
-    public MavenInstallation inferMavenInstallation() {
-        return getMaven();
-    }
-
     @Override
     protected Set<ResourceActivity> getResourceActivities() {
         final Set<ResourceActivity> activities = new HashSet<ResourceActivity>();

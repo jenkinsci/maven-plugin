@@ -728,10 +728,6 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         }
     }
 
-    public MavenInstallation inferMavenInstallation() {
-        return getParent().inferMavenInstallation();
-    }
-
     /**
      * List of active {@link MavenReporter}s configured for this module.
      */

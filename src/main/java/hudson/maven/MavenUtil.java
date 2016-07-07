@@ -31,8 +31,8 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
+import hudson.tasks.MavenSelector;
 import hudson.tasks.Maven.MavenInstallation;
-import hudson.tasks.Maven.ProjectWithMaven;
 import jenkins.model.Jenkins;
 import jenkins.mvn.SettingsProvider;
 import org.apache.commons.lang.StringUtils;
@@ -66,6 +66,16 @@ public class MavenUtil {
         return createEmbedder(listener,(File)null,profiles);
     }
 
+    private static MavenInstallation obtainMavenInstallation(AbstractProject<?, ?> project, TaskListener listener)
+            throws IOException, InterruptedException {
+        MavenInstallation m = null;
+        m = MavenSelector.obtainMavenInstallation(project);
+        if (m != null) {
+            m = m.forNode(Jenkins.getInstance(), listener);
+        }
+        return m;
+    }
+    
     /**
      * This version tries to infer mavenHome by looking at a project.
      *
@@ -73,8 +83,7 @@ public class MavenUtil {
      */
     public static MavenEmbedder createEmbedder(TaskListener listener, AbstractProject<?,?> project, String profiles) throws MavenEmbedderException, IOException, InterruptedException {
         MavenInstallation m=null;
-        if (project instanceof ProjectWithMaven)
-            m = ((ProjectWithMaven) project).inferMavenInstallation().forNode(Jenkins.getInstance(),listener);
+        m = obtainMavenInstallation(project, listener);
 
         return createEmbedder(listener,m!=null?m.getHomeDir():null,profiles);
     }
@@ -93,9 +102,8 @@ public class MavenUtil {
         
         AbstractProject<?,?> project = build.getProject();
         
-        if (project instanceof ProjectWithMaven) {
-            m = ((ProjectWithMaven) project).inferMavenInstallation().forNode(Jenkins.getInstance(),listener);
-        }
+        m = obtainMavenInstallation(project, listener);
+
         if (project instanceof MavenModuleSet) {
             String altSet = SettingsProvider.getSettingsRemotePath(((MavenModuleSet) project).getSettings(), build, listener);
             
