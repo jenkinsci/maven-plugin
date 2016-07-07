@@ -28,6 +28,9 @@ import hudson.model.Item;
 import hudson.tasks.MavenSelector;
 import hudson.tasks.Maven.MavenInstallation;
 
+/**
+ * {@link MavenSelector} extension for {@link MavenModule} and {@link MavenModuleSet} {@link Item}s
+ */
 @Extension
 public class MavenPluginMavenSelectorImpl extends MavenSelector {
 
