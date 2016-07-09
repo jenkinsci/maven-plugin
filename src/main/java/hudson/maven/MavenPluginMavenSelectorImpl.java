@@ -36,11 +36,7 @@ public class MavenPluginMavenSelectorImpl extends MavenSelector {
 
     @Override
     public boolean isApplicable(Class<? extends Item> itemClass) {
-        if (itemClass.isAssignableFrom(MavenModule.class) || itemClass.isAssignableFrom(MavenModuleSet.class)) {
-            return true;
-        } else {
-            return false;
-        }
+        return itemClass.isAssignableFrom(MavenModule.class) || itemClass.isAssignableFrom(MavenModuleSet.class);
     }
 
     @Override
