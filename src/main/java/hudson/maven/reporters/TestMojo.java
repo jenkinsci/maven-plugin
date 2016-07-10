@@ -69,7 +69,8 @@ enum TestMojo {
             "internal-integration-test",null,"3.0.0-alpha-6"),
     ANDROID_MAVEN_PLUGIN("com.jayway.maven.plugins.android.generation2", "android-maven-plugin",
             "internal-integration-test",null,"3.0.0-alpha-6"),
-            
+    ANDROID_MAVEN_PLUGIN_2("com.simpligility.maven.plugins", "android-maven-plugin", "internal-integration-test", null),
+
     GWT_MAVEN_PLUGIN("org.codehaus.mojo", "gwt-maven-plugin", "test","reportsDirectory","1.2"),
     
     MAVEN_SOAPUI_PLUGIN("com.smartbear.soapui", "soapui-maven-plugin", "test", "outputFolder"),
