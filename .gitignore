@@ -6,3 +6,4 @@ work
 *.iml
 .idea/
 .java-version
+out/
