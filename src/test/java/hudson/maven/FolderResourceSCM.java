@@ -31,7 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Simple scm which
+ * Simple scm which copy a project to the workspace (avoid unzip)
  */
 public class FolderResourceSCM extends NullSCM
 {

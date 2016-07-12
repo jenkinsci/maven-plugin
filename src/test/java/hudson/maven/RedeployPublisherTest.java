@@ -248,7 +248,7 @@ public class RedeployPublisherTest {
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
         // a build with a failing unit tests
-        m2.setScm(new ExtractResourceSCM(getClass().getResource("maven-test-failure-findbugs.zip")));
+        m2.setScm( new FolderResourceSCM("src/test/projects/maven-test-failure-findbugs") );
         m2.getPublishersList().add(new RedeployPublisher("",repo.toURI().toString(),false, true));
 
         MavenModuleSetBuild b = m2.scheduleBuild2(0).get();
