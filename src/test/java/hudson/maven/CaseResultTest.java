@@ -28,13 +28,14 @@ import hudson.maven.reporters.SurefireReport;
 import hudson.model.Result;
 import hudson.tasks.junit.CaseResult;
 import hudson.tasks.junit.TestResult;
-import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class CaseResultTest {
 
@@ -47,7 +48,8 @@ public class CaseResultTest {
     @Test public void mavenErrorMsgAndStacktraceRender() throws Exception {
         ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "maven-render-test");
-        m.setScm(new ExtractResourceSCM(m.getClass().getResource("maven-test-failure-findbugs.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-test-failure-findbugs"));
+
         m.setGoals("clean test");
         MavenModuleSetBuild b = j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
         MavenBuild modBuild = b.getModuleLastBuilds().get(m.getModule("test:test"));
