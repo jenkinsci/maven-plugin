@@ -153,7 +153,7 @@ public abstract class AbstractMaven3xBuildTest
         m.addProperty( parametersDefinitionProperty );
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("envars-maven-project.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/envars-maven-project"));
         m.setGoals( "clean test-compile" );
         MavenModuleSetBuild mmsb =  buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());
@@ -234,7 +234,7 @@ public abstract class AbstractMaven3xBuildTest
         m.setRootPOM( "org.foobar.build/pom.xml" );
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("foobar_eclipse_with_fix.zip"),"foobar_eclipse"));
+        m.setScm(new FolderResourceSCM("src/test/projects/foobar_eclipse_with_fix/foobar_eclipse"));
         m.setGoals("verify");
         buildAndAssertSuccess(m);
 
