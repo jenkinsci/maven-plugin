@@ -475,6 +475,7 @@ THE SOFTWARE.
             <!-- Prevent the annoying ForkedBooter process from stealing window focus on Mac OS -->
             <!-- Must be defined as argLine and not as system property to be used -->
             <!--argLine>-Djava.awt.headless=true</argLine-->
+            <forkedProcessTimeoutInSeconds>14400</forkedProcessTimeoutInSeconds>
           </configuration>
         </plugin>
       </plugins>
