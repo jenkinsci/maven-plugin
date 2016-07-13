@@ -97,7 +97,7 @@ public class MavenBuildTest {
     public void testParallelModuleBuild() throws Exception {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/multimodule-maven"));
         
         j.buildAndAssertSuccess(m);
 
@@ -342,7 +342,7 @@ public class MavenBuildTest {
     public void testActionsOfPreAndPostBuildersMustBeExposed() throws Exception {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/multimodule-maven"));
         m.setGoals("initialize");
 
         TestBuilder pre = new TestBuilder();
@@ -368,7 +368,7 @@ public class MavenBuildTest {
     public void testBuildWrappersTeardown() throws Exception {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/multimodule-maven"));
         m.setGoals("initialize");
 
         TearingDownBuildWrapper testBuild1Wrapper = new TearingDownBuildWrapper();
