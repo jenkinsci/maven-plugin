@@ -116,7 +116,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
      * Check if the generated site is linked correctly for multi module projects.
      */
     public void testMultiModuleSiteBuild() throws Exception {
-        MavenModuleSet project = createProject("maven-multimodule-site");
+        MavenModuleSet project = createProject("src/test/projects/maven-multimodule-site");
         project.setGoals("site");
 
         try {
@@ -144,7 +144,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     }
     
     public void testNestedMultiModuleSiteBuild() throws Exception {
-        MavenModuleSet project = createProject("maven-nested-multimodule-site");
+        MavenModuleSet project = createProject("src/test/projects/maven-nested-multimodule-site");
         project.setGoals("site");
 
         try {
@@ -168,7 +168,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
      */
     @Bug(5943)
     public void testMultiModuleSiteBuildOnSlave() throws Exception {
-        MavenModuleSet project = createProject("maven-multimodule-site");
+        MavenModuleSet project = createProject("src/test/projects/maven-multimodule-site");
         project.setGoals("site");
         project.setAssignedLabel(createSlave().getSelfLabel());
 
@@ -187,7 +187,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
 
     @Bug(6779)
     public void testDeleteSetBuildDeletesModuleBuilds() throws Exception {
-        MavenModuleSet project = createProject("maven-multimod");
+        MavenModuleSet project = createProject("src/test/projects/maven-multimod");
         project.setLocalRepository(new DefaultLocalRepositoryLocator());
         project.setGoals("install");
         buildAndAssertSuccess(project);
