@@ -76,14 +76,13 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     }
 
     private MavenModuleSet createSimpleProject() throws Exception {
-        return createProject("/simple-projects.zip");
+        return createProject( "/src/test/projects/simple-projects" );
     }
 
-    private MavenModuleSet createProject(final String scmResource) throws Exception {
+    private MavenModuleSet createProject(final String scmResourceFolder) throws Exception {
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mi = ToolInstallations.configureDefaultMaven();
-        project.setScm(new ExtractResourceSCM(getClass().getResource(
-                scmResource)));
+        project.setScm(new FolderResourceSCM(scmResourceFolder));
         project.setMaven(mi.getName());
         project.setLocalRepository(new PerJobLocalRepositoryLocator());
         return project;
@@ -117,7 +116,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
      * Check if the generated site is linked correctly for multi module projects.
      */
     public void testMultiModuleSiteBuild() throws Exception {
-        MavenModuleSet project = createProject("maven-multimodule-site.zip");
+        MavenModuleSet project = createProject("maven-multimodule-site");
         project.setGoals("site");
 
         try {
@@ -145,7 +144,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     }
     
     public void testNestedMultiModuleSiteBuild() throws Exception {
-        MavenModuleSet project = createProject("maven-nested-multimodule-site.zip");
+        MavenModuleSet project = createProject("maven-nested-multimodule-site");
         project.setGoals("site");
 
         try {
@@ -169,7 +168,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
      */
     @Bug(5943)
     public void testMultiModuleSiteBuildOnSlave() throws Exception {
-        MavenModuleSet project = createProject("maven-multimodule-site.zip");
+        MavenModuleSet project = createProject("maven-multimodule-site");
         project.setGoals("site");
         project.setAssignedLabel(createSlave().getSelfLabel());
 
@@ -188,7 +187,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
 
     @Bug(6779)
     public void testDeleteSetBuildDeletesModuleBuilds() throws Exception {
-        MavenModuleSet project = createProject("maven-multimod.zip");
+        MavenModuleSet project = createProject("maven-multimod");
         project.setLocalRepository(new DefaultLocalRepositoryLocator());
         project.setGoals("install");
         buildAndAssertSuccess(project);
