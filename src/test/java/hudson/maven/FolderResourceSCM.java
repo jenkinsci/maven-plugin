@@ -38,6 +38,9 @@ public class FolderResourceSCM extends NullSCM
     private final String directory;
 
     public FolderResourceSCM( String directory ) {
+        if (!new File( directory ).isDirectory()){
+            throw new IllegalArgumentException( directory + " must be an existing directory" );
+        }
         this.directory = directory;
     }
 
