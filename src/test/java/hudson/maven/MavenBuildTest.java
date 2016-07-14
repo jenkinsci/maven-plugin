@@ -59,7 +59,7 @@ public class MavenBuildTest {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("HUDSON-4192.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/HUDSON-4192"));
         j.buildAndAssertSuccess(m);
     }
     
