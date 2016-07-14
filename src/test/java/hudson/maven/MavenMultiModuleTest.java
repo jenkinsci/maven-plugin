@@ -55,7 +55,7 @@ public class MavenMultiModuleTest {
         ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
 	    assertFalse("MavenModuleSet.isNonRecursive() should be false", m.isNonRecursive());
         j.buildAndAssertSuccess(m);
     }
@@ -65,7 +65,7 @@ public class MavenMultiModuleTest {
         Assume.assumeFalse(Functions.isWindows());
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
-        mms.setScm(new ExtractResourceSCM(MavenMultiModuleTest.class.getResource("maven-multimod.zip")));
+        mms.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         j.buildAndAssertSuccess(mms);
         MavenModule mm = mms.getModule("org.jvnet.hudson.main.test.multimod:moduleA");
         j.buildAndAssertSuccess(mms);
@@ -95,8 +95,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.getReporters().add(new MavenFingerprinter());
-    	m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod.zip"),
-    						   getClass().getResource("maven-multimod-changes.zip")));
+    	m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod-with-changes"));
     
     	j.buildAndAssertSuccess(m);
     
@@ -213,9 +212,7 @@ public class MavenMultiModuleTest {
         ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource(
-                "maven-multimod.zip"), getClass().getResource(
-                "maven-multimod-changes.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod-with-changes"));
 
         j.buildAndAssertSuccess(m);
 
@@ -246,8 +243,7 @@ public class MavenMultiModuleTest {
         ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod.zip"),
-                getClass().getResource("maven-multimod-changes.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod-with-changes"));
 
         m.setIncrementalBuild(true);
         j.buildAndAssertSuccess(m);
@@ -262,7 +258,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install -N");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
 
         j.buildAndAssertSuccess(m);
 
@@ -452,7 +448,7 @@ public class MavenMultiModuleTest {
         ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         m.setGoals( "-N validate" );
         assertTrue("MavenModuleSet.isNonRecursive() should be true", m.isNonRecursive());
         j.buildAndAssertSuccess(m);
@@ -463,7 +459,7 @@ public class MavenMultiModuleTest {
     @Test public void modulesPageLinks() throws Exception {
         ToolInstallations.configureMaven3();
         MavenModuleSet ms = j.jenkins.createProject(MavenModuleSet.class, "p");
-        ms.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
+        ms.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         j.buildAndAssertSuccess(ms);
         MavenModule m = ms.getModule("org.jvnet.hudson.main.test.multimod:moduleA");
         assertNotNull(m);
@@ -478,7 +474,7 @@ public class MavenMultiModuleTest {
         ArtifactManagerConfiguration.get().getArtifactManagerFactories().add(new TestAMF());
         ToolInstallations.configureDefaultMaven(); // using Maven 2 so we can test single-module builds
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
-        mms.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
+        mms.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         mms.setAssignedNode(j.createOnlineSlave());
         j.buildAndAssertSuccess(mms);
         // We want all the artifacts in a given module to be archived in one operation. But modules are archived separately.
