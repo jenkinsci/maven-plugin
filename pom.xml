@@ -29,12 +29,12 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.4</version>
+    <version>2.9</version>
   </parent>
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
   <artifactId>maven-plugin</artifactId><!-- for the same reason, artifactId is against the convention -->
-  <version>2.13-SNAPSHOT</version>
+  <version>2.14-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>Maven Integration plugin</name>
@@ -53,6 +53,8 @@ THE SOFTWARE.
     <wagonVersion>2.4</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <findbugs.failOnError>false</findbugs.failOnError>
+    <!-- well the parent pom could defined an empty one instead of causing failure!! -->
+    <argLine />
   </properties>
 
   <issueManagement>
@@ -474,6 +476,19 @@ THE SOFTWARE.
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <!-- now defined in parent pom -->
+            <!-- Prevent the annoying ForkedBooter process from stealing window focus on Mac OS -->
+            <!-- Must be defined as argLine and not as system property to be used -->
+            <!--argLine>-Djava.awt.headless=true</argLine-->
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

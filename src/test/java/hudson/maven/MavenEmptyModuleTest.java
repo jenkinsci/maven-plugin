@@ -14,7 +14,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 /**
  * @author Andrew Bayer
  */
-public class MavenEmptyModuleTest extends HudsonTestCase {
+public class MavenEmptyModuleTest extends AbstractMavenTestCase {
     /**
      * Verify that a build will work with a module <module></module> and a module <module> </module>
      */

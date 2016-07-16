@@ -14,7 +14,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class MavenModuleSetTest extends HudsonTestCase {
+public class MavenModuleSetTest extends AbstractMavenTestCase {
     public void testConfigRoundtripLocalRepository() throws Exception {
         MavenModuleSet p = jenkins.createProject(MavenModuleSet.class, "p");
         configRoundtrip((Item) p);

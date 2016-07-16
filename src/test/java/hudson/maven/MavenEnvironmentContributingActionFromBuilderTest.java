@@ -30,7 +30,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 public class MavenEnvironmentContributingActionFromBuilderTest {
 
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new MavenJenkinsRule();
 
     @Test
     @Bug(20844)

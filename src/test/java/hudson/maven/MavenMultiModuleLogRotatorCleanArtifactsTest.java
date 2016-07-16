@@ -37,7 +37,7 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest {
 
 	
 	@Rule
-	public JenkinsRule j = new JenkinsRule();
+	public JenkinsRule j = new MavenJenkinsRule();
 	private MavenModuleSet m;
 	private FilePath jobs;
 

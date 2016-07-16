@@ -16,7 +16,7 @@ import org.jvnet.hudson.test.ToolInstallations;
  *
  * @author Andrew Bayer
  */
-public class MavenSnapshotTriggerTest extends HudsonTestCase {
+public class MavenSnapshotTriggerTest extends AbstractMavenTestCase {
     /**
      * Verifies dependency build ordering of SNAPSHOT dependency.
      * Note - has to build the projects once each first in order to get dependency info.

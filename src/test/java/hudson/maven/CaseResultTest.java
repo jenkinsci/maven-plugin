@@ -38,7 +38,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 
 public class CaseResultTest {
 
-    @Rule public JenkinsRule j = new JenkinsRule();
+    @Rule public JenkinsRule j = new MavenJenkinsRule();
 
     /**
      * Verifies that the error message and stacktrace from a failed junit test actually render properly.
