@@ -84,6 +84,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jenkins.MasterToSlaveFileCallable;
+import jenkins.maven3.agent.Maven33Main;
 import jenkins.model.Jenkins;
 import jenkins.mvn.GlobalSettingsProvider;
 import jenkins.mvn.SettingsProvider;
@@ -101,6 +102,7 @@ import jenkins.maven3.agent.Maven32Main;
 import org.jvnet.hudson.maven3.agent.Maven3Main;
 import org.jvnet.hudson.maven3.launcher.Maven31Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven32Launcher;
+import org.jvnet.hudson.maven3.launcher.Maven33Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -767,12 +769,19 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                                 maven3MainClass = Maven31Main.class;
                                 maven3LauncherClass = Maven31Launcher.class;
                                 break;
-                            default:
+                            case MAVEN_3_2:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
                                 factory = new Maven32ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
-                                                                    pom.getParent() );
+                                        pom.getParent() );
                                 maven3MainClass = Maven32Main.class;
                                 maven3LauncherClass = Maven32Launcher.class;
+                                break;
+                            default:
+                                LOGGER.fine( "using maven 3 " + mavenVersion );
+                                factory = new Maven33ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
+                                                                    pom.getParent() );
+                                maven3MainClass = Maven33Main.class;
+                                maven3LauncherClass = Maven33Launcher.class;
                         }
 
                         process = MavenBuild.mavenProcessCache.get( launcher.getChannel(), slistener, factory);

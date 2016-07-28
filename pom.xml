@@ -44,8 +44,8 @@ THE SOFTWARE.
 
   <properties>
     <jenkins.version>1.580.1</jenkins.version>
-    <java.level>6</java.level>
-    <mavenInterceptorsVersion>1.7</mavenInterceptorsVersion>  
+    <java.level>7</java.level>
+    <mavenInterceptorsVersion>1.8-SNAPSHOT</mavenInterceptorsVersion>
     <mavenVersion>3.1.0</mavenVersion>
     <maven.version>${mavenVersion}</maven.version>
     <aetherVersion>0.9.0.M3</aetherVersion>
@@ -159,7 +159,12 @@ THE SOFTWARE.
       <artifactId>maven32-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
     </dependency>
-    
+    <dependency>
+      <groupId>org.jenkins-ci.main.maven</groupId>
+      <artifactId>maven33-agent</artifactId>
+      <version>${mavenInterceptorsVersion}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven3-interceptor</artifactId>
@@ -183,6 +188,11 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven32-interceptor</artifactId>
+      <version>${mavenInterceptorsVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.main.maven</groupId>
+      <artifactId>maven33-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
     </dependency>
     <dependency>
