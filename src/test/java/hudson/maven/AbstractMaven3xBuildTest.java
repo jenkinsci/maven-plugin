@@ -278,6 +278,11 @@ public abstract class AbstractMaven3xBuildTest
         for(MavenModule module : expectedNonBuiltModules) {
             assertEquals(1,module.getLastBuild().getNumber());
         }
+        
+        // AbstractBuild#getRootBuild() never be null.
+        assertNotNull(isolated.getRootBuild());
+        // as there's no parent build, rootBuild is itself.
+        assertEquals(isolated, isolated.getRootBuild());
     }
     
     @Bug(12109)
