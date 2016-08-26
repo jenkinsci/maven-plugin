@@ -533,7 +533,7 @@ public class MavenMultiModuleTest {
                 if (f.exists()) {
                     if (f.getRemote().replace('\\', '/').contains("/org/jvnet/hudson/main/test/")) {
                         // Inside the local repository. Hard to know exactly what that path might be, so just mask it out.
-                        f = new FilePath(f.getChannel(), f.getRemote().replaceFirst("^.+(?=[/\\\\]org[/\\\\]jvnet[/\\\\]hudson[/\\\\]main[/\\\\]test[/\\\\])", "…"));
+                        f = new FilePath(f.getChannel(), f.getRemote().replaceFirst("^.+(?=[/\\\\]org[/\\\\]jvnet[/\\\\]hudson[/\\\\]main[/\\\\]test[/\\\\])", "…").replace('\\', '/'));
                     }
                     m.put(e.getKey(), f);
                 } else {
