@@ -202,6 +202,8 @@ public abstract class AbstractMaven3xBuildTest
     }
 
     @Issue("JENKINS-9326")
+    // Because of https://bugs.eclipse.org/bugs/show_bug.cgi?id=340852 this test is failing
+    // if you maven installation (MAVEN_HOME) is using a symbolic link
     public void testTychoTestResults() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
