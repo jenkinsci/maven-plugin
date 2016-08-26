@@ -70,12 +70,10 @@ public class MavenMultiModuleTest {
         MavenModule mm = mms.getModule("org.jvnet.hudson.main.test.multimod:moduleA");
         j.buildAndAssertSuccess(mms);
         assertEquals(2, mms.getLastStableBuild().number);
-        assertEquals(mms.getLastBuild().getId(), Util.resolveSymlink(new File(mms.getRootDir(), "builds/2")));
         assertEquals("2", Util.resolveSymlink(new File(mms.getRootDir(), "builds/lastStableBuild")));
         assertEquals("builds/lastStableBuild", Util.resolveSymlink(new File(mms.getRootDir(), "lastStable")));
         assertEquals("[lastBuild, lastStableBuild, lastSuccessfulBuild]", permalinks(mms).toString());
         assertEquals(2, mm.getLastStableBuild().number);
-        assertEquals(mm.getLastBuild().getId(), Util.resolveSymlink(new File(mm.getRootDir(), "builds/2")));
         assertEquals("2", Util.resolveSymlink(new File(mm.getRootDir(), "builds/lastStableBuild")));
         assertEquals("builds/lastStableBuild", Util.resolveSymlink(new File(mm.getRootDir(), "lastStable")));
         assertEquals("[lastBuild, lastStableBuild, lastSuccessfulBuild]", permalinks(mm).toString());
