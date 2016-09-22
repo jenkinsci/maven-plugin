@@ -221,19 +221,29 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
     private Result computeResult() {
         Result r = super.getResult();
-
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.finest("Current result is: " + r);
+        }
         for (MavenBuild b : getModuleLastBuilds().values()) {
             Result br = b.getResult();
-            if(r==null)
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.finest("Module result is: " + br + " for " + b.getParent().getGroupId() + ":" +
+                        b.getParent().getArtifactId());
+            }
+            if (r == null) {
                 r = br;
-            else
-            if(br==Result.NOT_BUILT)
+            } else if (br == Result.NOT_BUILT || br == Result.ABORTED) {
+                if (LOGGER.isLoggable(Level.FINEST)) {
+                    LOGGER.finest("Result not updated: " + r);
+                }
                 continue;   // UGLY: when computing combined status, ignore the modules that were not built
-            else
-            if(br!=null)
+            } else if (br != null) {
                 r = r.combine(br);
+            }
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.finest("New result is: " + r);
+            }
         }
-
         return r;
     }
 

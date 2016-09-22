@@ -37,6 +37,7 @@ import org.junit.Assume;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 
@@ -504,6 +505,21 @@ public class MavenMultiModuleTest {
         expected.put("org.jvnet.hudson.main.test.multimod:moduleA", m);
         assertEquals(expected, TestAM.archivings);
     }
+
+    @Issue("JENKINS-24832")
+    @Test
+    public void testMultiModulesFailureWithParallelThreads() throws Exception {
+        ToolInstallations.configureMaven3();
+        MavenModuleSet project = j.createProject(MavenModuleSet.class, "mp");
+        project.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod-failure.zip")));
+        // Without the parallel option it is correctly failing
+        project.setGoals("test");
+        j.assertBuildStatus(Result.FAILURE, project.scheduleBuild2(0).get());
+        // With the parallel option it was previously reported as aborted
+        project.setGoals("test -T 2");
+        j.assertBuildStatus(Result.FAILURE, project.scheduleBuild2(0).get());
+    }
+
 
     public static final class TestAMF extends ArtifactManagerFactory {
         @Override public ArtifactManager managerFor(Run<?,?> build) {
