@@ -1446,7 +1446,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
      * @since 2.12.2
      * @return true if {@link MavenModuleSetBuild} is a release
      */
-    protected Boolean isARelease() {
+    protected Boolean isRelease() {
         MavenModuleSet mavenModuleSet = this.getProject();
         for (MavenModule mavenModule : mavenModuleSet.getModules()) {
             if(mavenModule.getVersion().contains("-SNAPSHOT")) {
