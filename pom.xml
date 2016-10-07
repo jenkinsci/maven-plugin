@@ -49,7 +49,7 @@ THE SOFTWARE.
     <mavenVersion>3.1.0</mavenVersion>
     <maven.version>${mavenVersion}</maven.version>
     <aetherVersion>0.9.0.M3</aetherVersion>
-    <sisuInjectVersion>0.0.0.M5</sisuInjectVersion>
+    <sisuInjectVersion>0.3.3</sisuInjectVersion>
     <wagonVersion>2.4</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <findbugs.failOnError>false</findbugs.failOnError>
