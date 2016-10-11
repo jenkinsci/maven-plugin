@@ -23,8 +23,6 @@
  */
 package hudson.maven;
 
-import static hudson.Util.fixNull;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.maven.MavenBuild.ProxyImpl2;
 import hudson.maven.reporters.TestFailureDetector;
@@ -33,12 +31,19 @@ import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.remoting.Channel;
 import hudson.remoting.DelegatingCallable;
-import hudson.util.IOException2;
+import org.apache.maven.eventspy.EventSpy;
+import org.apache.maven.execution.AbstractExecutionListener;
+import org.apache.maven.execution.ExecutionEvent;
+import org.apache.maven.execution.ExecutionListener;
+import org.apache.maven.plugin.MojoExecution;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import org.jvnet.hudson.maven3.listeners.HudsonMavenExecutionResult;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.Collection;
@@ -54,15 +59,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
-import org.apache.maven.eventspy.EventSpy;
-import org.apache.maven.execution.AbstractExecutionListener;
-import org.apache.maven.execution.ExecutionEvent;
-import org.apache.maven.execution.ExecutionListener;
-import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-import org.jvnet.hudson.maven3.listeners.HudsonMavenExecutionResult;
-import org.slf4j.LoggerFactory;
+import static hudson.Util.fixNull;
 
 /**
  * @author Olivier Lamy
@@ -172,16 +169,8 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             }
 
             return Result.FAILURE;
-        } catch (NoSuchMethodException e) {
-            throw new IOException2(e);
-        } catch (IllegalAccessException e) {
-            throw new IOException2(e);
-        } catch (InvocationTargetException e) {
-            throw new IOException2(e);
-        //} catch (ClassNotFoundException e) {
-        //    throw new IOException2(e);
         } catch (Exception e) {
-            throw new IOException2(e);
+            throw new IOException(e);
         } finally {
             if (DUMP_PERFORMANCE_COUNTERS)
                 Channel.current().dumpPerformanceCounters(listener.error("Remoting stats"));

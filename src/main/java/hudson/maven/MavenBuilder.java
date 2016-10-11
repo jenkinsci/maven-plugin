@@ -33,7 +33,6 @@ import hudson.model.Result;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.remoting.DelegatingCallable;
-import hudson.util.IOException2;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -180,19 +179,9 @@ public abstract class MavenBuilder extends AbstractMavenBuilder implements Deleg
             }
 
             return Result.FAILURE;
-        } catch (NoSuchMethodException e) {
-            throw new IOException2(e);
-        } catch (IllegalAccessException e) {
-            throw new IOException2(e);
-        } catch (RuntimeException e) {
-            throw new IOException2(e);
-        } catch (InvocationTargetException e) {
-            throw new IOException2(e);
-        } catch (ClassNotFoundException e) {
-            throw new IOException2(e);
-        }
-        catch ( NoSuchRealmException e ) {
-            throw new IOException2(e);
+        } catch (NoSuchMethodException | IllegalAccessException | RuntimeException | InvocationTargetException
+            | ClassNotFoundException | NoSuchRealmException e ) {
+            throw new IOException(e);
         } finally {
             //PluginManagerInterceptor.setListener(null);
             //LifecycleExecutorInterceptor.setListener(null);

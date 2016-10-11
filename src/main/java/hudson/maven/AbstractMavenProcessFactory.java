@@ -1,7 +1,5 @@
 package hudson.maven;
 
-import static hudson.Util.fixNull;
-
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -16,8 +14,8 @@ import hudson.model.Computer;
 import hudson.model.Executor;
 import hudson.model.JDK;
 import hudson.model.Node;
-import hudson.model.TaskListener;
 import hudson.model.Run.RunnerAbortedException;
+import hudson.model.TaskListener;
 import hudson.remoting.Channel;
 import hudson.remoting.Pipe;
 import hudson.remoting.RemoteInputStream;
@@ -29,6 +27,13 @@ import hudson.slaves.Channels;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks._maven.MavenConsoleAnnotator;
 import hudson.util.ArgumentListBuilder;
+import hudson.util.StreamCopyThread;
+import jenkins.model.Jenkins;
+import jenkins.security.MasterToSlaveCallable;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Zip;
+
+import javax.annotation.CheckForNull;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -40,22 +45,14 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 
-import javax.annotation.CheckForNull;
-
-import hudson.util.StreamCopyThread;
-import java.net.SocketException;
-import jenkins.model.Jenkins;
-import jenkins.security.MasterToSlaveCallable;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Zip;
-
-import org.kohsuke.stapler.framework.io.IOException2;
+import static hudson.Util.fixNull;
 
 /*
  * The MIT License
@@ -322,7 +319,7 @@ public abstract class AbstractMavenProcessFactory
                 // diagnose issue #659
                 JDK jdk = mms.getJDK();
                 if(jdk==null)
-                    throw new IOException2(mms.getDisplayName()+" is not configured with a JDK, but your PATH doesn't include Java",e);
+                    throw new IOException(mms.getDisplayName()+" is not configured with a JDK, but your PATH doesn't include Java",e);
             }
             throw e;
         }

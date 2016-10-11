@@ -31,7 +31,6 @@ import hudson.model.StreamBuildListener;
 import hudson.remoting.Channel;
 import hudson.remoting.Future;
 import hudson.util.AbstractTaskListener;
-import hudson.util.IOException2;
 import jenkins.security.MasterToSlaveCallable;
 import jenkins.util.MarkFindingOutputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -161,7 +160,7 @@ final class SplittableBuildListener extends AbstractTaskListener implements Buil
                 try {
                     f.get();
                 } catch (ExecutionException e) {
-                    throw new IOException2(e);
+                    throw new IOException(e);
                 }
             }
         }

@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 
 import jenkins.security.MasterToSlaveCallable;
-import org.kohsuke.stapler.framework.io.IOException2;
 
 /**
  * 
@@ -71,7 +70,7 @@ public class MavenVersionCallable
         }
         catch ( MavenEmbedderException e )
         {
-            throw new IOException2( e );
+            throw new IOException( e );
         }
     }
 
