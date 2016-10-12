@@ -65,7 +65,15 @@ THE SOFTWARE.
       <f:entry title="${%Maven Version}">
         <div class="error">
           ${%Maven Version.error.1}&lt;br>
-          ${%Maven Version.error.2(rootURL)}
+          <!-- In Jenkins 2.x and later, tools configuration is on its own page, not the global configuration. -->
+          <j:choose>
+            <j:when test="${h.version.startsWith('1')">
+              ${%Maven Version.error.2(rootURL)}
+            </j:when>
+            <j:otherwise>
+              ${%Maven Version.error.3(rootURL)}
+            </j:otherwise>
+          </j:choose>
         </div>
       </f:entry>
     </j:if>
