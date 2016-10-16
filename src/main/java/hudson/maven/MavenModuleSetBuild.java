@@ -90,6 +90,7 @@ import jenkins.mvn.SettingsProvider;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
@@ -1449,7 +1450,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
     protected Boolean isRelease() {
         MavenModuleSet mavenModuleSet = this.getProject();
         for (MavenModule mavenModule : mavenModuleSet.getModules()) {
-            if(mavenModule.getVersion().contains("-SNAPSHOT")) {
+            if (ArtifactUtils.isSnapshot(mavenModule.getVersion())) {
                 return false;
             }
         }
