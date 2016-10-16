@@ -91,6 +91,7 @@ import jenkins.mvn.SettingsProvider;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
@@ -1456,6 +1457,23 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         
 
         private static final long serialVersionUID = 1L;
+    }
+
+    /**
+     * Check if the current build is a release or not.
+     * If all its maven modules are not SNAPSHOT then it is a release
+     *
+     * @since 2.12.2
+     * @return true if {@link MavenModuleSetBuild} is a release
+     */
+    protected Boolean isRelease() {
+        MavenModuleSet mavenModuleSet = this.getProject();
+        for (MavenModule mavenModule : mavenModuleSet.getModules()) {
+            if (ArtifactUtils.isSnapshot(mavenModule.getVersion())) {
+                return false;
+            }
+        }
+        return true;
     }
         
     private static final Logger LOGGER = Logger.getLogger(MavenModuleSetBuild.class.getName());
