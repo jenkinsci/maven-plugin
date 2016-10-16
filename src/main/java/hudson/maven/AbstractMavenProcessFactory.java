@@ -299,7 +299,15 @@ public abstract class AbstractMavenProcessFactory
                 if (originalJdk == null) { // so we only try this once
                     for (Throwable t = x; t != null; t = t.getCause()) {
                         if (t instanceof UnsupportedClassVersionError || t instanceof SocketException) {
-                            listener.error("[JENKINS-18403] JDK 5 not supported to run Maven; retrying with slave Java and setting compile/test properties to point to " + jdk.getHome());
+                            listener.error("================================================================================");
+                            listener.error("Invalid project setup: "+t.getMessage());
+                            listener.error("[JENKINS-18403][JENKINS-28294] JDK '" + jdk.getName() +
+                                    "' not supported to run Maven projects.");
+                            listener.error("Maven projects have to be launched with a Java version greater or equal to the minimum version required by the master.");
+                            listener.error("Use the Maven JDK Toolchains (plugin) to build your maven project with an older JDK.");
+                            listener.error("Retrying with slave Java and setting compile/test properties to point to " +
+                                    jdk.getHome() + ".");
+                            listener.error("================================================================================");
                             originalJdk = jdk;
                             jdk = launcher.getChannel().call(new FindJavaHome());
                             continue JDK;
