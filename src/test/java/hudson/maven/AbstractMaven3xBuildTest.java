@@ -226,7 +226,7 @@ public abstract class AbstractMaven3xBuildTest
         AbstractTestResultAction trpa = testModule.getLastBuild().getAction(AbstractTestResultAction.class);
 
         int totalCount = trpa.getTotalCount();
-        assertEquals(1, totalCount);
+        assertEquals(2, totalCount);
     }
 
     @Bug(9326)
