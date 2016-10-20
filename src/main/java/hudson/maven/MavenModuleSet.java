@@ -45,7 +45,6 @@ import hudson.model.Descriptor.FormException;
 import hudson.model.Executor;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
-import static hudson.model.ItemGroupMixIn.loadChildren;
 import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.Queue.Task;
@@ -102,6 +101,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.model.building.ModelBuildingRequest;
+import org.jenkins.ui.icon.Icon;
+import org.jenkins.ui.icon.IconSet;
+import org.jenkins.ui.icon.IconSpec;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
@@ -110,6 +112,8 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
+
+import static hudson.model.ItemGroupMixIn.loadChildren;
 
 /**
  * Group of {@link MavenModule}s.
@@ -1300,7 +1304,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     @Extension(ordinal=900)
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
-    public static final class DescriptorImpl extends AbstractProjectDescriptor {
+    public static final class DescriptorImpl extends AbstractProjectDescriptor implements IconSpec {
         /**
          * Globally-defined MAVEN_OPTS.
          */
@@ -1403,6 +1407,15 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
             return "plugin/maven-plugin/images/:size/mavenmoduleset.png";
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getIconClassName() {
+            return "icon-maven-moduleset";
+        }
+
+
         public MavenModuleSet newInstance(ItemGroup parent, String name) {
             MavenModuleSet mms = new MavenModuleSet(parent,name);
             mms.setSettings(GlobalMavenConfig.get().getSettingsProvider());
@@ -1442,6 +1455,21 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
             Mailer.class,           // for historical reasons, Maven uses MavenMailer
             JUnitResultArchiver.class // done by SurefireArchiver
         ));
+
+        static {
+            IconSet.icons.addIcon(
+                    new Icon("icon-maven-moduleset icon-sm",
+                            "plugin/maven/images/16x16/mavenmoduleset.png", Icon.ICON_SMALL_STYLE));
+            IconSet.icons.addIcon(
+                    new Icon("icon-maven-moduleset icon-md",
+                            "plugin/maven/images/24x24/mavenmoduleset.png", Icon.ICON_MEDIUM_STYLE));
+            IconSet.icons.addIcon(
+                    new Icon("icon-maven-moduleset icon-lg",
+                            "plugin/maven/images/32x32/mavenmoduleset.png", Icon.ICON_LARGE_STYLE));
+            IconSet.icons.addIcon(
+                    new Icon("icon-maven-moduleset icon-xlg",
+                            "plugin/maven/images/48x48/mavenmoduleset.png", Icon.ICON_XLARGE_STYLE));
+        }
     }
     
     private static final Logger LOGGER = Logger.getLogger(MavenModuleSet.class.getName());
