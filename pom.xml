@@ -285,13 +285,6 @@ THE SOFTWARE.
     </dependency>
     -->
 
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-      <version>4.0-beta</version>
-      <classifier>no_aop</classifier>
-    </dependency>
-
     <!-- JENKINS-10819 : This wagon is safer and more configurable to provide http(s) support -->
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
@@ -472,6 +465,12 @@ THE SOFTWARE.
       <artifactId>promoted-builds</artifactId>
       <version>2.23</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jenkins-ci.main</groupId>
+          <artifactId>maven-plugin</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
