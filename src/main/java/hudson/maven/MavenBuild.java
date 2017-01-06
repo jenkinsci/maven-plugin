@@ -56,6 +56,7 @@ import hudson.util.DescribableList;
 import jenkins.MasterToSlaveFileCallable;
 import jenkins.maven3.agent.Maven31Main;
 import jenkins.maven3.agent.Maven32Main;
+import jenkins.maven3.agent.Maven33Main;
 
 import org.apache.maven.BuildFailureException;
 import org.apache.maven.execution.MavenSession;
@@ -66,6 +67,7 @@ import org.apache.maven.project.MavenProject;
 import org.jvnet.hudson.maven3.agent.Maven3Main;
 import org.jvnet.hudson.maven3.launcher.Maven31Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven32Launcher;
+import org.jvnet.hudson.maven3.launcher.Maven33Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
@@ -938,9 +940,13 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                     request.maven3MainClass = Maven31Main.class;
                     request.maven3LauncherClass = Maven31Launcher.class;
                     break;
+                case MAVEN_3_2:
+	                request.maven3MainClass = Maven32Main.class;
+	                request.maven3LauncherClass = Maven32Launcher.class;
+	                break;
                 default:
-                    request.maven3MainClass = Maven32Main.class;
-                    request.maven3LauncherClass = Maven32Launcher.class;
+                    request.maven3MainClass = Maven33Main.class;
+                    request.maven3LauncherClass = Maven33Launcher.class;
             }
 
             return request;
