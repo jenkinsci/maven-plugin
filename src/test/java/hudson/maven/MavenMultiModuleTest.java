@@ -23,6 +23,7 @@ import hudson.tasks.Maven.MavenInstallation;
 import java.io.File;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -73,11 +74,15 @@ public class MavenMultiModuleTest {
         assertEquals(2, mms.getLastStableBuild().number);
         assertEquals("2", Util.resolveSymlink(new File(mms.getBuildDir(), "lastStableBuild")));
         assertEquals("builds/lastStableBuild", Util.resolveSymlink(new File(mms.getRootDir(), "lastStable")));
-        assertEquals("[lastBuild, lastStableBuild, lastSuccessfulBuild]", permalinks(mms).toString());
+        // The number of builtin permalinks changed in jenkins 2.x so we can not use a strict comparision if we want
+        // cross version passing tests
+        assertTrue(permalinks(mms).containsAll(Arrays.asList("lastBuild", "lastStableBuild", "lastSuccessfulBuild")));
         assertEquals(2, mm.getLastStableBuild().number);
         assertEquals("2", Util.resolveSymlink(new File(mm.getBuildDir(), "lastStableBuild")));
         assertEquals("builds/lastStableBuild", Util.resolveSymlink(new File(mm.getRootDir(), "lastStable")));
-        assertEquals("[lastBuild, lastStableBuild, lastSuccessfulBuild]", permalinks(mm).toString());
+        // The number of builtin permalinks changed in jenkins 2.x so we can not use a strict comparision if we want
+        // cross version passing tests   
+        assertTrue(permalinks(mm).containsAll(Arrays.asList("lastBuild", "lastStableBuild", "lastSuccessfulBuild")));
     }
     private static Set<String> permalinks(Job<?,?> j) {
         Set<String> r = new TreeSet<String>();
