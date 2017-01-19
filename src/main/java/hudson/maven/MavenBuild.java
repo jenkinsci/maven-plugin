@@ -652,7 +652,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                 MavenBuild.this.execute(new Terminate() {
                     @Override
                     public Result run(BuildListener listener) {
-                        return Result.ABORTED;
+                        return Result.NOT_BUILT;
                     }
                 });
             }

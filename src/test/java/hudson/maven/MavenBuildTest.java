@@ -246,7 +246,7 @@ public class MavenBuildTest {
         assertFalse(build.isBuilding());
 
         j.assertBuildStatus(Result.SUCCESS, getModuleBuild(build, "moduleA"));
-        j.assertBuildStatus(Result.ABORTED, getModuleBuild(build, "moduleB"));
+        j.assertBuildStatus(Result.NOT_BUILT, getModuleBuild(build, "moduleB"));
         j.assertBuildStatus(Result.NOT_BUILT, getModuleBuild(build, "moduleC"));
 
         for (MavenBuild mb: build.getModuleLastBuilds().values()) {
