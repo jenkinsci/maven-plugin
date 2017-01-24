@@ -19,10 +19,6 @@ package hudson.maven.util;
  * under the License.
  */
 
-import hudson.tasks._maven.Maven3MojoNote;
-
-import java.io.IOException;
-
 import org.apache.maven.execution.ExecutionEvent;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.project.MavenProject;
@@ -34,17 +30,26 @@ public class ExecutionEventLogger
 	extends org.apache.maven.cli.event.ExecutionEventLogger
 {
     private final Logger logger;
+    private final String mojoNote;
 
     public ExecutionEventLogger()
     {
     	super();
         logger = LoggerFactory.getLogger( ExecutionEventLogger.class );
+        mojoNote = null; // Maven 3.1+, so unused; cf. JenkinsEventSpy
     }
 
+    @Deprecated
     public ExecutionEventLogger( Logger logger )
+    {
+        this(logger, null);
+    }
+
+    public ExecutionEventLogger( Logger logger, String mojoNote )
     {
         super(logger);
         this.logger = logger;
+        this.mojoNote = mojoNote;
     }
 
     /**
@@ -53,16 +58,10 @@ public class ExecutionEventLogger
     @Override
     public void mojoStarted( ExecutionEvent event )
     {
-        if ( logger.isInfoEnabled() )
+        if ( mojoNote != null && logger.isInfoEnabled() )
         {
-            final Maven3MojoNote note = new Maven3MojoNote();
             final StringBuilder buffer = new StringBuilder( 128 );
-            try {
-                buffer.append( note.encode() );
-            } catch ( IOException e ) {
-                // As we use only memory buffers this should not happen, ever.
-                throw new RuntimeException( "Could not encode note?", e );
-            }
+            buffer.append(mojoNote);
             buffer.append( "--- " );
             append( buffer, event.getMojoExecution() );
             append( buffer, event.getProject() );

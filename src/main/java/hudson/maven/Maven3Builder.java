@@ -31,6 +31,8 @@ import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.remoting.Channel;
 import hudson.remoting.DelegatingCallable;
+import hudson.tasks._maven.Maven3MojoNote;
+import jenkins.model.Jenkins;
 import org.apache.maven.eventspy.EventSpy;
 import org.apache.maven.execution.AbstractExecutionListener;
 import org.apache.maven.execution.ExecutionEvent;
@@ -79,7 +81,9 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
     Class<?> maven3LauncherClass;
     boolean supportEventSpy = false;
 
-    protected Maven3Builder(Maven3BuilderRequest maven3BuilderRequest) {
+    private final String mojoNote;
+
+    protected Maven3Builder(Maven3BuilderRequest maven3BuilderRequest) throws IOException {
         super( maven3BuilderRequest.listener, maven3BuilderRequest.modules, maven3BuilderRequest.goals, maven3BuilderRequest.systemProps );
         this.sourceProxies.putAll(maven3BuilderRequest.proxies);
         this.proxies = new HashMap<ModuleName, FilterImpl>();
@@ -89,6 +93,8 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
         this.maven3LauncherClass = maven3BuilderRequest.maven3LauncherClass;
         this.maven3MainClass = maven3BuilderRequest.maven3MainClass;
         this.supportEventSpy = maven3BuilderRequest.supportEventSpy;
+        assert Jenkins.getInstance() != null : "this is supposed to be run on master";
+        mojoNote = new Maven3MojoNote().encode();
     }
 
     protected static class Maven3BuilderRequest {
@@ -191,7 +197,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
     private static final class JenkinsEventSpy extends MavenExecutionListener implements EventSpy,Serializable{
         private static final long serialVersionUID = 4942789836756366117L;
 
-        public JenkinsEventSpy(AbstractMavenBuilder maven3Builder) {
+        JenkinsEventSpy(Maven3Builder maven3Builder) {
            super(maven3Builder);
             // avoid log event output duplication for maven 3.1 build which use eventSpy
             // there is a delagation which duplicate log event.
@@ -358,7 +364,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
         protected ExecutionEventLogger eventLogger;
 
-        public MavenExecutionListener(AbstractMavenBuilder maven3Builder) {
+        MavenExecutionListener(Maven3Builder maven3Builder) {
             this.maven3Builder = maven3Builder;
             this.proxies = new ConcurrentHashMap<ModuleName, FilterImpl>(maven3Builder.proxies);
             for (ModuleName name : this.proxies.keySet()) {
@@ -368,7 +374,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
 
             // E.g. there's also the option to redirect logging to a file which is handled there, but not here.
-            this.eventLogger = new ExecutionEventLogger( logger );
+            this.eventLogger = new ExecutionEventLogger( logger, maven3Builder.mojoNote );
         }
 
 
