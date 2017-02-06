@@ -50,7 +50,7 @@ THE SOFTWARE.
     <maven.version>${mavenVersion}</maven.version>
     <aetherVersion>1.1.0</aetherVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
-    <wagonVersion>2.4</wagonVersion>
+    <wagonVersion>2.12</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <findbugs.failOnError>false</findbugs.failOnError>
     <!-- well the parent pom could defined an empty one instead of causing failure!! -->
