@@ -48,7 +48,7 @@ THE SOFTWARE.
     <mavenInterceptorsVersion>1.8.1</mavenInterceptorsVersion>
     <mavenVersion>3.1.0</mavenVersion>
     <maven.version>${mavenVersion}</maven.version>
-    <aetherVersion>0.9.0.M3</aetherVersion>
+    <aetherVersion>1.1.0</aetherVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
     <wagonVersion>2.4</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
