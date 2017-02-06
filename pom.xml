@@ -254,6 +254,11 @@ THE SOFTWARE.
         </exclusion>
       </exclusions>      
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-connector-basic</artifactId>
+      <version>${aetherVersion}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
