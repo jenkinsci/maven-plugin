@@ -48,7 +48,7 @@ THE SOFTWARE.
     <mavenInterceptorsVersion>1.8.1</mavenInterceptorsVersion>
     <mavenVersion>3.1.0</mavenVersion>
     <maven.version>${mavenVersion}</maven.version>
-    <aetherVersion>0.9.0.M3</aetherVersion>
+    <aetherVersion>1.1.0</aetherVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
     <wagonVersion>2.4</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
@@ -254,6 +254,11 @@ THE SOFTWARE.
         </exclusion>
       </exclusions>      
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-connector-basic</artifactId>
+      <version>${aetherVersion}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
@@ -351,7 +356,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.lib</groupId>
       <artifactId>lib-jenkins-maven-embedder</artifactId>
-      <version>3.11</version>
+      <version>3.12-SNAPSHOT</version>
       <exclusions>
         <exclusion><!-- we'll add our own patched version. see https://issues.jenkins-ci.org/browse/JENKINS-1680 -->
           <groupId>jtidy</groupId>
