@@ -1459,16 +1459,16 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         static {
             IconSet.icons.addIcon(
                     new Icon("icon-maven-moduleset icon-sm",
-                            "plugin/maven/images/16x16/mavenmoduleset.png", Icon.ICON_SMALL_STYLE));
+                            "plugin/maven-plugin/images/16x16/mavenmoduleset.png", Icon.ICON_SMALL_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-maven-moduleset icon-md",
-                            "plugin/maven/images/24x24/mavenmoduleset.png", Icon.ICON_MEDIUM_STYLE));
+                            "plugin/maven-plugin/images/24x24/mavenmoduleset.png", Icon.ICON_MEDIUM_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-maven-moduleset icon-lg",
-                            "plugin/maven/images/32x32/mavenmoduleset.png", Icon.ICON_LARGE_STYLE));
+                            "plugin/maven-plugin/images/32x32/mavenmoduleset.png", Icon.ICON_LARGE_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-maven-moduleset icon-xlg",
-                            "plugin/maven/images/48x48/mavenmoduleset.png", Icon.ICON_XLARGE_STYLE));
+                            "plugin/maven-plugin/images/48x48/mavenmoduleset.png", Icon.ICON_XLARGE_STYLE));
         }
     }
     
