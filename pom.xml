@@ -38,7 +38,7 @@ THE SOFTWARE.
   <packaging>hpi</packaging>
 
   <name>Maven Integration plugin</name>
-  <description>This plug-in provides deep integration of Jenkins and Maven. This functionality used to be part of the Jenkins core.</description>
+  <description>This plug-in provides, for better and for worse, a deep integration of Jenkins and Maven: Automatic triggers between projects depending on SNAPSHOTs, automated configuration of various Jenkins publishers (Junit, ...).</description>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Maven+Project+Plugin</url>
 
   <properties>
