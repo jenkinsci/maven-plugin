@@ -309,7 +309,11 @@ public class MavenUtil {
         if (mavenCurrent.compareTo( maven3_2_0 ) >= 0 && mavenCurrent.compareTo( maven3_3_1 ) < 0){
             return MavenVersion.MAVEN_3_2;
         }
-        return MavenVersion.MAVEN_3_3;
+        ComparableVersion maven3_5_0 = new ComparableVersion("3.5.0");
+        if (mavenCurrent.compareTo( maven3_3_1 ) >= 0 && mavenCurrent.compareTo( maven3_5_0 ) < 0){
+            return MavenVersion.MAVEN_3_3;
+        }
+        return MavenVersion.MAVEN_3_5;
 
     }
 
@@ -328,7 +332,7 @@ public class MavenUtil {
     }
 
     public enum MavenVersion {
-        MAVEN_2,MAVEN_3_0_X,MAVEN_3_1,MAVEN_3_2,MAVEN_3_3;
+        MAVEN_2,MAVEN_3_0_X,MAVEN_3_1,MAVEN_3_2,MAVEN_3_3, MAVEN_3_5
     }
     
 
