@@ -29,7 +29,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.17</version>
+    <version>2.33</version>
   </parent>
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
@@ -44,8 +44,8 @@ THE SOFTWARE.
   <properties>
     <jenkins.version>1.625.3</jenkins.version>
     <java.level>7</java.level>
-    <mavenInterceptorsVersion>1.11</mavenInterceptorsVersion>
-    <mavenVersion>3.1.0</mavenVersion>
+    <mavenInterceptorsVersion>1.12-SNAPSHOT</mavenInterceptorsVersion>
+    <mavenVersion>3.5.0</mavenVersion>
     <maven.version>${mavenVersion}</maven.version>
     <aetherVersion>1.1.0</aetherVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
@@ -67,26 +67,7 @@ THE SOFTWARE.
     </license>
   </licenses>
   
-  <dependencyManagement>
-    <dependencies>
-      <!-- Newer version of plexus-utils is required for artifact deployment to 
-           work using scpexe wagon (see JENKINS-4861). This may be removed when
-           the effective version of the transitive plexus-utils dependency is 3.0.16+. -->
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-utils</artifactId>
-        <version>3.0.17</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  
   <dependencies>
-    <dependency> <!-- TODO pending https://github.com/jenkinsci/plugin-pom/pull/17 -->
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>javadoc</artifactId>
@@ -223,7 +204,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-aether-provider</artifactId>
-      <version>${mavenVersion}</version>
+      <version>3.3.9</version>
     </dependency>      
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -309,17 +290,20 @@ THE SOFTWARE.
           <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-      <version>4.4.3</version>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>apache-httpclient-4-api</artifactId>
+      <version>4.5.3-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
@@ -361,7 +345,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-classworlds</artifactId>
-      <version>2.5.1</version>
+      <version>2.5.2</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.lib</groupId>
@@ -435,7 +419,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>1.8.5</version>
+      <version>1.10.19</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -467,11 +451,17 @@ THE SOFTWARE.
       <artifactId>mock-javamail</artifactId>
       <version>1.9</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.mail</groupId>
+          <artifactId>mail</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.4</version>
+      <version>1.7.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -566,6 +556,43 @@ THE SOFTWARE.
           </execution>
         </executions>
       </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M1</version>
+        
+        <!-- Consider adding to Jenkins plugin parent POM? -->
+        <dependencies>
+          <dependency>
+            <groupId>de.skuzzle.enforcer</groupId>
+            <artifactId>restrict-imports-enforcer-rule</artifactId>
+            <version>0.7.0</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>ban-commons-httpclient-3x</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                  <basePackage>**</basePackage>
+                  <includeTestCode>true</includeTestCode>
+                  <bannedImports>
+                    <bannedImport>org.apache.commons.httpclient.**</bannedImport>
+                  </bannedImports>
+                </restrictImports>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
     </plugins>
   </build>
 
