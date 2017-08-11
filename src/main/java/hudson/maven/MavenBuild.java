@@ -96,6 +96,9 @@ import javax.annotation.CheckForNull;
 
 import jenkins.model.ArtifactManager;
 import jenkins.mvn.SettingsProvider;
+import org.apache.maven.project.DuplicateProjectException;
+import org.apache.maven.project.ProjectSorter;
+import org.codehaus.plexus.util.dag.CycleDetectedException;
 
 /**
  * {@link Run} for {@link MavenModule}.
@@ -347,18 +350,41 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
             private static final long serialVersionUID = 1L;
         }
-
+      
+        /**
+         * @deprecated Used APIs are deprecated and probably unstable according to
+         * {@link ProjectSorter#getTopLevelProject()} comments.
+         */
+        @Deprecated
+        @CheckForNull
+        private static MavenProject getTopLevelProject(ReactorManager rm) throws BuildFailureException {
+            List<MavenProject> sortedProjects = rm.getSortedProjects();
+            if (sortedProjects.isEmpty()) {
+                return null;
+            }
+            
+            final ProjectSorter sorter;
+            try {
+                sorter = new ProjectSorter(sortedProjects);
+            } catch(CycleDetectedException ex) {
+                throw new BuildFailureException("Cannot retrieve the top-level project due to the cycle", ex);
+            } catch(DuplicateProjectException ex) {
+                throw new BuildFailureException("Cannot retrieve the duplicate in the project list", ex);
+            }
+            return sorter.getTopLevelProject();
+        }
+        
         @Override
         void preBuild(MavenSession session, ReactorManager rm, EventDispatcher dispatcher) throws BuildFailureException, LifecycleExecutionException, IOException, InterruptedException {
             for (MavenReporter r : reporters.get(moduleName))
-                r.preBuild(buildProxy,rm.getTopLevelProject(),listener);
+                r.preBuild(buildProxy,getTopLevelProject(rm),listener);
         }
 
         @Override
         void postBuild(MavenSession session, ReactorManager rm, EventDispatcher dispatcher) throws BuildFailureException, LifecycleExecutionException, IOException, InterruptedException {
             buildProxy.setExecutedMojos(executedMojos);
             for (MavenReporter r : reporters.get(moduleName))
-                r.postBuild(buildProxy,rm.getTopLevelProject(),listener);
+                r.postBuild(buildProxy,getTopLevelProject(rm),listener);
         }
 
         @Override
