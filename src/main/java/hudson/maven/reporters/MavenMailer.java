@@ -29,6 +29,7 @@ import hudson.maven.MavenBuild;
 import hudson.maven.MavenModule;
 import hudson.maven.MavenReporter;
 import hudson.maven.MavenReporterDescriptor;
+import hudson.maven.util.VariableExpander;
 import hudson.model.BuildListener;
 import hudson.tasks.MailSender;
 import java.io.IOException;
@@ -71,7 +72,8 @@ public class MavenMailer extends MavenReporter {
             if (sendToIndividuals) {
                 LOGGER.log(Level.FINE, "would also include {0}", build.getCulprits());
             }
-            new MailSender(getAllRecipients(),dontNotifyEveryUnstableBuild,sendToIndividuals).execute(build,listener);
+            final String evaluatedRecipients = new VariableExpander(build, listener).expand(getAllRecipients());
+            new MailSender(evaluatedRecipients,dontNotifyEveryUnstableBuild,sendToIndividuals).execute(build,listener);
         }
         return true;
     }

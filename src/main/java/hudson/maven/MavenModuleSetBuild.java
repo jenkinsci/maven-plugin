@@ -34,6 +34,7 @@ import hudson.maven.MavenBuild.ProxyImpl2;
 import hudson.maven.reporters.MavenAggregatedArtifactRecord;
 import hudson.maven.reporters.MavenFingerprinter;
 import hudson.maven.reporters.MavenMailer;
+import hudson.maven.util.VariableExpander;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Build;
@@ -1087,7 +1088,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         public void cleanUp(BuildListener listener) throws Exception {
             MavenMailer mailer = project.getReporters().get(MavenMailer.class);
             if (mailer != null) {
-                new MailSender(mailer.getAllRecipients(),
+                final String evaluatedRecipients = new VariableExpander(getBuild(), listener).expand(mailer.getAllRecipients());
+                new MailSender(evaluatedRecipients,
                         mailer.dontNotifyEveryUnstableBuild,
                         mailer.sendToIndividuals).execute(MavenModuleSetBuild.this, listener);
             }
