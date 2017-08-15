@@ -302,8 +302,8 @@ THE SOFTWARE.
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
-      <artifactId>apache-httpclient-4-api</artifactId>
-      <version>4.5.3-1-SNAPSHOT</version>
+      <artifactId>apache-httpcomponents-client-4-api</artifactId>
+      <version>4.5.3-1.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
