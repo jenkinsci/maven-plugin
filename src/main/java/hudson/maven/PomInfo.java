@@ -26,7 +26,9 @@ package hudson.maven;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Extension;
+import org.apache.maven.model.Model;
 import org.apache.maven.model.Notifier;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.ReportPlugin;
@@ -130,6 +132,19 @@ final class PomInfo implements Serializable {
 
         for (Dependency dep : project.getDependencies())
             dependencies.add(new ModuleDependency(dep));
+
+        // Imported dependencyManagement are also dependencies
+        Model originalModel = project.getOriginalModel();
+        if (originalModel != null) {
+            DependencyManagement originalDependencyManagement = originalModel.getDependencyManagement();
+            if (originalDependencyManagement != null) {
+                for (Dependency dep : originalDependencyManagement.getDependencies()) {
+                    if (dep.getScope() != null && dep.getScope().equals("import")) {
+                        dependencies.add(new ModuleDependency((dep)));
+                    }
+                }
+            }
+        }
 
         MavenProject parentProject = project.getParent();
         if(parentProject!=null)
