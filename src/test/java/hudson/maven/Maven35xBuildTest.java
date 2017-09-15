@@ -27,15 +27,15 @@ import org.jvnet.hudson.test.ToolInstallations;
 /**
  * @author Olivier Lamy
  */
-public class Maven31xBuildTest
+public class Maven35xBuildTest
     extends AbstractMaven3xBuildTest {
 
     @Override
     public MavenInstallation configureMaven3x()
         throws Exception
     {
-        MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.1.0", MavenInstallation.MAVEN_30);
-        MavenInstallation m3 = new MavenInstallation("apache-maven-3.1.0", mvn.getHome(), j.NO_PROPERTIES);
+        MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.5.0", MavenInstallation.MAVEN_30);
+        MavenInstallation m3 = new MavenInstallation("apache-maven-3.5.0", mvn.getHome(), j.NO_PROPERTIES);
         j.jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
         return m3;
     }
