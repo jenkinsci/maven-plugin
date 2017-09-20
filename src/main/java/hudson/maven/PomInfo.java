@@ -140,7 +140,7 @@ final class PomInfo implements Serializable {
             if (originalDependencyManagement != null) {
                 for (Dependency dep : originalDependencyManagement.getDependencies()) {
                     if (dep.getScope() != null && dep.getScope().equals("import")) {
-                        dependencies.add(new ModuleDependency((dep)));
+                        dependencies.add(new ModuleDependency(dep));
                     }
                 }
             }
