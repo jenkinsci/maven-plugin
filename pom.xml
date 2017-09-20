@@ -93,6 +93,11 @@ THE SOFTWARE.
           <groupId>classworlds</groupId>
           <artifactId>classworlds</artifactId>
         </exclusion>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
      
@@ -105,7 +110,12 @@ THE SOFTWARE.
           <groupId>classworlds</groupId>
           <artifactId>classworlds</artifactId>
         </exclusion>
-      </exclusions>      
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
      
     <dependency>
@@ -127,22 +137,48 @@ THE SOFTWARE.
           <groupId>org.sonatype.sisu</groupId>
           <artifactId>sisu-inject-bean</artifactId>
         </exclusion>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven31-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven32-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven33-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
@@ -155,6 +191,11 @@ THE SOFTWARE.
           -->
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -172,32 +213,72 @@ THE SOFTWARE.
           <groupId>org.sonatype.sisu</groupId>
           <artifactId>sisu-inject-bean</artifactId>
         </exclusion>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven31-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven32-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven33-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven35-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven3-interceptor-commons</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -216,9 +297,13 @@ THE SOFTWARE.
       <version>3.3.9</version>
     </dependency>      
     <dependency>
+      <!--
+      Maven embedder version has to comply with the minimally supported version of Maven,
+      because it needs to be present on both agent and Maven side
+      -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-embedder</artifactId>
-      <version>${mavenVersion}</version>
+      <version>3.1.0</version>
     </dependency>   
     
     
@@ -379,7 +464,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.lib</groupId>
       <artifactId>lib-jenkins-maven-embedder</artifactId>
-      <version>3.13-20170915.144243-1</version>
+      <version>3.12</version>
       <exclusions>
         <exclusion><!-- we'll add our own patched version. see https://issues.jenkins-ci.org/browse/JENKINS-1680 -->
           <groupId>jtidy</groupId>
