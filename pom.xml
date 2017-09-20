@@ -148,6 +148,15 @@ THE SOFTWARE.
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven35-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!--Jenkins bundles Guava 11.0.1, this library requires 20.0 and makes the plugin to bundle it.
+              The interceptor should not be actually used inside Jenkins, what could possibly go wrong?
+          -->
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
