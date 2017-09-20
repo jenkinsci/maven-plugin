@@ -25,8 +25,10 @@ import hudson.tasks.Maven.MavenInstallation;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**
- * @author Olivier Lamy
+ * @author Oleg Nenashev
  */
+//TODO: Placeholder for Maven 3.3.9 tests. Inactive, because JTH test tools do not offer such version of Maven
+// Another tool installation approach should be used
 public class Maven339BuildTest
     extends AbstractMaven3xBuildTest {
 

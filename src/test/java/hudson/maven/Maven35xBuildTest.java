@@ -22,11 +22,15 @@ package hudson.maven;
 
 import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
+import org.junit.Ignore;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**
- * @author Olivier Lamy
+ * @author Oleg Nenashev
  */
+//TODO: Placeholder for Maven 3.5 tests. Inactive, because JTH test tools do not offer such version of Maven
+// Another tool installation approach should be used
+@Ignore
 public class Maven35xBuildTest
     extends AbstractMaven3xBuildTest {
 
