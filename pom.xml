@@ -749,23 +749,6 @@ THE SOFTWARE.
               <fail>true</fail>
             </configuration>
           </execution>
-        </executions>
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.0.0-M1</version>
-        
-        <!-- Consider adding to Jenkins plugin parent POM? -->
-        <dependencies>
-          <dependency>
-            <groupId>de.skuzzle.enforcer</groupId>
-            <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.7.0</version>
-          </dependency>
-        </dependencies>
-        <executions>
           <execution>
             <id>ban-commons-httpclient-3x</id>
             <phase>process-sources</phase>
@@ -786,8 +769,16 @@ THE SOFTWARE.
             </configuration>
           </execution>
         </executions>
+        
+        <!-- Consider adding to Jenkins plugin parent POM? -->
+        <dependencies>
+          <dependency>
+            <groupId>de.skuzzle.enforcer</groupId>
+            <artifactId>restrict-imports-enforcer-rule</artifactId>
+            <version>0.7.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
-      
     </plugins>
   </build>
 
