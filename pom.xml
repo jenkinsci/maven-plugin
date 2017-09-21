@@ -45,7 +45,14 @@ THE SOFTWARE.
     <jenkins.version>1.625.3</jenkins.version>
     <java.level>7</java.level>
     <mavenInterceptorsVersion>1.12-alpha-1</mavenInterceptorsVersion>
+    <!-- Version of Maven Components -->
     <mavenVersion>3.5.0</mavenVersion>
+    <!--
+      Minimal supported version of Maven.
+      It declares version of the core, which should be included into the the server-side.
+      Note that the plugin still bundles agent support for Maven 3.0.5, probably it's not really operational
+    -->
+    <mavenMinimalVersion>3.1.0</mavenMinimalVersion>
     <maven.version>${mavenVersion}</maven.version>
     <aetherVersion>1.1.0</aetherVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
@@ -137,10 +144,14 @@ THE SOFTWARE.
           <groupId>org.sonatype.sisu</groupId>
           <artifactId>sisu-inject-bean</artifactId>
         </exclusion>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -149,10 +160,14 @@ THE SOFTWARE.
       <artifactId>maven31-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
       <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -161,10 +176,14 @@ THE SOFTWARE.
       <artifactId>maven32-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
       <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -173,10 +192,14 @@ THE SOFTWARE.
       <artifactId>maven33-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
       <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -192,10 +215,14 @@ THE SOFTWARE.
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
         </exclusion>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -213,10 +240,19 @@ THE SOFTWARE.
           <groupId>org.sonatype.sisu</groupId>
           <artifactId>sisu-inject-bean</artifactId>
         </exclusion>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -225,10 +261,19 @@ THE SOFTWARE.
       <artifactId>maven31-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
       <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -237,10 +282,19 @@ THE SOFTWARE.
       <artifactId>maven32-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
       <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -249,10 +303,19 @@ THE SOFTWARE.
       <artifactId>maven33-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
       <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -261,10 +324,14 @@ THE SOFTWARE.
       <artifactId>maven35-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
       <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -273,28 +340,37 @@ THE SOFTWARE.
       <artifactId>maven3-interceptor-commons</artifactId>
       <version>${mavenInterceptorsVersion}</version>
       <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
         <exclusion>
-          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>${mavenVersion}</version>
+      <version>${mavenMinimalVersion}</version>
     </dependency>  
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-compat</artifactId>
-      <version>${mavenVersion}</version>
+      <version>${mavenMinimalVersion}</version>
     </dependency>     
     
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-aether-provider</artifactId>
-      <version>3.3.9</version>
+      <version>${mavenMinimalVersion}</version>
     </dependency>      
     <dependency>
       <!--
@@ -303,7 +379,7 @@ THE SOFTWARE.
       -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-embedder</artifactId>
-      <version>3.1.0</version>
+      <version>${mavenMinimalVersion}</version>
     </dependency>   
     
     
@@ -455,6 +531,12 @@ THE SOFTWARE.
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
       <version>3.0.24</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-component-annotations</artifactId>
+      <version>1.7.1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.lib</groupId>
