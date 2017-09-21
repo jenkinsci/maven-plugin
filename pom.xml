@@ -380,17 +380,6 @@ THE SOFTWARE.
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-embedder</artifactId>
       <version>${mavenMinimalVersion}</version>
-      <exclusions>
-        <exclusion>
-          <!--
-            Excluded to solve the upper bounds conflict with the core.
-            Jenkins core bundles 1.8.4 while the Embedder Lib requires Ant 1.9.2
-            The required version is available in Maven Runtime, but there is no sense to ship custom version within the plugin
-          -->
-          <groupId>org.apache.ant</groupId>
-          <artifactId>ant</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>   
     
     
@@ -575,6 +564,15 @@ THE SOFTWARE.
           <!-- we bundle our own version below -->
           <groupId>org.apache.maven.wagon</groupId>
           <artifactId>wagon-webdav</artifactId>
+        </exclusion>
+        <exclusion>
+          <!--
+            Excluded to solve the upper bounds conflict with the core.
+            Jenkins core bundles 1.8.4 while the Embedder Lib requires Ant 1.9.2
+            The required version is available in Maven Runtime, but there is no sense to ship custom version within the plugin
+          -->
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
