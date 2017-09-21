@@ -596,6 +596,11 @@ THE SOFTWARE.
           <groupId>commons-codec</groupId>
           <artifactId>commons-codec</artifactId>
         </exclusion>
+        <exclusion>
+          <!-- Offered by HttpComponents Client 4.x API plugin and by Maven on the remote side -->
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
