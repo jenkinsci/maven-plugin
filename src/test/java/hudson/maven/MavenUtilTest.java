@@ -22,7 +22,9 @@ package hudson.maven;
  */
 
 
+import org.apache.maven.project.MavenProject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -63,5 +65,39 @@ public class MavenUtilTest
     @Test
     public void eventSpy31x(){
         Assert.assertTrue( MavenUtil.supportEventSpy( "3.1.0" ) );
+    }
+
+    private MavenProject project;
+
+    @Before
+    public void setUp() {
+        project = new MavenProject();
+        project.setGroupId("test");
+        project.setArtifactId("testmodule");
+        project.setVersion("2.0-SNAPSHOT");
+        project.setPackaging("jar");
+    }
+
+    @Test
+    public void resolveVersionPlain() {
+        Assert.assertTrue("1.2.3".equals(MavenUtil.resolveVersion("1.2.3", project)));
+    }
+
+    @Test
+    public void resolveVersionComplex() {
+        Assert.assertNull(MavenUtil.resolveVersion("1.${abc}.3", project));
+        Assert.assertNull(MavenUtil.resolveVersion("1.${abc}", project));
+        Assert.assertNull(MavenUtil.resolveVersion("${abc}.3", project));
+    }
+
+    @Test
+    public void resolveVersionMissingProperty() {
+        Assert.assertNull(MavenUtil.resolveVersion("${abc}", project));
+    }
+
+    @Test
+    public void resolveVersionProperty() {
+        project.getProperties().setProperty("abc", "1.2.3");
+        Assert.assertTrue("1.2.3".equals(MavenUtil.resolveVersion("${abc}", project)));
     }
 }
