@@ -331,6 +331,35 @@ public class MavenUtil {
         return new ComparableVersion(mavenVersion).compareTo( new ComparableVersion ("3.1.0") ) >= 0;
     }
 
+    public static String resolveVersion(String version, MavenProject project) {
+        final int tokenIdx = version.indexOf("${");
+        if (tokenIdx == -1) {
+            LOGGER.finest("Returning version " + version + " unchanged");
+            return version;
+        }
+        final Properties props = project.getProperties();
+        if (props != null) {
+            if (tokenIdx == 0) {
+                if (version.indexOf("}") == version.length() - 1) {
+                    final String propName = version.substring(2, version.length() - 1);
+                    if (props.containsKey(propName)) {
+                        final String value = props.getProperty(propName);
+                        LOGGER.finest("Found property value " + value + " for version " + version);
+                        return value;
+                    } else {
+                        LOGGER.finest("No property found for " + propName);
+                    }
+                } else {
+                    LOGGER.finest("Matching curly brace not at end of version " + version);
+                }
+            }
+        } else {
+            LOGGER.finest("No properties to resolve version " + version);
+        }
+        LOGGER.fine("Could not resolve version " + version + ", returning null instead");
+        return null;
+    }
+
     public enum MavenVersion {
         MAVEN_2,MAVEN_3_0_X,MAVEN_3_1,MAVEN_3_2,MAVEN_3_3, MAVEN_3_5
     }

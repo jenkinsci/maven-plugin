@@ -26,17 +26,20 @@ package hudson.maven;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Extension;
+import org.apache.maven.model.Model;
 import org.apache.maven.model.Notifier;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.project.MavenProject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.ArrayList;
+import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 
 /**
@@ -118,6 +121,8 @@ final class PomInfo implements Serializable {
      */
     public final String packaging;
 
+    private static final Logger LOGGER = Logger.getLogger(PomInfo.class.getName());
+
     public PomInfo(MavenProject project, PomInfo parent, String relPath) {
         this.name = new ModuleName(project);
         this.version = project.getVersion();
@@ -130,6 +135,25 @@ final class PomInfo implements Serializable {
 
         for (Dependency dep : project.getDependencies())
             dependencies.add(new ModuleDependency(dep));
+
+
+        // Imported dependencyManagement are also dependencies
+        Model originalModel = project.getOriginalModel();
+        if (originalModel != null) {
+            DependencyManagement originalDependencyManagement = originalModel.getDependencyManagement();
+            if (originalDependencyManagement != null) {
+                for (Dependency dep : originalDependencyManagement.getDependencies()) {
+                    if (dep == null) {
+                        continue;
+                    }
+                    if (dep.getScope() != null && dep.getScope().equals("import")) {
+                        final Dependency depClone = dep.clone();
+                        depClone.setVersion(MavenUtil.resolveVersion(depClone.getVersion(), project));
+                        dependencies.add(new ModuleDependency(depClone));
+                    }
+                }
+            }
+        }
 
         MavenProject parentProject = project.getParent();
         if(parentProject!=null)
@@ -166,7 +190,7 @@ final class PomInfo implements Serializable {
         this.artifactId = project.getArtifactId();
         this.packaging = project.getPackaging();
     }
-    
+
     /**
      * Creates {@link ModuleDependency} that represents this {@link PomInfo}.
      */
