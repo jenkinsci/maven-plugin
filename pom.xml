@@ -29,7 +29,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.17</version>
+    <version>2.35</version>
   </parent>
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
@@ -44,12 +44,19 @@ THE SOFTWARE.
   <properties>
     <jenkins.version>1.625.3</jenkins.version>
     <java.level>7</java.level>
-    <mavenInterceptorsVersion>1.11</mavenInterceptorsVersion>
-    <mavenVersion>3.1.0</mavenVersion>
+    <mavenInterceptorsVersion>1.12-alpha-1</mavenInterceptorsVersion>
+    <!-- Version of Maven Components -->
+    <mavenVersion>3.5.0</mavenVersion>
+    <!--
+      Minimal supported version of Maven.
+      It declares version of the core, which should be included into the the server-side.
+      Note that the plugin still bundles agent support for Maven 3.0.5, probably it's not really operational
+    -->
+    <mavenMinimalVersion>3.1.0</mavenMinimalVersion>
     <maven.version>${mavenVersion}</maven.version>
     <aetherVersion>1.1.0</aetherVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
-    <wagonVersion>2.12</wagonVersion>
+    <wagonVersion>3.0.0</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <findbugs.failOnError>false</findbugs.failOnError>
     <!-- well the parent pom could defined an empty one instead of causing failure!! -->
@@ -67,26 +74,7 @@ THE SOFTWARE.
     </license>
   </licenses>
   
-  <dependencyManagement>
-    <dependencies>
-      <!-- Newer version of plexus-utils is required for artifact deployment to 
-           work using scpexe wagon (see JENKINS-4861). This may be removed when
-           the effective version of the transitive plexus-utils dependency is 3.0.16+. -->
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-utils</artifactId>
-        <version>3.0.17</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  
   <dependencies>
-    <dependency> <!-- TODO pending https://github.com/jenkinsci/plugin-pom/pull/17 -->
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>javadoc</artifactId>
@@ -112,6 +100,11 @@ THE SOFTWARE.
           <groupId>classworlds</groupId>
           <artifactId>classworlds</artifactId>
         </exclusion>
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
      
@@ -124,7 +117,12 @@ THE SOFTWARE.
           <groupId>classworlds</groupId>
           <artifactId>classworlds</artifactId>
         </exclusion>
-      </exclusions>      
+        <exclusion>
+          <!-- Embedded in Maven, Provided by Maven Embedder Library on the Jenkins side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
      
     <dependency>
@@ -146,27 +144,87 @@ THE SOFTWARE.
           <groupId>org.sonatype.sisu</groupId>
           <artifactId>sisu-inject-bean</artifactId>
         </exclusion>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven31-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven32-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven33-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven35-agent</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!--Jenkins bundles Guava 11.0.1, this library requires 20.0 and makes the plugin to bundle it.
+              The interceptor should not be actually used inside Jenkins, what could possibly go wrong?
+          -->
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -182,53 +240,146 @@ THE SOFTWARE.
           <groupId>org.sonatype.sisu</groupId>
           <artifactId>sisu-inject-bean</artifactId>
         </exclusion>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven31-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven32-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven33-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven35-interceptor</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven3-interceptor-commons</artifactId>
       <version>${mavenInterceptorsVersion}</version>
+      <exclusions>
+        <!-- Embedded in Maven, Provided by Maven Embedder Library or Maven Plugin on the Jenkins side -->
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-embedder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Interceptor gets it from the Maven Core on the remote side -->
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-aether-provider</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>${mavenVersion}</version>
+      <version>${mavenMinimalVersion}</version>
     </dependency>  
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-compat</artifactId>
-      <version>${mavenVersion}</version>
+      <version>${mavenMinimalVersion}</version>
     </dependency>     
     
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-aether-provider</artifactId>
-      <version>${mavenVersion}</version>
+      <version>${mavenMinimalVersion}</version>
     </dependency>      
     <dependency>
+      <!--
+      Maven embedder version has to comply with the minimally supported version of Maven,
+      because it needs to be present on both agent and Maven side
+      -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-embedder</artifactId>
-      <version>${mavenVersion}</version>
+      <version>${mavenMinimalVersion}</version>
     </dependency>   
     
     
@@ -309,17 +460,25 @@ THE SOFTWARE.
           <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.1</version>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>apache-httpcomponents-client-4-api</artifactId>
+      <version>4.5.3-1.0</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-      <version>4.4.3</version>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>jsch</artifactId>
+      <version>0.1.54.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
@@ -339,6 +498,11 @@ THE SOFTWARE.
         <exclusion>
           <groupId>org.codehaus.plexus</groupId>
           <artifactId>plexus-component-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Comes from the jsch plugin -->
+          <groupId>com.jcraft</groupId>
+          <artifactId>jsch</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -361,7 +525,18 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-classworlds</artifactId>
-      <version>2.5.1</version>
+      <version>2.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>3.0.24</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-component-annotations</artifactId>
+      <version>1.7.1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.lib</groupId>
@@ -371,7 +546,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.lib</groupId>
       <artifactId>lib-jenkins-maven-embedder</artifactId>
-      <version>3.12.1</version>
+      <version>3.12</version>
       <exclusions>
         <exclusion><!-- we'll add our own patched version. see https://issues.jenkins-ci.org/browse/JENKINS-1680 -->
           <groupId>jtidy</groupId>
@@ -389,6 +564,15 @@ THE SOFTWARE.
           <!-- we bundle our own version below -->
           <groupId>org.apache.maven.wagon</groupId>
           <artifactId>wagon-webdav</artifactId>
+        </exclusion>
+        <exclusion>
+          <!--
+            Excluded to solve the upper bounds conflict with the core.
+            Jenkins core bundles 1.8.4 while the Embedder Lib requires Ant 1.9.2
+            The required version is available in Maven Runtime, but there is no sense to ship custom version within the plugin
+          -->
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -416,6 +600,16 @@ THE SOFTWARE.
           <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
         </exclusion>
+        <exclusion>
+          <!-- Core offers commons-codec:commons-codec:1.8, 1.10 will be available on the Maven side anyway -->
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Offered by HttpComponents Client 4.x API plugin and by Maven on the remote side -->
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -435,7 +629,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>1.8.5</version>
+      <version>1.10.19</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -467,11 +661,17 @@ THE SOFTWARE.
       <artifactId>mock-javamail</artifactId>
       <version>1.9</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.mail</groupId>
+          <artifactId>mail</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.4</version>
+      <version>1.7.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -495,21 +695,6 @@ THE SOFTWARE.
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.20</version>
-          <configuration>
-            <!-- now defined in parent pom -->
-            <!-- Prevent the annoying ForkedBooter process from stealing window focus on Mac OS -->
-            <!-- Must be defined as argLine and not as system property to be used -->
-            <!--argLine>-Djava.awt.headless=true</argLine-->
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -564,7 +749,35 @@ THE SOFTWARE.
               <fail>true</fail>
             </configuration>
           </execution>
+          <execution>
+            <id>ban-commons-httpclient-3x</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                  <basePackage>**</basePackage>
+                  <includeTestCode>true</includeTestCode>
+                  <bannedImports>
+                    <bannedImport>org.apache.commons.httpclient.**</bannedImport>
+                  </bannedImports>
+                </restrictImports>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
         </executions>
+        
+        <!-- Consider adding to Jenkins plugin parent POM? -->
+        <dependencies>
+          <dependency>
+            <groupId>de.skuzzle.enforcer</groupId>
+            <artifactId>restrict-imports-enforcer-rule</artifactId>
+            <version>0.7.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
