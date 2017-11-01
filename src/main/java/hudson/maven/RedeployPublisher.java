@@ -23,6 +23,7 @@
  */
 package hudson.maven;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -243,6 +244,24 @@ public class RedeployPublisher extends Recorder {
                 if(buildNode == null) {
                     // assume that build was made on master
                     buildNode = Jenkins.getInstance();
+                }
+
+                EnvVars envVars = build.getEnvironment(listener);
+                for (Entry<Object, Object> entry : systemProperties.entrySet()) {
+                    // expand variables in goals
+                    Object value = entry.getValue();
+                    if (value instanceof String) {
+                        value = envVars.expand((String) value);
+                        entry.setValue(value);
+                    }
+                }
+                if (envVars != null && !envVars.isEmpty()) {
+                    // define all EnvVars as "env.xxx" maven properties
+                    for (Entry<String, String> entry : envVars.entrySet()) {
+                        if (entry.getKey() != null && entry.getValue() != null) {
+                            systemProperties.put("env." + entry.getKey(), entry.getValue());
+                        }
+                    }
                 }
 
                 if (StringUtils.isBlank( altSettingsPath ) ) {
