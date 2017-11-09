@@ -5,8 +5,10 @@ import hudson.slaves.CommandLauncher;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * Customisation of the JenkinsRule to fix the lost of window focus when tests are launched on MacOS.
@@ -35,10 +37,16 @@ public class MavenJenkinsRule extends JenkinsRule {
     @Override
     public CommandLauncher createComputerLauncher(EnvVars env) throws URISyntaxException, MalformedURLException {
         int sz = this.jenkins.getNodes().size();
+        final URL slaveJarURL;
+        try {
+            slaveJarURL = this.jenkins.getJnlpJars("slave.jar").getURL();
+        } catch (IOException ex) {
+            throw new AssertionError("Cannot retrieve slave.jar for the test", ex);
+        }
         return new CommandLauncher(String.format("\"%s/bin/java\" %s %s -jar \"%s\"",
                 new Object[]{System.getProperty("java.home"), JAVA_HEADLESS_OPT, SLAVE_DEBUG_PORT > 0 ?
                         " -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=" + (SLAVE_DEBUG_PORT + sz) : "",
-                        (new File(this.jenkins.getJnlpJars("slave.jar").getURL().toURI())).getAbsolutePath()}), env);
+                        (new File(slaveJarURL.toURI())).getAbsolutePath()}), env);
     }
 
 }
