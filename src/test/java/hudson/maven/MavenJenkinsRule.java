@@ -6,7 +6,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import org.jvnet.hudson.test.SimpleCommandLauncher;
@@ -36,9 +35,9 @@ public class MavenJenkinsRule extends JenkinsRule {
      * Fix the focus issue when a JVM is created to launch a slave by adding {@link #JAVA_HEADLESS_OPT}
      */
     @Override
-    public ComputerLauncher createComputerLauncher(EnvVars env) throws URISyntaxException, MalformedURLException {
+    public ComputerLauncher createComputerLauncher(EnvVars env) throws URISyntaxException, IOException {
         if (env != null && !env.isEmpty()) {
-            throw new UnsupportedOperationException("SimpleCommandLauncher.<init>(String, EnvVars) is not currently accessible");
+            return super.createComputerLauncher(env); // TODO delete this override and port fix to JTH
         }
         int sz = this.jenkins.getNodes().size();
         final URL slaveJarURL;
