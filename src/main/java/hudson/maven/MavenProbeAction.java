@@ -55,7 +55,7 @@ public final class MavenProbeAction implements Action {
     private final transient Channel channel;
     private final transient AbstractMavenBuild<?,?> build;
 
-    public final AbstractProject<?,?> owner;
+    public final transient AbstractProject<?,?> owner;
 
     MavenProbeAction(AbstractProject<?,?> owner, Channel channel, AbstractMavenBuild<?,?> build) {
         this.channel = channel;
