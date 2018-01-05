@@ -1,7 +1,7 @@
 package hudson.maven;
 
 import hudson.EnvVars;
-import hudson.slaves.CommandLauncher;
+import hudson.slaves.ComputerLauncher;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.File;
@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import org.jvnet.hudson.test.SimpleCommandLauncher;
 
 /**
  * Customisation of the JenkinsRule to fix the lost of window focus when tests are launched on MacOS.
@@ -35,7 +36,10 @@ public class MavenJenkinsRule extends JenkinsRule {
      * Fix the focus issue when a JVM is created to launch a slave by adding {@link #JAVA_HEADLESS_OPT}
      */
     @Override
-    public CommandLauncher createComputerLauncher(EnvVars env) throws URISyntaxException, MalformedURLException {
+    public ComputerLauncher createComputerLauncher(EnvVars env) throws URISyntaxException, MalformedURLException {
+        if (!env.isEmpty()) {
+            throw new UnsupportedOperationException("SimpleCommandLauncher.<init>(String, EnvVars) is not currently accessible");
+        }
         int sz = this.jenkins.getNodes().size();
         final URL slaveJarURL;
         try {
@@ -43,10 +47,10 @@ public class MavenJenkinsRule extends JenkinsRule {
         } catch (IOException ex) {
             throw new AssertionError("Cannot retrieve slave.jar for the test", ex);
         }
-        return new CommandLauncher(String.format("\"%s/bin/java\" %s %s -jar \"%s\"",
+        return new SimpleCommandLauncher(String.format("\"%s/bin/java\" %s %s -jar \"%s\"",
                 new Object[]{System.getProperty("java.home"), JAVA_HEADLESS_OPT, SLAVE_DEBUG_PORT > 0 ?
                         " -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=" + (SLAVE_DEBUG_PORT + sz) : "",
-                        (new File(slaveJarURL.toURI())).getAbsolutePath()}), env);
+                        (new File(slaveJarURL.toURI())).getAbsolutePath()}));
     }
 
 }
