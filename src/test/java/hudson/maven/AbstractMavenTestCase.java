@@ -39,7 +39,7 @@ public abstract class AbstractMavenTestCase extends HudsonTestCase {
      */
     @Override
     public ComputerLauncher createComputerLauncher(EnvVars env) throws URISyntaxException, MalformedURLException {
-        if (!env.isEmpty()) {
+        if (env != null && !env.isEmpty()) {
             throw new UnsupportedOperationException("SimpleCommandLauncher.<init>(String, EnvVars) is not currently accessible");
         }
         int sz = this.jenkins.getNodes().size();
