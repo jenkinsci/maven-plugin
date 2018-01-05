@@ -28,6 +28,7 @@ import hudson.console.ModelHyperlinkNote;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
+import hudson.model.Cause;
 import hudson.model.DependencyGraph;
 import jenkins.model.Jenkins;
 import hudson.model.ItemGroup;
@@ -239,4 +240,28 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
      */
     protected abstract void addTransientActionsFromBuild(R lastBuild, List<Action> collection, Set<Class> added);
     
+    // TODO for some reason the default implementations added to ParameterizedJob in 2.61 are not found by javac:
+
+    @Deprecated
+    @Override
+    public boolean scheduleBuild() {
+        return super.scheduleBuild();
+    }
+
+    @Deprecated
+    @Override
+    public boolean scheduleBuild(int quietPeriod) {
+        return super.scheduleBuild(quietPeriod);
+    }
+
+    @Override
+    public boolean scheduleBuild(Cause c) {
+        return super.scheduleBuild(c);
+    }
+
+    @Override
+    public boolean scheduleBuild(int quietPeriod, Cause c) {
+        return super.scheduleBuild(quietPeriod, c);
+    }
+
 }
