@@ -34,6 +34,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import com.google.common.collect.Maps;
+import hudson.AbortException;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -127,6 +128,9 @@ public final class MavenProbeAction implements Action {
     }
 
     public void doScript( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
+        if (owner == null) {
+            throw new AbortException("Completed build");
+        }
         Jenkins._doScript(req, rsp, req.getView(this, "_script.jelly"), channel, owner.getACL());
     }
 
@@ -134,6 +138,9 @@ public final class MavenProbeAction implements Action {
      * Obtains the heap dump.
      */
     public HeapDump getHeapDump() throws IOException {
+        if (owner == null) {
+            throw new AbortException("Completed build");
+        }
         return new HeapDump(owner,channel);
     }
 }
