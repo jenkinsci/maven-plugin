@@ -1,0 +1,12 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <f:entry title="${%MavenBuildWrapper.Title}" description="${%MavenBuildWrapper.Description}">
+        <select class="setting-input" name="_.mavenInstallationName">
+            <j:forEach var="installation" items="${descriptor.installations}">
+                <f:option selected="${installation.name==instance.mavenInstallationName}">${installation.name}</f:option>
+            </j:forEach>
+        </select>
+    </f:entry>
+
+</j:jelly>
