@@ -24,13 +24,13 @@
 package hudson.maven;
 
 import hudson.console.ConsoleNote;
+import hudson.console.HyperlinkNote;
 import hudson.model.BuildListener;
 import hudson.model.Cause;
 import hudson.model.Result;
 import hudson.model.StreamBuildListener;
 import hudson.remoting.Channel;
 import hudson.remoting.Future;
-import hudson.util.AbstractTaskListener;
 import jenkins.security.MasterToSlaveCallable;
 import jenkins.util.MarkFindingOutputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -53,7 +53,7 @@ import java.util.concurrent.ExecutionException;
  * @author Kohsuke Kawaguchi
  * @since 1.133
  */
-final class SplittableBuildListener extends AbstractTaskListener implements BuildListener, Serializable {
+final class SplittableBuildListener implements BuildListener, Serializable {
     /**
      * The actual {@link BuildListener} where the output goes.
      */
@@ -231,6 +231,12 @@ final class SplittableBuildListener extends AbstractTaskListener implements Buil
 
     public void annotate(ConsoleNote ann) throws IOException {
         core.annotate(ann);
+    }
+
+    @Override // TODO 2.92+ delete
+    public void hyperlink(String url, String text) throws IOException {
+        annotate(new HyperlinkNote(url,text.length()));
+        getLogger().print(text);
     }
 
     private Object writeReplace() throws IOException {
