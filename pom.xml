@@ -29,7 +29,8 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.35</version>
+    <version>3.2</version>
+    <relativePath />
   </parent>
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
@@ -39,7 +40,7 @@ THE SOFTWARE.
 
   <name>Maven Integration plugin</name>
   <description>This plug-in provides, for better and for worse, a deep integration of Jenkins and Maven: Automatic triggers between projects depending on SNAPSHOTs, automated configuration of various Jenkins publishers (Junit, ...).</description>
-  <url>http://wiki.jenkins-ci.org/display/JENKINS/Maven+Project+Plugin</url>
+  <url>https://wiki.jenkins.io/display/JENKINS/Maven+Project+Plugin</url>
 
   <properties>
     <jenkins.version>1.625.3</jenkins.version>
@@ -70,7 +71,7 @@ THE SOFTWARE.
   <licenses>
     <license>
       <name>MIT License</name>
-      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <url>https://opensource.org/licenses/MIT</url>
     </license>
   </licenses>
   
@@ -633,7 +634,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>token-macro</artifactId>
-      <version>1.1</version>
+      <version>1.10</version>
       <optional>true</optional>
     </dependency>
 
@@ -684,12 +685,6 @@ THE SOFTWARE.
           <artifactId>mail</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.7</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.test</groupId>
@@ -803,13 +798,13 @@ THE SOFTWARE.
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
+      <url>https://repo.jenkins-ci.org/public/</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
+      <url>https://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
 

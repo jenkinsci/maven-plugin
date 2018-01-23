@@ -27,6 +27,7 @@ import hudson.EnvVars;
 import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.EnvironmentContributingAction;
+import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ReflectionUtils;
 
@@ -55,8 +56,17 @@ public abstract class AbstractMavenBuild<P extends AbstractMavenProject<P,B>,B e
     public EnvVars getEnvironment(TaskListener log) throws IOException, InterruptedException {
         EnvVars envs = super.getEnvironment(log);
 
-        for (EnvironmentContributingAction a : Util.filter(getProject().getActions(), EnvironmentContributingAction.class))
-            a.buildEnvVars(this,envs);
+        for (EnvironmentContributingAction a : Util.filter(getProject().getActions(), EnvironmentContributingAction.class)) {
+            try {
+                try { // TODO remove reflection when on 2.76+
+                    EnvironmentContributingAction.class.getMethod("buildEnvironment", Run.class, EnvVars.class).invoke(a, this, envs);
+                } catch (NoSuchMethodException x) {
+                    EnvironmentContributingAction.class.getMethod("buildEnvVars", AbstractBuild.class, EnvVars.class).invoke(a, this, envs);
+                }
+            } catch (Exception x) {
+                LOGGER.log(Level.WARNING, null, x);
+            }
+        }
 
         String opts = getMavenOpts(log,envs);
 
