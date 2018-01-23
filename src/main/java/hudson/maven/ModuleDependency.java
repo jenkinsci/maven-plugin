@@ -63,14 +63,14 @@ public final class ModuleDependency implements Serializable {
      *
      * @see #getVersionAsRange()
      */
-    private VersionRange range;
+    private transient VersionRange range;
 
     /**
      * Cache of the parsed form of {@link #version}
      *
      * @see #parseVersion()
      */
-    private ArtifactVersion parsedVersion;
+    private transient ArtifactVersion parsedVersion;
 
     /**
      * @since 2.2
