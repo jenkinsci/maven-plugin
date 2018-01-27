@@ -6,7 +6,10 @@ import hudson.maven.AbstractMavenBuild;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Uses Maven's default local repository, which is actually <code>~/.m2/repository</code>
+ * Uses Maven's default local repository, which is usually <tt>~/.m2/repository</tt>,
+ * or the value of 'localRepository' in Maven's settings file, if defined.
+ *
+ * @see <a href="https://maven.apache.org/settings.html#Settings_Details">https://maven.apache.org/settings.html#Settings_Details</a>
  *
  * @author Kohsuke Kawaguchi
  */
@@ -24,7 +27,7 @@ public class DefaultLocalRepositoryLocator extends LocalRepositoryLocator {
     public static class DescriptorImpl extends LocalRepositoryLocatorDescriptor {
         @Override
         public String getDisplayName() {
-            return "Default (~/.m2/repository)";
+            return "Default (\"~/.m2/repository\", or the value of 'localRepository' in Maven's settings file, if defined)";
         }
     }
 }
