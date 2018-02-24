@@ -58,6 +58,7 @@ import jenkins.maven3.agent.Maven31Main;
 import jenkins.maven3.agent.Maven32Main;
 import jenkins.maven3.agent.Maven33Main;
 
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.maven.BuildFailureException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.execution.ReactorManager;
@@ -75,8 +76,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -590,10 +589,10 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         private final MavenModuleSetBuild parentBuild;
         private boolean blockBuildEvents;
 
-        ProxyImpl2(MavenModuleSetBuild parentBuild,SplittableBuildListener listener) throws FileNotFoundException {
+        ProxyImpl2(MavenModuleSetBuild parentBuild,SplittableBuildListener listener,OutputStream log) {
             this.parentBuild = parentBuild;
             this.listener = listener;
-            log = new FileOutputStream(getLogFile()); // no buffering so that AJAX clients can see the log live
+            this.log = log;
         }
 
         public void start() {
@@ -896,7 +895,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                 ProxyImpl proxy;
                 if (mavenBuildInformation.isMaven3OrLater())
                 {
-                    ProxyImpl2 proxy2 = new ProxyImpl2(mms.getLastCompletedBuild(), slistener);
+                    ProxyImpl2 proxy2 = new ProxyImpl2(mms.getLastCompletedBuild(), slistener, new NullOutputStream());
                     proxy2.setBlockBuildEvents(true);
                     proxy = proxy2;
                     builder = new Maven3Builder(createRequest(proxy2,

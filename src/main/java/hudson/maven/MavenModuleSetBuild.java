@@ -63,8 +63,10 @@ import hudson.util.IOUtils;
 import hudson.util.StreamTaskListener;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.URL;
@@ -730,7 +732,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                             }
 
                             mb.setWorkspace(getModuleRoot().child(m.getRelativePath()));
-                            proxies.put(moduleName, mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener));
+                            OutputStream moduleLogger = new FileOutputStream(mb.getLogFile()); // no buffering so that AJAX clients can see the log live
+                            proxies.put(moduleName, mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener,moduleLogger));
                         }
 
                         // run the complete build here
