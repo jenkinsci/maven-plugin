@@ -32,6 +32,7 @@ import hudson.Util;
 import hudson.maven.reporters.MavenMailer;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
+import hudson.model.BuildableItemWithBuildWrappers;
 import hudson.model.DependencyGraph;
 import hudson.model.Descriptor;
 import hudson.model.Descriptor.FormException;
@@ -43,6 +44,7 @@ import hudson.model.Label;
 import hudson.model.Node;
 import hudson.model.Resource;
 import hudson.model.Saveable;
+import hudson.tasks.BuildWrapper;
 import hudson.tasks.LogRotator;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Publisher;
@@ -77,7 +79,7 @@ import java.util.logging.Logger;
  * 
  * @author Kohsuke Kawaguchi
  */
-public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> implements Saveable {
+public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> implements Saveable, BuildableItemWithBuildWrappers {
     private DescribableList<MavenReporter,Descriptor<MavenReporter>> reporters =
         new DescribableList<MavenReporter,Descriptor<MavenReporter>>(this);
 
@@ -792,6 +794,17 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
      */
     public Set<ModuleDependency> getDependencies() {
         return new HashSet<ModuleDependency>( dependencies);
+    }
+
+    @Override
+    public AbstractProject<?, ?> asProject() {
+        return this;
+    }
+
+    @Override
+    public DescribableList<BuildWrapper, Descriptor<BuildWrapper>> getBuildWrappersList() {
+        // inherit build wrappers configured on the parent project
+        return getParent().getBuildWrappersList();
     }
 
     /**
