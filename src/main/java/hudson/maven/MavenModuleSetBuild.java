@@ -30,6 +30,7 @@ import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Util;
+import hudson.console.ConsoleLogFilter;
 import hudson.maven.MavenBuild.ProxyImpl2;
 import hudson.maven.reporters.MavenAggregatedArtifactRecord;
 import hudson.maven.reporters.MavenFingerprinter;
@@ -732,8 +733,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                             }
 
                             mb.setWorkspace(getModuleRoot().child(m.getRelativePath()));
-                            OutputStream moduleLogger = new FileOutputStream(mb.getLogFile()); // no buffering so that AJAX clients can see the log live
-                            proxies.put(moduleName, mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener,moduleLogger));
+                            proxies.put(moduleName, mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener,createModuleLogger(mb)));
                         }
 
                         // run the complete build here
@@ -1064,6 +1064,22 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             // module builds must start with this build's number
             for (MavenModule m : modules.values())
                 m.updateNextBuildNumber(getNumber());
+        }
+
+        private OutputStream createModuleLogger(MavenBuild build) throws IOException, InterruptedException {
+            OutputStream logger = new FileOutputStream(build.getLogFile()); // no buffering so that AJAX clients can see the log live
+
+            // Global log filters
+            for (ConsoleLogFilter filter : ConsoleLogFilter.all()) {
+                logger = filter.decorateLogger(build, logger);
+            }
+
+            // Project specific log filters
+            for (BuildWrapper bw : getParent().getBuildWrappersList()) {
+                logger = bw.decorateLogger(build, logger);
+            }
+
+            return logger;
         }
 
         protected void post2(BuildListener listener) throws Exception {
