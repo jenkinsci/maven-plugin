@@ -50,7 +50,6 @@ import hudson.util.AlternativeUiTextProvider;
 import hudson.util.DescribableList;
 import jenkins.model.Jenkins;
 
-import org.apache.maven.model.Notifier;
 import org.apache.maven.project.MavenProject;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -212,7 +211,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         
         MavenMailer projectMailer = getParent().getReporters() == null? null: getParent().getReporters().get(MavenMailer.class);
         if (projectMailer != null) {
-        	Notifier notifier = getCiManagementNotifier(pom);
+        	NotifierInfo notifier = getCiManagementNotifier(pom);
 	        if (notifier != null) {
 	            MavenMailer mailer;
 	            
@@ -223,9 +222,9 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
 	        	}
 	            
 	        	mailer.perModuleEmail = projectMailer.perModuleEmail;
-                mailer.dontNotifyEveryUnstableBuild = !notifier.isSendOnFailure();
+                mailer.dontNotifyEveryUnstableBuild = !notifier.sendOnFailure;
                 
-                String recipients = notifier.getConfiguration().getProperty("recipients");
+                String recipients = notifier.recipients;
                 
                 mailer.recipients = projectMailer.recipients;
                 mailer.mavenRecipients = recipients;
@@ -251,8 +250,8 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
 		return mavenMailer;
 	}
 
-	private Notifier getCiManagementNotifier(PomInfo pom) {
-		Notifier notifier = null;
+	private NotifierInfo getCiManagementNotifier(PomInfo pom) {
+		NotifierInfo notifier = null;
 		
 		if (pom.mailNotifier != null) {
 			notifier = pom.mailNotifier;

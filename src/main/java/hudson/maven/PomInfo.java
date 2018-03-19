@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -112,7 +113,7 @@ final class PomInfo implements Serializable {
      */    
     private final String artifactId;
 
-    public final Notifier mailNotifier;
+    public final @CheckForNull NotifierInfo mailNotifier;
     
     /**
      * Packaging type taken from the POM.
@@ -182,7 +183,7 @@ final class PomInfo implements Serializable {
                     break;
                 }
             }
-            this.mailNotifier = mailNotifier;
+            this.mailNotifier = new NotifierInfo(mailNotifier);
         } else
             this.mailNotifier = null;
         

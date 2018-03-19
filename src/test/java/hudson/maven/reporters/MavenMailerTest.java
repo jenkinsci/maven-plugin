@@ -48,6 +48,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 import org.jvnet.mock_javamail.Mailbox;
@@ -129,7 +130,7 @@ public class MavenMailerTest {
 	 * @throws Exception
 	 */
     @Test
-    @Bug(1201)
+    @Issue({"JENKINS-1201", "JENKINS-50251"})
     public void testCiManagementNotificationRoot() throws Exception {
     	JenkinsLocationConfiguration.get().setAdminAddress(EMAIL_ADMIN);
         Mailbox yourInbox = Mailbox.get(new InternetAddress(EMAIL_SOME));
@@ -139,6 +140,7 @@ public class MavenMailerTest {
 
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
+        mms.setAssignedNode(j.createSlave());
         mms.setGoals("test");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-parent-defined.zip")));
         
