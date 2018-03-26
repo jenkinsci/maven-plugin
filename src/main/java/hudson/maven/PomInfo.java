@@ -183,7 +183,8 @@ final class PomInfo implements Serializable {
                     break;
                 }
             }
-            this.mailNotifier = new NotifierInfo(mailNotifier);
+            if (mailNotifier!=null)
+                this.mailNotifier = new NotifierInfo(mailNotifier);
         } else
             this.mailNotifier = null;
         
