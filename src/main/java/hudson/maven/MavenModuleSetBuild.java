@@ -733,7 +733,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                             }
 
                             mb.setWorkspace(getModuleRoot().child(m.getRelativePath()));
-                            proxies.put(moduleName, mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener,createModuleLogger(mb)));
+                            proxies.put(moduleName, mb.new ProxyImpl2(MavenModuleSetBuild.this, slistener, createModuleLogger(mb)));
                         }
 
                         // run the complete build here

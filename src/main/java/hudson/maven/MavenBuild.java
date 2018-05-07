@@ -589,7 +589,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         private final MavenModuleSetBuild parentBuild;
         private boolean blockBuildEvents;
 
-        ProxyImpl2(MavenModuleSetBuild parentBuild,SplittableBuildListener listener,OutputStream log) {
+        ProxyImpl2(MavenModuleSetBuild parentBuild, SplittableBuildListener listener, OutputStream log) {
             this.parentBuild = parentBuild;
             this.listener = listener;
             this.log = log;
