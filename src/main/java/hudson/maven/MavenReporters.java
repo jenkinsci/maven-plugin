@@ -46,7 +46,7 @@ public final class MavenReporters {
      * Gets the subset of {@link #LIST} that has configuration screen.
      */
     public static List<MavenReporterDescriptor> getConfigurableList() {
-        List<MavenReporterDescriptor> r = new ArrayList<MavenReporterDescriptor>();
+        List<MavenReporterDescriptor> r = new ArrayList<>();
         for (MavenReporterDescriptor d : MavenReporterDescriptor.all()) {
             if(d.hasConfigScreen())
                 r.add(d);

@@ -241,7 +241,7 @@ public class MavenUtil {
         File basedir = project.getFile().getParentFile();
         relativePathInfo.put( project, rel );
 
-        List<MavenProject> modules = new ArrayList<MavenProject>();
+        List<MavenProject> modules = new ArrayList<>();
 
         if ( !nonRecursive ) {
             for ( String modulePath : project.getModules()) {

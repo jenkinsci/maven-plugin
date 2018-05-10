@@ -273,7 +273,7 @@ public final class ModuleDependency implements Serializable {
      */
     public ModuleDependency findHighestFrom(Collection<ModuleDependency> candidates) {
         //Create a sorted map of the ModuleDependnecies sorted on version (descending order).
-        SortedMap<ArtifactVersion, ModuleDependency> sorted = new TreeMap<ArtifactVersion, ModuleDependency>(new ReverseComparator());
+        SortedMap<ArtifactVersion, ModuleDependency> sorted = new TreeMap<>(new ReverseComparator());
         for (ModuleDependency candidate : candidates) {
             sorted.put(candidate.parseVersion(), candidate);
         }

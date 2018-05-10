@@ -322,11 +322,14 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         int end = nb!=null ? nb.getNumber() : Integer.MAX_VALUE;
 
         // preserve the order by using LinkedHashMap
-        Map<MavenModule,List<MavenBuild>> r = new LinkedHashMap<MavenModule,List<MavenBuild>>(mods.size());
+        Map<MavenModule,List<MavenBuild>> r = new LinkedHashMap<>(mods.size());
 
         for (MavenModule m : mods) {
-            List<MavenBuild> builds = new ArrayList<MavenBuild>();
-            MavenBuild b = m.getNearestBuild(number);
+            List<MavenBuild> builds = new ArrayList<>();
+            MavenBuild b = m.getBuildByNumber(number);
+            if( b == null ) {
+                b = m.getNearestBuild(number);
+            }
             while(b!=null && b.getNumber()<end) {
                 builds.add(b);
                 b = b.getNextBuild();
@@ -493,7 +496,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         int end = nb!=null ? nb.getNumber() : Integer.MAX_VALUE;
 
         // preserve the order by using LinkedHashMap
-        Map<MavenModule,MavenBuild> r = new LinkedHashMap<MavenModule,MavenBuild>(mods.size());
+        Map<MavenModule,MavenBuild> r = new LinkedHashMap<>(mods.size());
 
         for (MavenModule m : mods) {
             MavenBuild b = m.getNearestOldBuild(end - 1);
@@ -506,7 +509,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
     public void registerAsProjectAction(MavenReporter reporter) {
         if(projectActionReporters==null)
-            projectActionReporters = new ArrayList<MavenReporter>();
+            projectActionReporters = new ArrayList<>();
         projectActionReporters.add(reporter);
     }
 
@@ -517,7 +520,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
      */
     public <T extends Action> List<T> findModuleBuildActions(Class<T> action) {
         Collection<MavenModule> mods = getParent().getModules();
-        List<T> r = new ArrayList<T>(mods.size());
+        List<T> r = new ArrayList<>(mods.size());
 
         // identify the build number range. [start,end)
         MavenModuleSetBuild nb = getNextBuild();
@@ -560,7 +563,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
     /*package*/ void notifyModuleBuild(MavenBuild newBuild) {
         try {
             // update module set build number
-            getParent().updateNextBuildNumber();
+            //getParent().updateNextBuildNumber();
 
             // update actions
             Map<MavenModule, List<MavenBuild>> moduleBuilds = getModuleBuilds();
@@ -574,7 +577,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 boolean modified = false;
 
                 List<Action> actions = getActions();
-                Set<Class<? extends AggregatableAction>> individuals = new HashSet<Class<? extends AggregatableAction>>();
+                Set<Class<? extends AggregatableAction>> individuals = new HashSet<>();
                 for (Action a : actions) {
                     if(a instanceof MavenAggregatedReport) {
                         MavenAggregatedReport mar = (MavenAggregatedReport) a;
@@ -599,13 +602,13 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                     save();
                     getProject().updateTransientActions();
                 }
-            }
 
-            // symlink to this module build
-            String moduleFsName = newBuild.getProject().getModuleName().toFileSystemName();
-            Util.createSymlink(getRootDir(),
-                    "../../modules/"+ moduleFsName +"/builds/"+newBuild.getId() /*ugly!*/,
-                    moduleFsName, StreamTaskListener.NULL);
+                // symlink to this module build
+                String moduleFsName = newBuild.getProject().getModuleName().toFileSystemName();
+                Util.createSymlink(getRootDir(),
+                                   "../../modules/"+ moduleFsName +"/builds/"+newBuild.getId() /*ugly!*/,
+                                   moduleFsName, StreamTaskListener.NULL);
+            }
         } catch (IOException e) {
             LOGGER.log(Level.WARNING,"Failed to update "+this,e);
         } catch (InterruptedException e) {
@@ -656,7 +659,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 } else {
                     // do builds here
                     try {
-                        List<BuildWrapper> wrappers = new ArrayList<BuildWrapper>();
+                        List<BuildWrapper> wrappers = new ArrayList<>();
                         for (BuildWrapper w : project.getBuildWrappersList())
                             wrappers.add(w);
                         ParametersAction parameters = getAction(ParametersAction.class);
@@ -690,8 +693,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
                         parsePoms(listener, logger, envVars, mvn, mavenVersion, mavenBuildInformation); // #5428 : do pre-build *before* parsing pom
                         SplittableBuildListener slistener = new SplittableBuildListener(listener);
-                        proxies = new HashMap<ModuleName, ProxyImpl2>();
-                        List<ModuleName> changedModules = new ArrayList<ModuleName>();
+                        proxies = new HashMap<>();
+                        List<ModuleName> changedModules = new ArrayList<>();
                         boolean incrementalBuild;
                         if (project.isIncrementalBuild()) {
                             if (getChangeSet().isEmptySet()) {
@@ -709,7 +712,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         }
 
                         for (MavenModule m : project.sortedActiveModules) {
-                            MavenBuild mb = m.newBuild();
+                            MavenBuild mb = m.newBuild(number);
                             // JENKINS-8418
                             mb.setBuiltOnStr( getBuiltOnStr() );
                             ModuleName moduleName = m.getModuleName();
@@ -958,7 +961,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
          * See JENKINS-5764
          */
         private Collection<ModuleName> getUnbuiltModulesSinceLastSuccessfulBuild() {
-            Collection<ModuleName> unbuiltModules = new ArrayList<ModuleName>();
+            Collection<ModuleName> unbuiltModules = new ArrayList<>();
             MavenModuleSetBuild previousSuccessfulBuild = getPreviousSuccessfulBuild();
             if (previousSuccessfulBuild == null) {
                 LOGGER.log(Level.FINER, "no successful build from {0} yet; taking the first build instead", MavenModuleSetBuild.this);
@@ -1011,8 +1014,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             // update the module list
             Map<ModuleName,MavenModule> modules = project.modules;
             synchronized(modules) {
-                Map<ModuleName,MavenModule> old = new HashMap<ModuleName, MavenModule>(modules);
-                List<MavenModule> sortedModules = new ArrayList<MavenModule>();
+                Map<ModuleName,MavenModule> old = new HashMap<>(modules);
+                List<MavenModule> sortedModules = new ArrayList<>();
 
                 modules.clear();
                 if(debug)
@@ -1323,7 +1326,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 
                 MavenProject rootProject = null;
                 
-                List<MavenProject> mps = new ArrayList<MavenProject>(0);
+                List<MavenProject> mps = new ArrayList<>(0);
                 if (maven3OrLater) {
                     mps = embedder.readProjects( pom,!this.nonRecursive );
 
@@ -1339,8 +1342,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         readChilds( mavenProject, embedder, mps, reactorReader );
                     }
                 }
-                Map<String,MavenProject> canonicalPaths = new HashMap<String, MavenProject>( mps.size() );
-                Map<String,String> modelParents = new HashMap<String,String>();
+                Map<String,MavenProject> canonicalPaths = new HashMap<>( mps.size() );
+                Map<String,String> modelParents = new HashMap<>();
                 for(MavenProject mp : mps) {
                     // Projects are indexed by POM path and not module path because
                     // Maven allows to have several POMs with different names in the same directory
@@ -1384,7 +1387,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 for (PomInfo pi : infos)
                     pi.cutCycle();
 
-                return new Result(new ArrayList<PomInfo>(infos), modelParents);
+                return new Result(new ArrayList<>(infos), modelParents);
             } catch (MavenEmbedderException e) {
                 throw new MavenExecutionException(e);
             } catch (ProjectBuildingException e) {

@@ -185,7 +185,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
      * relationship of the POM.
      */
     public List<MavenModule> getSubsidiaries() {
-        List<MavenModule> r = new ArrayList<MavenModule>();
+        List<MavenModule> r = new ArrayList<>();
         for (MavenModule mm : getParent().getModules())
             if(mm!=this && mm.getRelativePath().startsWith(getRelativePath()))
                 r.add(mm);
@@ -372,7 +372,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
 
     public DescribableList<Publisher,Descriptor<Publisher>> getPublishersList() {
         // TODO
-        return new DescribableList<Publisher,Descriptor<Publisher>>(this);
+        return new DescribableList<>(this);
     }
 
     @Override
@@ -389,6 +389,12 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
     @Override
     protected MavenBuild newBuild() throws IOException {
         return super.newBuild();
+    }
+
+    protected MavenBuild newBuild(int buildNumber) throws IOException {
+        MavenBuild mavenBuild = super.newBuild();
+        mavenBuild.number = buildNumber;
+        return mavenBuild;
     }
 
     public ModuleName getModuleName() {
@@ -441,7 +447,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         List<ModuleName> l = children;    // take a snapshot
         if(l==null) return null;
 
-        List<MavenModule> modules = new ArrayList<MavenModule>(l.size());
+        List<MavenModule> modules = new ArrayList<>(l.size());
         for (ModuleName n : l) {
             MavenModule m = getParent().modules.get(n);
             if(m!=null)
@@ -505,7 +511,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         // ONLY if we find a such an old MavenModule in this Jenkins instance.
         final boolean hasDependenciesWithUnknownVersion = hasDependenciesWithUnknownVersion();
         if (data == null) {
-            Map<ModuleDependency,MavenModule> modules = new HashMap<ModuleDependency,MavenModule>();
+            Map<ModuleDependency,MavenModule> modules = new HashMap<>();
     
             for (MavenModule m : getAllMavenModules()) {
                 if(!m.isBuildable() || m.getParent().isDisableTriggerDownstreamProjects())  continue;
@@ -537,7 +543,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         Map<ModuleDependency,MavenModule> myParentsModules; // = data.modulesPerParent.get(getParent());
         
         //if (myParentsModules == null) {
-            myParentsModules = new HashMap<ModuleDependency, MavenModule>();
+            myParentsModules = new HashMap<>();
             
             for (MavenModule m : getParent().getModules()) {
                 if(m.isDisabled())  continue;
@@ -760,7 +766,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
      * Creates a list of {@link MavenReporter}s to be used for a build of this project.
      */
     protected List<MavenReporter> createReporters() {
-    	Set<MavenReporter> reporterSet = new TreeSet<MavenReporter>(new Comparator<MavenReporter>() {
+    	Set<MavenReporter> reporterSet = new TreeSet<>(new Comparator<MavenReporter>() {
 			@Override
 			public int compare(MavenReporter o1, MavenReporter o2) {
 				if (o1.getClass() == o2.getClass()) {
@@ -782,7 +788,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
                 reporterSet.add(auto);
         }
 
-        return new ArrayList<MavenReporter>(reporterSet);
+        return new ArrayList<>(reporterSet);
     }
 
     /**
@@ -790,7 +796,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
      * @since 2.2
      */
     public Set<ModuleDependency> getDependencies() {
-        return new HashSet<ModuleDependency>( dependencies);
+        return new HashSet<>( dependencies);
     }
 
     /**

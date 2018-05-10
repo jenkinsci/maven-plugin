@@ -258,7 +258,7 @@ public abstract class MavenBuilder extends AbstractMavenBuilder implements Deleg
 
         private final MavenBuilder listener;
         private final AtomicBoolean hasTestFailures = new AtomicBoolean();
-        private final Map<ModuleName, Long> currentMojoStartPerModuleName = new ConcurrentHashMap<ModuleName, Long>();
+        private final Map<ModuleName, Long> currentMojoStartPerModuleName = new ConcurrentHashMap<>();
 
         /**
          * Number of total nanoseconds {@link MavenBuilder} spent.

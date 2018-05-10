@@ -325,7 +325,7 @@ public class RedeployPublisher extends Recorder {
     }
     
     protected List<MavenAbstractArtifactRecord> getActions(AbstractBuild<?, ?> build, BuildListener listener) {
-        List<MavenAbstractArtifactRecord> actions = new ArrayList<MavenAbstractArtifactRecord>();
+        List<MavenAbstractArtifactRecord> actions = new ArrayList<>();
         MavenModuleSetBuild mavenBuild = getMavenBuild(build);
         if (mavenBuild == null) {
             return actions;

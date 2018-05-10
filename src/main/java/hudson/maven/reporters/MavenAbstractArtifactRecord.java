@@ -107,7 +107,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
          * Returns the log of this deployment record.
          */
         public AnnotatedLargeText<Record> getLog() {
-            return new AnnotatedLargeText<Record>(new File(getBuild().getRootDir(),fileName), Charset.defaultCharset(), true, this);
+            return new AnnotatedLargeText<>(new File(getBuild().getRootDir(),fileName), Charset.defaultCharset(), true, this);
         }
 
         /**
@@ -157,7 +157,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
      * Records of a deployment.
      */
     @Exported
-    public final CopyOnWriteArrayList<Record> records = new CopyOnWriteArrayList<Record>();
+    public final CopyOnWriteArrayList<Record> records = new CopyOnWriteArrayList<>();
 
     /**
      * Gets the parent build object to which this record is registered.

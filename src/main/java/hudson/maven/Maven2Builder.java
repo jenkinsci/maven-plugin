@@ -89,7 +89,7 @@ final class Maven2Builder extends MavenBuilder {
         // set all modules which are not actually being build (in incremental builds) to NOT_BUILD
         
         List<MavenProject> projects = rm.getSortedProjects();
-        Set<ModuleName> buildingProjects = new HashSet<ModuleName>();
+        Set<ModuleName> buildingProjects = new HashSet<>();
         for (MavenProject p : projects) {
             buildingProjects.add(new ModuleName(p));
         }
@@ -149,7 +149,7 @@ final class Maven2Builder extends MavenBuilder {
 
         List<ExecutedMojo> mojoList = executedMojos.get(name);
         if(mojoList==null)
-            executedMojos.put(name,mojoList=new ArrayList<ExecutedMojo>());
+            executedMojos.put(name,mojoList=new ArrayList<>());
         mojoList.add(new ExecutedMojo(mojoInfo,System.currentTimeMillis()-mojoStartTime));
 
         MavenBuildProxy2 proxy = proxies.get(name);

@@ -82,9 +82,9 @@ public class MavenFingerprinter extends MavenReporter {
     private transient Map<String,String> produced;
 
     public boolean preBuild(MavenBuildProxy build, MavenProject pom, BuildListener listener) throws InterruptedException, IOException {
-        files = new HashSet<File>();
-        used = new HashMap<String,String>();
-        produced = new HashMap<String,String>();
+        files = new HashSet<>();
+        used = new HashMap<>();
+        produced = new HashMap<>();
         return true;
     }
 
@@ -124,7 +124,7 @@ public class MavenFingerprinter extends MavenReporter {
                 for (Entry<String, String> e : u.entrySet())
                     map.getOrCreate(null, e.getKey(), e.getValue()).add(build);
 
-                Map<String,String> all = new HashMap<String, String>(u);
+                Map<String,String> all = new HashMap<>(u);
                 all.putAll(p);
 
                 // add action
@@ -236,7 +236,7 @@ public class MavenFingerprinter extends MavenReporter {
      * by aggregating all fingerprints from module builds.
      */
     public static void aggregate(MavenModuleSetBuild mmsb) throws IOException {
-        Map<String,String> records = new HashMap<String, String>();
+        Map<String,String> records = new HashMap<>();
         for (List<MavenBuild> builds : mmsb.getModuleBuilds().values()) {
             for (MavenBuild build : builds) {
                 FingerprintAction fa = build.getAction(FingerprintAction.class);

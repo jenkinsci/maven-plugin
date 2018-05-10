@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class UnbuiltModuleAction implements Action {
 
-    private List<ModuleName> moduleNames = new ArrayList<ModuleName>();
+    private List<ModuleName> moduleNames = new ArrayList<>();
     
     public void addUnbuiltModule(ModuleName moduleName) {
         this.moduleNames.add(moduleName);

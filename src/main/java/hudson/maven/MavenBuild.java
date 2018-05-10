@@ -134,6 +134,10 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         SurefireArchiver.fixUp(projectActionReporters);
     }
 
+    public MavenBuild(MavenModule job, Integer buildNumber) throws IOException {
+        super(job, buildNumber);
+    }
+
     @Override
     public String getUpUrl() {
         StaplerRequest req = Stapler.getCurrentRequest();
@@ -247,13 +251,13 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
     public void registerAsProjectAction(MavenReporter reporter) {
         if(projectActionReporters==null)
-            projectActionReporters = new ArrayList<MavenProjectActionBuilder>();
+            projectActionReporters = new ArrayList<>();
         projectActionReporters.add(reporter);
     }
 
     public void registerAsProjectAction(MavenProjectActionBuilder builder) {
         if(projectActionReporters==null)
-            projectActionReporters = new ArrayList<MavenProjectActionBuilder>();
+            projectActionReporters = new ArrayList<>();
         projectActionReporters.add(builder);
     }
 
@@ -327,7 +331,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         /**
          * Records of what was executed.
          */
-        private final List<ExecutedMojo> executedMojos = new ArrayList<ExecutedMojo>();
+        private final List<ExecutedMojo> executedMojos = new ArrayList<>();
         private final ModuleName moduleName;
 
         private long startTime;
@@ -446,7 +450,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
     class ProxyImpl implements MavenBuildProxy, Serializable {
         private static final long serialVersionUID = 8865133776526671879L;
 
-        private final Map<String,String> artifacts = new LinkedHashMap<String,String>();
+        private final Map<String,String> artifacts = new LinkedHashMap<>();
 
         public <V, T extends Throwable> V execute(BuildCallable<V, T> program) throws T, IOException, InterruptedException {
             return program.call(MavenBuild.this);
@@ -956,7 +960,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             request.modules = Collections.singleton(module);
             request.goals = goals;
             request.systemProps = systemProps;
-            request.proxies = new HashMap<ModuleName, ProxyImpl2>();
+            request.proxies = new HashMap<>();
             request.proxies.put(module.getModuleName(), buildProxy);
             request.mavenBuildInformation = mavenBuildInformation;
             request.supportEventSpy = MavenUtil.supportEventSpy(mavenVersion);

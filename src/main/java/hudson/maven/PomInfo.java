@@ -91,7 +91,7 @@ final class PomInfo implements Serializable {
     /**
      * Children of this module.
      */
-    public final List<ModuleName> children = new ArrayList<ModuleName>();
+    public final List<ModuleName> children = new ArrayList<>();
 
     /**
      * The default goal specified in POM or null.

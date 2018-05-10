@@ -67,7 +67,7 @@ public class MavenArtifactArchiver extends MavenReporter {
     @Override
     public boolean preExecute(MavenBuildProxy build, MavenProject pom, MojoInfo mojo, BuildListener listener) throws InterruptedException, IOException {
         if(mojo.is("org.apache.maven.plugins","maven-assembly-plugin","assembly")) {
-            if (assemblies==null)   assemblies = new ArrayList<File>();
+            if (assemblies==null)   assemblies = new ArrayList<>();
 
             try {
                 // watch out for AssemblyArchiver.createArchive that returns a File object, pointing to the archives created by the assembly plugin.
@@ -114,7 +114,7 @@ public class MavenArtifactArchiver extends MavenReporter {
             }
 
             // record attached artifacts
-            final List<MavenArtifact> attachedArtifacts = new ArrayList<MavenArtifact>();
+            final List<MavenArtifact> attachedArtifacts = new ArrayList<>();
             for (Artifact a : pom.getAttachedArtifacts()) {
                 MavenArtifact ma = MavenArtifact.create(a);
                 if (ma != null) {

@@ -72,9 +72,9 @@ public abstract class AbstractMavenBuilder extends MasterToSlaveCallable<Result,
     /**
      * Kept so that we can finalize them in the end method.
      */
-    protected final transient Map<ModuleName,ProxyImpl2> sourceProxies = new HashMap<ModuleName, MavenBuild.ProxyImpl2>();
+    protected final transient Map<ModuleName,ProxyImpl2> sourceProxies = new HashMap<>();
 
-    protected final Map<ModuleName,List<MavenReporter>> reporters = new HashMap<ModuleName,List<MavenReporter>>();
+    protected final Map<ModuleName,List<MavenReporter>> reporters = new HashMap<>();
     
     /**
      * Record all asynchronous executions as they are scheduled,
@@ -153,7 +153,7 @@ public abstract class AbstractMavenBuilder extends MasterToSlaveCallable<Result,
      * The method must be called in the Maven jail process i.e. inside the call method!
      */
     protected void initializeAsynchronousExecutions() {
-        futures = new CopyOnWriteArrayList<Future<?>>();
+        futures = new CopyOnWriteArrayList<>();
         if (this.proxies != null) {
             for(FilterImpl proxy : this.proxies.values()) {
                 proxy.setFutures(futures);
