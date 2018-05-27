@@ -1,15 +1,40 @@
 package hudson.maven;
 
+import hudson.Launcher;
+import hudson.console.ConsoleLogFilter;
 import hudson.maven.local_repo.PerJobLocalRepositoryLocator;
 import hudson.maven.reporters.MavenFingerprinter;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import hudson.model.Item;
+import hudson.model.Run.RunnerAbortedException;
+import hudson.tasks.BuildWrapper;
 import hudson.tasks.Fingerprinter;
 import hudson.tasks.Maven;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.TreeSet;
+
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.ToolInstallations;
+import org.mockito.Mockito;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -35,11 +60,7 @@ public class MavenModuleSetTest extends AbstractMavenTestCase {
     }
 
     public void testExplicitFingerprints() throws Exception {
-        Maven.MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.1.0", Maven.MavenInstallation.MAVEN_30);
-        Maven.MavenInstallation m3 = new Maven.MavenInstallation("apache-maven-3.1.0", mvn.getHome(), NO_PROPERTIES);
-        jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
-        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
+        MavenModuleSet m = createMavenModuleSet();
         assertFalse(m.isArchivingDisabled());
         assertFalse(m.isSiteArchivingDisabled());
         assertFalse(m.isFingerprintingDisabled());
@@ -93,4 +114,74 @@ public class MavenModuleSetTest extends AbstractMavenTestCase {
         assertFalse(m.getBlockTriggerWhenBuilding());
     }
 
+    @Issue("49262")
+    public void testLogFiltersForAggregateBuild() throws Exception {
+        MavenModuleSet m = createMavenModuleSet();
+        m.setAggregatorStyleBuild(true);
+        testLogFilters(m);
+    }
+
+    @Issue("49262")
+    public void testLogFiltersForParallelBuild() throws Exception {
+        MavenModuleSet m = createMavenModuleSet();
+        m.setAggregatorStyleBuild(false);
+        testLogFilters(m);
+    }
+
+    /**
+     * Create a {@link MavenModuleSet} that can be successfully built.
+     * @return a new {@link MavenModuleSet}
+     * @throws Exception
+     */
+    private MavenModuleSet createMavenModuleSet() throws Exception {
+        Maven.MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.1.0", Maven.MavenInstallation.MAVEN_30);
+        Maven.MavenInstallation m3 = new Maven.MavenInstallation("apache-maven-3.1.0", mvn.getHome(), NO_PROPERTIES);
+        jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
+        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
+        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
+        return m;
+    }
+
+    /**
+     * Test that log filters are applied to the Maven parent build and module builds.
+     * @param m the Maven project
+     * @throws Exception
+     */
+    private void testLogFilters(MavenModuleSet m) throws Exception {
+        TestConsoleLogFilter logFilter = new TestConsoleLogFilter();
+        ConsoleLogFilter.all().add(logFilter);
+        TestBuildWrapper buildWrapper = new TestBuildWrapper();
+        m.getBuildWrappersList().add(buildWrapper);
+        buildAndAssertSuccess(m);
+        waitUntilNoActivity();
+        assertThat(logFilter.decorateLoggerBuilds, Matchers.<Class<?>>contains(MavenModuleSetBuild.class, MavenBuild.class));
+        assertThat(buildWrapper.decorateLoggerBuilds, Matchers.<Class<?>>contains(MavenModuleSetBuild.class, MavenBuild.class));
+    }
+
+    private static class TestConsoleLogFilter extends ConsoleLogFilter {
+
+        List<Class<?>> decorateLoggerBuilds = new ArrayList<>();
+
+        @Override
+        public OutputStream decorateLogger(AbstractBuild build, OutputStream logger) {
+            decorateLoggerBuilds.add(build.getClass());
+            return logger;
+        }
+    }
+
+    private static class TestBuildWrapper extends BuildWrapper {
+
+        List<Class<?>> decorateLoggerBuilds = new ArrayList<>();
+
+        @Override
+        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
+            return new BuildWrapper.Environment() {};
+        }
+
+        @Override
+        public OutputStream decorateLogger(AbstractBuild build, OutputStream logger) {
+            decorateLoggerBuilds.add(build.getClass());
+            return logger;
+        }
+    }
 }
