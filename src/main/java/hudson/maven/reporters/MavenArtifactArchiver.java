@@ -125,23 +125,7 @@ public class MavenArtifactArchiver extends MavenReporter {
             }
 
             // record the action
-            build.execute(new MavenBuildProxy.BuildCallable<Void, IOException>() {
-                private static final long serialVersionUID = -7955474564875700905L;
-
-                public Void call(MavenBuild build) throws IOException, InterruptedException {
-                    // if a build forks lifecycles, this method can be called multiple times
-                    List<MavenArtifactRecord> old = build.getActions(MavenArtifactRecord.class);
-                    if (!old.isEmpty())
-                        build.getActions().removeAll(old);
-
-                    MavenArtifactRecord mar = new MavenArtifactRecord(build, pomArtifact, mainArtifact, attachedArtifacts,
-                            repositoryUrl,
-                            repositoryId);
-                    build.addAction(mar);
-
-                    return null;
-                }
-            });
+            build.execute(new BuildCallableImplementation(attachedArtifacts, repositoryId, pomArtifact, repositoryUrl, mainArtifact));
         }
 
         // do we have any assembly artifacts?
@@ -161,6 +145,43 @@ public class MavenArtifactArchiver extends MavenReporter {
         }
 
         return true;
+    }
+
+    private final class BuildCallableImplementation implements
+                    MavenBuildProxy.BuildCallable<Void, IOException> {
+        private final List<MavenArtifact> attachedArtifacts;
+
+        private final String repositoryId;
+
+        private final MavenArtifact pomArtifact;
+
+        private final String repositoryUrl;
+
+        private final MavenArtifact mainArtifact;
+
+        private static final long serialVersionUID = -7955474564875700905L;
+
+        private BuildCallableImplementation(List<MavenArtifact> attachedArtifacts, String repositoryId, MavenArtifact pomArtifact, String repositoryUrl, MavenArtifact mainArtifact) {
+            this.attachedArtifacts = attachedArtifacts;
+            this.repositoryId = repositoryId;
+            this.pomArtifact = pomArtifact;
+            this.repositoryUrl = repositoryUrl;
+            this.mainArtifact = mainArtifact;
+        }
+
+        public Void call(MavenBuild build) throws IOException, InterruptedException {
+            // if a build forks lifecycles, this method can be called multiple times
+            List<MavenArtifactRecord> old = build.getActions(MavenArtifactRecord.class);
+            if (!old.isEmpty())
+                build.getActions().removeAll(old);
+
+            MavenArtifactRecord mar = new MavenArtifactRecord(build, pomArtifact, mainArtifact, attachedArtifacts,
+                    repositoryUrl,
+                    repositoryId);
+            build.addAction(mar);
+
+            return null;
+        }
     }
 
     @Extension

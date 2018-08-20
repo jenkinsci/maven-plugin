@@ -109,31 +109,7 @@ public class MavenFingerprinter extends MavenReporter {
         
         recordParents(build, pom, listener);
         
-        build.executeAsync(new BuildCallable<Void,IOException>() {
-            private static final long serialVersionUID = -1360161848504044869L;
-
-            // record is transient, so needs to make a copy first
-            private final Map<String,String> u = used;
-            private final Map<String,String> p = produced;
-
-            public Void call(MavenBuild build) throws IOException, InterruptedException {
-                FingerprintMap map = Jenkins.getInstance().getFingerprintMap();
-
-                for (Entry<String, String> e : p.entrySet())
-                    map.getOrCreate(build, e.getKey(), e.getValue()).add(build);
-                for (Entry<String, String> e : u.entrySet())
-                    map.getOrCreate(null, e.getKey(), e.getValue()).add(build);
-
-                Map<String,String> all = new HashMap<String, String>(u);
-                all.putAll(p);
-
-                // add action
-                FingerprintAction fa = build.getAction(FingerprintAction.class);
-                if (fa!=null)   fa.add(all);
-                else            build.getActions().add(new FingerprintAction(build,all));
-                return null;
-            }
-        });
+        build.executeAsync(new BuildCallableImplementation());
         return true;
     }
 
@@ -218,6 +194,34 @@ public class MavenFingerprinter extends MavenReporter {
         files.add(f);
         String digest = new FilePath(f).digest();
         record.put(fileNamePrefix+':'+f.getName(),digest);
+    }
+
+    private final class BuildCallableImplementation
+                    implements BuildCallable<Void, IOException> {
+        private static final long serialVersionUID = -1360161848504044869L;
+
+        // record is transient, so needs to make a copy first
+        private final Map<String,String> u = used;
+
+        private final Map<String,String> p = produced;
+
+        public Void call(MavenBuild build) throws IOException, InterruptedException {
+            FingerprintMap map = Jenkins.getInstance().getFingerprintMap();
+
+            for (Entry<String, String> e : p.entrySet())
+                map.getOrCreate(build, e.getKey(), e.getValue()).add(build);
+            for (Entry<String, String> e : u.entrySet())
+                map.getOrCreate(null, e.getKey(), e.getValue()).add(build);
+
+            Map<String,String> all = new HashMap<String, String>(u);
+            all.putAll(p);
+
+            // add action
+            FingerprintAction fa = build.getAction(FingerprintAction.class);
+            if (fa!=null)   fa.add(all);
+            else            build.getActions().add(new FingerprintAction(build,all));
+            return null;
+        }
     }
 
     @Extension
