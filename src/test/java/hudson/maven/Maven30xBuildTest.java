@@ -35,10 +35,4 @@ public class Maven30xBuildTest
     {
         return ToolInstallations.configureMaven3();
     }
-
-    @Override
-    public void testSiteBuildWithForkedMojo() throws Exception {
-        // TODO currently failing, apparently from NPE in DefaultDependencyGraphBuilder.canFindCoreClass after failing to resolve an artifact from the test project
-    }
-    
 }

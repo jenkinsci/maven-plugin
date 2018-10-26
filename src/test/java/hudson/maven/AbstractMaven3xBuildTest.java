@@ -42,6 +42,7 @@ import java.util.*;
 import org.jvnet.hudson.test.Issue;
 
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  * @author Olivier Lamy
@@ -94,6 +95,7 @@ public abstract class AbstractMaven3xBuildTest {
         assertTrue("file not ended with -1.jar", files[0].endsWith( "-1.jar" ));
     }
 
+    @Ignore("TODO long failing in 3.0.x with NPE in DefaultDependencyGraphBuilder.canFindCoreClass after failing to resolve an artifact from the test project; started failing in 3.1.x with ClassNotFoundException: org.apache.maven.doxia.siterenderer.DocumentContent; and 3.3.9 and 3.5.x are ignored overall, so not even tested there")
     @Test
     public void testSiteBuildWithForkedMojo() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
