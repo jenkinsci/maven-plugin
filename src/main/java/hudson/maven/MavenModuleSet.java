@@ -131,7 +131,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     /**
      * All {@link MavenModule}s, keyed by their {@link MavenModule#getModuleName()} module name}s.
      */
-    transient /*final*/ Map<ModuleName,MavenModule> modules = new CopyOnWriteMap.Tree<ModuleName,MavenModule>();
+    transient /*final*/ Map<ModuleName,MavenModule> modules = new CopyOnWriteMap.Tree<>();
 
     /**
      * Topologically sorted list of modules. This only includes live modules,
@@ -326,7 +326,10 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
             this.alternateSettings = null;
         } else if (plugin != null && StringUtils.isNotBlank(this.settingConfigId)) {
             try {
-                Class<? extends SettingsProvider> legacySettings = plugin.getWrapper().classLoader.loadClass("org.jenkinsci.plugins.configfiles.maven.job.MvnSettingsProvider").asSubclass(SettingsProvider.class);
+                Class<? extends SettingsProvider> legacySettings =
+                    plugin.getWrapper().classLoader
+                        .loadClass("org.jenkinsci.plugins.configfiles.maven.job.MvnSettingsProvider")
+                        .asSubclass(SettingsProvider.class);
                 SettingsProvider newInstance = legacySettings.newInstance();
                 PropertyUtils.setProperty(newInstance, "settingsConfigId", this.settingConfigId);
                 this.settings = newInstance;
@@ -340,7 +343,10 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         
         if (plugin != null && StringUtils.isNotBlank(this.globalSettingConfigId)) {
             try {
-                Class<? extends GlobalSettingsProvider> legacySettings = plugin.getWrapper().classLoader.loadClass("org.jenkinsci.plugins.configfiles.maven.job.MvnGlobalSettingsProvider").asSubclass(GlobalSettingsProvider.class);
+                Class<? extends GlobalSettingsProvider> legacySettings =
+                    plugin.getWrapper().classLoader
+                        .loadClass("org.jenkinsci.plugins.configfiles.maven.job.MvnGlobalSettingsProvider")
+                        .asSubclass(GlobalSettingsProvider.class);
                 GlobalSettingsProvider newInstance = legacySettings.newInstance();
                 PropertyUtils.setProperty(newInstance, "settingsConfigId", this.globalSettingConfigId);
                 this.globalSettings = newInstance;
@@ -357,31 +363,26 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     /**
      * Reporters configured at {@link MavenModuleSet} level. Applies to all {@link MavenModule} builds.
      */
-    private DescribableList<MavenReporter,Descriptor<MavenReporter>> reporters =
-        new DescribableList<MavenReporter,Descriptor<MavenReporter>>(this);
+    private DescribableList<MavenReporter,Descriptor<MavenReporter>> reporters = new DescribableList<>(this);
 
     /**
      * List of active {@link Publisher}s configured for this project.
      * @since 1.176
      */
-    private DescribableList<Publisher,Descriptor<Publisher>> publishers =
-        new DescribableList<Publisher,Descriptor<Publisher>>(this);
+    private DescribableList<Publisher,Descriptor<Publisher>> publishers = new DescribableList<>(this);
 
     /**
      * List of active {@link BuildWrapper}s configured for this project.
      * @since 1.212
      */
-    private DescribableList<BuildWrapper,Descriptor<BuildWrapper>> buildWrappers =
-        new DescribableList<BuildWrapper, Descriptor<BuildWrapper>>(this);
+    private DescribableList<BuildWrapper,Descriptor<BuildWrapper>> buildWrappers = new DescribableList<>(this);
 
 	/**
      * List of active {@link Builder}s configured for this project.
      */
-    private DescribableList<Builder,Descriptor<Builder>> prebuilders =
-            new DescribableList<Builder,Descriptor<Builder>>(this);
+    private DescribableList<Builder,Descriptor<Builder>> prebuilders = new DescribableList<>(this);
     
-    private DescribableList<Builder,Descriptor<Builder>> postbuilders =
-            new DescribableList<Builder,Descriptor<Builder>>(this);
+    private DescribableList<Builder,Descriptor<Builder>> postbuilders = new DescribableList<>(this);
 	
     private Result runPostStepsIfResult;
     
@@ -502,10 +503,9 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     protected void addTransientActionsFromBuild(MavenModuleSetBuild build, List<Action> collection, Set<Class> added) {
         if(build==null)    return;
 
-        for (Action a : build.getActions())
-            if(a instanceof MavenAggregatedReport)
-                if(added.add(a.getClass()))
-                    collection.add(((MavenAggregatedReport)a).getProjectAction(this));
+        for (MavenAggregatedReport a : build.getActions( MavenAggregatedReport.class ))
+            if(added.add(a.getClass()))
+                collection.add(a.getProjectAction(this));
 
         List<MavenReporter> list = build.projectActionReporters;
         if(list==null)   return;
@@ -769,7 +769,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 
     public Collection<Job> getAllJobs() {
-        Set<Job> jobs = new HashSet<Job>(getItems());
+        Set<Job> jobs = new HashSet<>(getItems());
         jobs.add(this);
         return jobs;
     }
@@ -847,23 +847,23 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         }
 
         if(reporters==null){
-            reporters = new DescribableList<MavenReporter, Descriptor<MavenReporter>>(this);
+            reporters = new DescribableList<>(this);
         }
         reporters.setOwner(this);
         if(publishers==null){
-            publishers = new DescribableList<Publisher,Descriptor<Publisher>>(this);
+            publishers = new DescribableList<>(this);
         }
         publishers.setOwner(this);
         if(buildWrappers==null){
-            buildWrappers = new DescribableList<BuildWrapper, Descriptor<BuildWrapper>>(this);
+            buildWrappers = new DescribableList<>(this);
         }
         buildWrappers.setOwner(this);
         if(prebuilders==null){
-        	prebuilders = new DescribableList<Builder,Descriptor<Builder>>(this);
+        	prebuilders = new DescribableList<>(this);
         }
         prebuilders.setOwner(this);
         if(postbuilders==null){
-        	postbuilders = new DescribableList<Builder,Descriptor<Builder>>(this);
+        	postbuilders = new DescribableList<>(this);
         }
         postbuilders.setOwner(this);
         
@@ -1164,7 +1164,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 
     private List<Queue.Item> filter(Collection<Queue.Item> base) {
-        List<Queue.Item> r = new ArrayList<Queue.Item>();
+        List<Queue.Item> r = new ArrayList<>();
         for( Queue.Item item : base) {
             Task t = item.task;
             if((t instanceof MavenModule && ((MavenModule)t).getParent()==this) || t ==this)
@@ -1313,7 +1313,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         /**
          * @since 1.394
          */
-        private Map<String, Integer> mavenValidationLevels = new LinkedHashMap<String, Integer>();
+        private Map<String, Integer> mavenValidationLevels = new LinkedHashMap<>();
 
         /**
          * @since 1.448

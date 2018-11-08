@@ -40,7 +40,6 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.cli.logging.Slf4jLoggerManager;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
-import org.codehaus.plexus.PlexusConstants;
 
 import java.io.File;
 import java.io.IOException;

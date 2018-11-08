@@ -325,7 +325,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         Map<MavenModule,List<MavenBuild>> r = new LinkedHashMap<MavenModule,List<MavenBuild>>(mods.size());
 
         for (MavenModule m : mods) {
-            List<MavenBuild> builds = new ArrayList<MavenBuild>();
+            List<MavenBuild> builds = new ArrayList<>();
             MavenBuild b = m.getNearestBuild(number);
             while(b!=null && b.getNumber()<end) {
                 builds.add(b);
@@ -493,7 +493,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         int end = nb!=null ? nb.getNumber() : Integer.MAX_VALUE;
 
         // preserve the order by using LinkedHashMap
-        Map<MavenModule,MavenBuild> r = new LinkedHashMap<MavenModule,MavenBuild>(mods.size());
+        Map<MavenModule,MavenBuild> r = new LinkedHashMap<>(mods.size());
 
         for (MavenModule m : mods) {
             MavenBuild b = m.getNearestOldBuild(end - 1);
@@ -506,7 +506,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
     public void registerAsProjectAction(MavenReporter reporter) {
         if(projectActionReporters==null)
-            projectActionReporters = new ArrayList<MavenReporter>();
+            projectActionReporters = new ArrayList<>();
         projectActionReporters.add(reporter);
     }
 
@@ -574,7 +574,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 boolean modified = false;
 
                 List<Action> actions = getActions();
-                Set<Class<? extends AggregatableAction>> individuals = new HashSet<Class<? extends AggregatableAction>>();
+                Set<Class<? extends AggregatableAction>> individuals = new HashSet<>();
                 for (Action a : actions) {
                     if(a instanceof MavenAggregatedReport) {
                         MavenAggregatedReport mar = (MavenAggregatedReport) a;
@@ -646,7 +646,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 
                 setMavenVersionUsed( mavenVersion );
 
-                LOGGER.fine(getFullDisplayName()+" is building with mavenVersion " + mavenVersion + " from file " + mavenInformation.getVersionResourcePath());
+                LOGGER.fine(getFullDisplayName()+" is building with mavenVersion " + mavenVersion + " from file "
+                                + mavenInformation.getVersionResourcePath());
                 
                 if(!project.isAggregatorStyleBuild()) {
                     parsePoms(listener, logger, envVars, mvn, mavenVersion, mavenBuildInformation);
@@ -690,12 +691,13 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
                         parsePoms(listener, logger, envVars, mvn, mavenVersion, mavenBuildInformation); // #5428 : do pre-build *before* parsing pom
                         SplittableBuildListener slistener = new SplittableBuildListener(listener);
-                        proxies = new HashMap<ModuleName, ProxyImpl2>();
+                        proxies = new HashMap<>();
                         List<ModuleName> changedModules = new ArrayList<ModuleName>();
                         boolean incrementalBuild;
                         if (project.isIncrementalBuild()) {
                             if (getChangeSet().isEmptySet()) {
-                                LOGGER.log(Level.FINER, "{0} has no changes and thus we are not doing an incremental build", MavenModuleSetBuild.this);
+                                LOGGER.log(Level.FINER, "{0} has no changes and thus we are not doing an incremental build",
+                                           MavenModuleSetBuild.this);
                                 incrementalBuild = false;
                             } else {
                                 incrementalBuild = true;
@@ -716,16 +718,20 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
                             if (incrementalBuild) {
                                 if (!getChangeSetFor(m).isEmpty()) {
-                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because it has changes", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because it has changes",
+                                               new Object[] {moduleName, MavenModuleSetBuild.this});
                                     changedModules.add(moduleName);
                                 } else if (mb.getPreviousBuiltBuild() == null) {
-                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because we have never seen this module before", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because we have never seen this module before",
+                                               new Object[] {moduleName, MavenModuleSetBuild.this});
                                     changedModules.add(moduleName);
                                 } else if (mb.getPreviousBuiltBuild().getResult().isWorseThan(Result.SUCCESS)) {
-                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because the previous build failed or was unstable", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because the previous build failed or was unstable",
+                                               new Object[] {moduleName, MavenModuleSetBuild.this});
                                     changedModules.add(moduleName);
                                 } else {
-                                    LOGGER.log(Level.FINER, "no reason to add {0} to changedModules for {1}", new Object[] {moduleName, MavenModuleSetBuild.this});
+                                    LOGGER.log(Level.FINER, "no reason to add {0} to changedModules for {1}",
+                                               new Object[] {moduleName, MavenModuleSetBuild.this});
                                 }
                             }
 
@@ -836,7 +842,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 						// find the correct maven goals and options, there might by an action overruling the defaults
                         String goals = project.getGoals(); // default
                         for (MavenArgumentInterceptorAction mavenArgInterceptor : argInterceptors) {
-                        	final String goalsAndOptions = mavenArgInterceptor.getGoalsAndOptions((MavenModuleSetBuild)this.getBuild());
+                        	final String goalsAndOptions = mavenArgInterceptor.getGoalsAndOptions(this.getBuild());
 							if(StringUtils.isNotBlank(goalsAndOptions)){
                         		goals = goalsAndOptions;
                                 // only one interceptor is allowed to overwrite the whole "goals and options" string
@@ -848,7 +854,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 						// enable the interceptors to change the whole command argument list
 						// all available interceptors are allowed to modify the argument list
 						for (MavenArgumentInterceptorAction mavenArgInterceptor : argInterceptors) {
-							final ArgumentListBuilder newMargs = mavenArgInterceptor.intercept(margs, (MavenModuleSetBuild)this.getBuild());
+							final ArgumentListBuilder newMargs = mavenArgInterceptor.intercept(margs, this.getBuild());
 							if (newMargs != null) {
 								margs = newMargs;
 							}
@@ -958,7 +964,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
          * See JENKINS-5764
          */
         private Collection<ModuleName> getUnbuiltModulesSinceLastSuccessfulBuild() {
-            Collection<ModuleName> unbuiltModules = new ArrayList<ModuleName>();
+            Collection<ModuleName> unbuiltModules = new ArrayList<>();
             MavenModuleSetBuild previousSuccessfulBuild = getPreviousSuccessfulBuild();
             if (previousSuccessfulBuild == null) {
                 LOGGER.log(Level.FINER, "no successful build from {0} yet; taking the first build instead", MavenModuleSetBuild.this);
@@ -1011,8 +1017,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             // update the module list
             Map<ModuleName,MavenModule> modules = project.modules;
             synchronized(modules) {
-                Map<ModuleName,MavenModule> old = new HashMap<ModuleName, MavenModule>(modules);
-                List<MavenModule> sortedModules = new ArrayList<MavenModule>();
+                Map<ModuleName,MavenModule> old = new HashMap<>(modules);
+                List<MavenModule> sortedModules = new ArrayList<>();
 
                 modules.clear();
                 if(debug)
@@ -1300,7 +1306,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 if (maven3OrLater) {
                     mer.setValidationLevel(VALIDATION_LEVEL_MAVEN_3_0);
                 } else {
-                    reactorReader = new ReactorReader( new HashMap<String, MavenProject>(), new File(workspaceProper) );
+                    reactorReader = new ReactorReader( new HashMap<>(), new File(workspaceProper) );
                     mer.setWorkspaceReader(reactorReader);
                 }
 
@@ -1323,7 +1329,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 
                 MavenProject rootProject = null;
                 
-                List<MavenProject> mps = new ArrayList<MavenProject>(0);
+                List<MavenProject> mps = new ArrayList<>(0);
                 if (maven3OrLater) {
                     mps = embedder.readProjects( pom,!this.nonRecursive );
 
@@ -1339,8 +1345,8 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         readChilds( mavenProject, embedder, mps, reactorReader );
                     }
                 }
-                Map<String,MavenProject> canonicalPaths = new HashMap<String, MavenProject>( mps.size() );
-                Map<String,String> modelParents = new HashMap<String,String>();
+                Map<String,MavenProject> canonicalPaths = new HashMap<>( mps.size() );
+                Map<String,String> modelParents = new HashMap<>();
                 for(MavenProject mp : mps) {
                     // Projects are indexed by POM path and not module path because
                     // Maven allows to have several POMs with different names in the same directory
@@ -1384,7 +1390,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 for (PomInfo pi : infos)
                     pi.cutCycle();
 
-                return new Result(new ArrayList<PomInfo>(infos), modelParents);
+                return new Result(new ArrayList<>(infos), modelParents);
             } catch (MavenEmbedderException e) {
                 throw new MavenExecutionException(e);
             } catch (ProjectBuildingException e) {

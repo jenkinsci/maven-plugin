@@ -42,6 +42,7 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import jenkins.model.StandardArtifactManager;
 import jenkins.util.VirtualFile;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -278,7 +279,7 @@ public final class MavenArtifact implements Serializable {
                     f.deleteOnExit();
                     OutputStream os = new FileOutputStream(f);
                     try {
-                        Util.copyStreamAndClose(getVirtualFile().open(), os);
+                        IOUtils.copy(getVirtualFile().open(), os);
                     } finally {
                         os.close();
                     }
@@ -311,7 +312,7 @@ public final class MavenArtifact implements Serializable {
         return new HttpResponse() {
             @Override public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
                 rsp.setContentType("application/octet-stream");
-                Util.copyStreamAndClose(parent.parent.getArtifactManager().root().child(artifactPath()).open(), rsp.getCompressedOutputStream(req));
+                IOUtils.copy(parent.parent.getArtifactManager().root().child(artifactPath()).open(), rsp.getCompressedOutputStream(req));
             }
         };
     }

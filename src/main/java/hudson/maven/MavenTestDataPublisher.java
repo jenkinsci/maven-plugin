@@ -80,7 +80,7 @@ public class MavenTestDataPublisher extends Recorder {
                 continue;
             }
             
-            List<Data> data = new ArrayList<Data>();
+            List<Data> data = new ArrayList<>();
             if (getTestDataPublishers() != null) {
                 for (TestDataPublisher tdp : getTestDataPublishers()) {
                     Data d = tdp.getTestData(moduleBuild, launcher, listener, report.getResult());
@@ -119,7 +119,7 @@ public class MavenTestDataPublisher extends Recorder {
 		@Override
 		public Publisher newInstance(StaplerRequest req, JSONObject formData) throws FormException {
 			DescribableList<TestDataPublisher, Descriptor<TestDataPublisher>> testDataPublishers
-                    = new DescribableList<TestDataPublisher, Descriptor<TestDataPublisher>>(Saveable.NOOP);
+                    = new DescribableList<>(Saveable.NOOP);
             try {
                 testDataPublishers.rebuild(req, formData, TestDataPublisher.all());
             } catch (IOException e) {

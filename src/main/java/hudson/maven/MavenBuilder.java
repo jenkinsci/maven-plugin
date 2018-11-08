@@ -219,27 +219,8 @@ public abstract class MavenBuilder extends AbstractMavenBuilder implements Deleg
         {
             callSetListenerWithReflectOnInterceptors(pluginManagerListener, cl);
         }
-        catch ( SecurityException e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        catch ( ClassNotFoundException e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        catch ( NoSuchMethodException e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        catch ( IllegalAccessException e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        catch ( InvocationTargetException e )
+        catch ( SecurityException | IllegalArgumentException | ClassNotFoundException | NoSuchMethodException
+            | IllegalAccessException | InvocationTargetException e )
         {
             throw new RuntimeException( e.getMessage(), e );
         }
@@ -258,7 +239,7 @@ public abstract class MavenBuilder extends AbstractMavenBuilder implements Deleg
 
         private final MavenBuilder listener;
         private final AtomicBoolean hasTestFailures = new AtomicBoolean();
-        private final Map<ModuleName, Long> currentMojoStartPerModuleName = new ConcurrentHashMap<ModuleName, Long>();
+        private final Map<ModuleName, Long> currentMojoStartPerModuleName = new ConcurrentHashMap<>();
 
         /**
          * Number of total nanoseconds {@link MavenBuilder} spent.

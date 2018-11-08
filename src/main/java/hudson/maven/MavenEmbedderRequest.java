@@ -327,7 +327,7 @@ public class MavenEmbedderRequest
                                 if(l!=null && l.contains("MAVEN-INTERCEPTION-TO-BE-MASKED"))
                                     return true;
                             }
-                        } catch (IOException _) {
+                        } catch (IOException x) {
                             // let whoever requesting this resource re-discover an error and report it
                         } finally {
                             IOUtils.closeQuietly(r);

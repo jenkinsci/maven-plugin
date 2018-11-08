@@ -135,12 +135,7 @@ public class SurefireArchiver extends TestFailureDetector {
                 if(result==null)    result = new TestResult();
                 
                 // filter all the already parsed files:
-                fileSet = Iterables.filter(fileSet, new Predicate<File>() {
-                    @Override
-                    public boolean apply(File input) {
-                        return !parsedFiles.containsKey(input) || parsedFiles.get(input) != input.lastModified();
-                    }
-                });
+                fileSet = Iterables.filter(fileSet, input ->  !parsedFiles.containsKey(input) || parsedFiles.get(input) != input.lastModified());
                 
                 if (!fileSet.iterator().hasNext())
                     return true;
@@ -263,21 +258,18 @@ public class SurefireArchiver extends TestFailureDetector {
         @Override
         public Iterator<File> iterator() {
             
-            Predicate<File> fileWithinFromAndTo = new Predicate<File>() {
-                @Override
-                public boolean apply(File file) {
+            Predicate<File> fileWithinFromAndTo = file -> {
                     long lastModified = file.lastModified();
                     if (lastModified>=from && lastModified<=to) {
                         return true;
                     }
                     return false;
-                }
             };
             
             return Iterators.filter(
                     Iterators.transform(
                         Iterators.forArray(reportFiles),
-                        new Function<String, File>() {
+                         new Function<String, File>() {
                             @Override
                             public File apply(String file) {
                                 return getFile(reportsDir,file);

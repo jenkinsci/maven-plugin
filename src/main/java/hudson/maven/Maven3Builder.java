@@ -183,13 +183,13 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
         }
     }
 
-    // worakround for verbose logging https://issues.jenkins-ci.org/browse/JENKINS-19396
+    // workaround for verbose logging https://issues.jenkins-ci.org/browse/JENKINS-19396
 	private void configureConsoleLogging() {
 	    Logger rootLogger = Logger.getLogger("");
 	    Handler[] handlers = rootLogger.getHandlers();
 	    for (Handler h : handlers) {
 	        if (h instanceof ConsoleHandler) {
-	            ((ConsoleHandler)h).setFormatter(new Maven3ConsoleFormatter());
+	            h.setFormatter(new Maven3ConsoleFormatter());
 	        }
 	    }
     }
@@ -356,21 +356,21 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
         private final Map<ModuleName,FilterImpl> proxies;
 
-        private final Map<ModuleName,List<ExecutedMojo>> executedMojosPerModule = new ConcurrentHashMap<ModuleName, List<ExecutedMojo>>();
+        private final Map<ModuleName,List<ExecutedMojo>> executedMojosPerModule = new ConcurrentHashMap<>();
 
         private final Map<ModuleName,List<MavenReporter>> reporters;
 
-        private final Map<ModuleName, Long> currentMojoStartPerModuleName = new ConcurrentHashMap<ModuleName, Long>();
+        private final Map<ModuleName, Long> currentMojoStartPerModuleName = new ConcurrentHashMap<>();
 
         protected ExecutionEventLogger eventLogger;
 
         MavenExecutionListener(Maven3Builder maven3Builder) {
             this.maven3Builder = maven3Builder;
-            this.proxies = new ConcurrentHashMap<ModuleName, FilterImpl>(maven3Builder.proxies);
+            this.proxies = new ConcurrentHashMap<>(maven3Builder.proxies);
             for (ModuleName name : this.proxies.keySet()) {
-                executedMojosPerModule.put( name, new CopyOnWriteArrayList<ExecutedMojo>() );
+                executedMojosPerModule.put( name, new CopyOnWriteArrayList<>() );
             }
-            this.reporters = new ConcurrentHashMap<ModuleName, List<MavenReporter>>(maven3Builder.reporters);
+            this.reporters = new ConcurrentHashMap<>(maven3Builder.reporters);
 
 
             // E.g. there's also the option to redirect logging to a file which is handled there, but not here.
@@ -648,7 +648,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             MavenProject p = event.getProject();
             List<ExecutedMojo> m = executedMojosPerModule.get(new ModuleName(p));
             if (m==null)    // defensive check
-                executedMojosPerModule.put(new ModuleName(p), m=new CopyOnWriteArrayList<ExecutedMojo>());
+                executedMojosPerModule.put(new ModuleName(p), m=new CopyOnWriteArrayList<>());
 
             Long startTime = getMojoStartTime( event.getProject() );
             m.add(new ExecutedMojo( mojoInfo, startTime == null ? 0 : System.currentTimeMillis() - startTime ));

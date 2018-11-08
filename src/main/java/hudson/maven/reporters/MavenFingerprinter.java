@@ -236,7 +236,7 @@ public class MavenFingerprinter extends MavenReporter {
      * by aggregating all fingerprints from module builds.
      */
     public static void aggregate(MavenModuleSetBuild mmsb) throws IOException {
-        Map<String,String> records = new HashMap<String, String>();
+        Map<String,String> records = new HashMap<>();
         for (List<MavenBuild> builds : mmsb.getModuleBuilds().values()) {
             for (MavenBuild build : builds) {
                 FingerprintAction fa = build.getAction(FingerprintAction.class);

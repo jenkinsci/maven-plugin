@@ -58,6 +58,7 @@ import jenkins.maven3.agent.Maven31Main;
 import jenkins.maven3.agent.Maven32Main;
 import jenkins.maven3.agent.Maven33Main;
 
+import jenkins.maven3.agent.Maven35Main;
 import org.apache.maven.BuildFailureException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.execution.ReactorManager;
@@ -68,6 +69,7 @@ import org.jvnet.hudson.maven3.agent.Maven3Main;
 import org.jvnet.hudson.maven3.launcher.Maven31Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven32Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven33Launcher;
+import org.jvnet.hudson.maven3.launcher.Maven35Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
@@ -327,7 +329,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         /**
          * Records of what was executed.
          */
-        private final List<ExecutedMojo> executedMojos = new ArrayList<ExecutedMojo>();
+        private final List<ExecutedMojo> executedMojos = new ArrayList<>();
         private final ModuleName moduleName;
 
         private long startTime;
@@ -793,12 +795,12 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
         @Override
         public MavenBuild getBuild() {
-            return (MavenBuild)super.getBuild();
+            return super.getBuild();
         }
 
         @Override
         public MavenModule getProject() {
-            return (MavenModule)super.getProject();
+            return super.getProject();
         }
 
         @Override
@@ -889,7 +891,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                 margs.add("-f",getModuleRoot().child("pom.xml").getRemote());
                 margs.addTokenized(getProject().getGoals());
 
-                Map<String,String> systemProps = new HashMap<String, String>(envVars);
+                Map<String,String> systemProps = new HashMap<>(envVars);
                 // backward compatibility
                 systemProps.put("hudson.build.number",String.valueOf(getNumber()));
 
@@ -956,7 +958,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             request.modules = Collections.singleton(module);
             request.goals = goals;
             request.systemProps = systemProps;
-            request.proxies = new HashMap<ModuleName, ProxyImpl2>();
+            request.proxies = new HashMap<>();
             request.proxies.put(module.getModuleName(), buildProxy);
             request.mavenBuildInformation = mavenBuildInformation;
             request.supportEventSpy = MavenUtil.supportEventSpy(mavenVersion);
@@ -974,9 +976,12 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 	                request.maven3MainClass = Maven32Main.class;
 	                request.maven3LauncherClass = Maven32Launcher.class;
 	                break;
-                default:
+                case MAVEN_3_3:
                     request.maven3MainClass = Maven33Main.class;
                     request.maven3LauncherClass = Maven33Launcher.class;
+                default:
+                    request.maven3MainClass = Maven35Main.class;
+                    request.maven3LauncherClass = Maven35Launcher.class;
             }
 
             return request;

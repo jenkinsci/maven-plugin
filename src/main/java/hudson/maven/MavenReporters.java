@@ -28,6 +28,7 @@ import hudson.util.DescriptorList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -40,17 +41,14 @@ public final class MavenReporters {
      * @deprecated as of 1.286. Use {@code MavenReporterDescriptor#all()} for listing reporters, and
      * use {@link Extension} for automatic registration. 
      */
-    public static final List<MavenReporterDescriptor> LIST = (List)new DescriptorList<MavenReporter>(MavenReporter.class);
+    public static final List<MavenReporterDescriptor> LIST = (List)new DescriptorList<>(MavenReporter.class);
 
     /**
      * Gets the subset of {@link #LIST} that has configuration screen.
      */
     public static List<MavenReporterDescriptor> getConfigurableList() {
-        List<MavenReporterDescriptor> r = new ArrayList<MavenReporterDescriptor>();
-        for (MavenReporterDescriptor d : MavenReporterDescriptor.all()) {
-            if(d.hasConfigScreen())
-                r.add(d);
-        }
-        return r;
+        return MavenReporterDescriptor.all().stream()
+            .filter( mavenReporterDescriptor -> mavenReporterDescriptor.hasConfigScreen() )
+            .collect( Collectors.toList() );
     }
 }
