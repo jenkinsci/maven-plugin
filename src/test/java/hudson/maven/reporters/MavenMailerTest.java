@@ -26,6 +26,7 @@ package hudson.maven.reporters;
 import static org.junit.Assert.assertEquals;
 
 import hudson.EnvVars;
+import hudson.maven.FolderResourceSCM;
 import hudson.maven.MavenJenkinsRule;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
@@ -105,7 +106,7 @@ public class MavenMailerTest {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setGoals("test");
-        mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/maven-multimodule-unit-failure.zip")));
+        mms.setScm(new FolderResourceSCM("src/test/projects/maven-multimodule-unit-failure"));
         j.assertBuildStatus(Result.UNSTABLE, mms.scheduleBuild2(0).get());
 
         MavenMailer m = new MavenMailer();

@@ -71,7 +71,7 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
 		MavenInstallation mavenInstallation = ToolInstallations.configureMaven3();
 		m.setMaven(mavenInstallation.getName());
-		m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimodule-unit-failure.zip")));
+		m.setScm(new FolderResourceSCM("src/test/projects/maven-multimodule-unit-failure"));
 		m.setGoals("clean install"); // build would fail because of failing unit
 										// tests
 
