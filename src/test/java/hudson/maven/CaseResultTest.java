@@ -47,9 +47,10 @@ public class CaseResultTest {
     @Test public void mavenErrorMsgAndStacktraceRender() throws Exception {
         ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "maven-render-test");
-        m.setScm(new ExtractResourceSCM(m.getClass().getResource("maven-test-failure-findbugs.zip")));
+        m.setScm( new FolderResourceSCM("src/test/projects/maven-test-failure-findbugs"));
         m.setGoals("clean test");
-        MavenModuleSetBuild b = j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
+        MavenModuleSetBuild mmsb = m.scheduleBuild2(0).get();
+        MavenModuleSetBuild b = j.assertBuildStatus(Result.UNSTABLE, mmsb);
         MavenBuild modBuild = b.getModuleLastBuilds().get(m.getModule("test:test"));
         TestResult tr = modBuild.getAction(SurefireReport.class).getResult();
         assertEquals(1,tr.getFailedTests().size());

@@ -73,7 +73,7 @@ public class MavenBuildTest {
         ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install findbugs:findbugs");
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-test-failure-findbugs.zip")));
+        m.setScm( new FolderResourceSCM("src/test/projects/maven-test-failure-findbugs"));
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
     }
     
