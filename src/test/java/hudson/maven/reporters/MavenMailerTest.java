@@ -128,7 +128,7 @@ public class MavenMailerTest {
 	 * Test using the list of recipients of TAG ciManagement defined in
 	 * ModuleRoot for all the modules.
 	 * 
-	 * @throws Exception
+	 *
 	 */
     @Test
     @Issue({"JENKINS-1201", "JENKINS-50251"})
@@ -143,7 +143,7 @@ public class MavenMailerTest {
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setAssignedNode(j.createSlave());
         mms.setGoals("test");
-        mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-parent-defined.zip")));
+        mms.setScm(new FolderResourceSCM("src/test/projects/JENKINS-1201-parent-defined"));
         
         MavenMailer m = new MavenMailer();
         m.recipients = EMAIL_JENKINS_CONFIGURED;
@@ -181,8 +181,6 @@ public class MavenMailerTest {
 	 * Test using the list of recipients of TAG ciManagement defined in
 	 * ModuleRoot for de root module, and the recipients defined in moduleA for
 	 * moduleA.
-	 * 
-	 * @throws Exception
 	 */
     @Test
     @Bug(6421)
@@ -199,7 +197,7 @@ public class MavenMailerTest {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setGoals("test");
-        mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-module-defined.zip")));
+        mms.setScm(new FolderResourceSCM("src/test/projects/JENKINS-1201-module-defined"));
         MavenMailer m = new MavenMailer();
         m.recipients = EMAIL_JENKINS_CONFIGURED;
         m.perModuleEmail = true;
@@ -261,7 +259,7 @@ public class MavenMailerTest {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setGoals("test");
-        mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-module-defined.zip")));
+        mms.setScm(new FolderResourceSCM("src/test/projects/JENKINS-1201-module-defined"));
 
         MavenMailer mailer1 = new MavenMailer();
         mailer1.recipients = EMAIL_JENKINS_CONFIGURED + " ${" + ENV_EMAILS_VARIABLE + "}";
