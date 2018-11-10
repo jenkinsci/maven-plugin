@@ -4,33 +4,40 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.tasks.Maven.MavenInstallation;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.ExtractChangeLogSet;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.ToolInstallations;
 
 import java.io.IOException;
 
-import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.ExtractChangeLogSet;
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.jvnet.hudson.test.ToolInstallations;
+import static org.junit.Assert.*;
 
 /**
  * @author Andrew Bayer
  */
-public class MavenMultiModuleTestIncremental extends AbstractMavenTestCase {
+public class MavenMultiModuleTestIncremental {
+
+    @Rule
+    public JenkinsRule j = new MavenJenkinsRule();
 
     @Bug(7684)
+    @Test
     public void testRelRootPom() throws Exception {
         ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
-        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
+        MavenModuleSet m = j.createProject(MavenModuleSet.class, "p");
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-rel-base.zip"),
 						   getClass().getResource("maven-multimod-changes.zip")));
         
-    	buildAndAssertSuccess(m);
+    	j.buildAndAssertSuccess(m);
             
     	// Now run a second build with the changes.
     	m.setIncrementalBuild(true);
-        buildAndAssertSuccess(m);
+        j.buildAndAssertSuccess(m);
             
     	MavenModuleSetBuild pBuild = m.getLastBuild();
     	ExtractChangeLogSet changeSet = (ExtractChangeLogSet) pBuild.getChangeSet();
