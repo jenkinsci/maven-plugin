@@ -23,7 +23,6 @@
  */
 package hudson.maven.reporters;
 
-import hudson.maven.AbstractMavenTestCase;
 import hudson.maven.MavenBuild;
 import hudson.maven.MavenJenkinsRule;
 import hudson.maven.MavenModuleSet;
@@ -33,7 +32,6 @@ import hudson.maven.reporters.SurefireArchiver.FactoryImpl;
 import hudson.model.Result;
 import org.junit.Rule;
 import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 
