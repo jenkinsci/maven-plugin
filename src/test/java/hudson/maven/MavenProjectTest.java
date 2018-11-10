@@ -30,40 +30,45 @@ import hudson.model.Item;
 import hudson.model.Result;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Shell;
-
-import java.io.File;
-
 import jenkins.model.Jenkins;
 import jenkins.mvn.DefaultGlobalSettingsProvider;
 import jenkins.mvn.DefaultSettingsProvider;
 import jenkins.mvn.FilePathGlobalSettingsProvider;
 import jenkins.mvn.FilePathSettingsProvider;
 import jenkins.mvn.GlobalMavenConfig;
-
-import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
-
-import java.net.HttpURLConnection;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
+
+import java.io.File;
+import java.net.HttpURLConnection;
+
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @author huybrechts
  */
-public class MavenProjectTest extends AbstractMavenTestCase {
-    
+public class MavenProjectTest {
 
+    @Rule
+    public JenkinsRule jenkins = new MavenJenkinsRule();
+
+    @Test
     public void testOnMaster() throws Exception {
         MavenModuleSet project = createSimpleProject();
         project.setGoals("validate");
 
-        buildAndAssertSuccess(project);
+        jenkins.buildAndAssertSuccess(project);
         String xml = project.getModules().iterator().next().getConfigFile().asString();
         assertTrue(xml, xml.contains("<maven2"));
         assertFalse(xml, xml.contains("<maven2-module-set"));
     }
-    
+
+    @Test
     @Bug(16499)
     public void testCopyFromExistingMavenProject() throws Exception {
         MavenModuleSet project = createSimpleProject();
@@ -92,23 +97,25 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     public void testOnSlave() throws Exception {
         MavenModuleSet project = createSimpleProject();
         project.setGoals("validate");
-        project.setAssignedLabel(createSlave().getSelfLabel());
+        project.setAssignedLabel(jenkins.createSlave().getSelfLabel());
 
-        buildAndAssertSuccess(project);
+        jenkins.buildAndAssertSuccess(project);
     }
 
     /**
      * Check if the generated site is linked correctly.
      */
+    @Test
     @Bug(3497)
     public void testSiteBuild() throws Exception {
         MavenModuleSet project = createSimpleProject();
         project.setGoals("site");
 
-        buildAndAssertSuccess(project);
+        jenkins.buildAndAssertSuccess(project);
 
         // this should succeed
-        HudsonTestCase.WebClient wc = new WebClient();
+
+        JenkinsRule.WebClient wc = jenkins.createWebClient();
         wc.getPage(project,"site");
         wc.assertFails(project.getUrl() + "site/no-such-file", HttpURLConnection.HTTP_NOT_FOUND);
     }
@@ -116,46 +123,48 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     /**
      * Check if the generated site is linked correctly for multi module projects.
      */
+    @Test
     public void testMultiModuleSiteBuild() throws Exception {
         MavenModuleSet project = createProject("maven-multimodule-site.zip");
         project.setGoals("site");
 
         try {
-            buildAndAssertSuccess(project);
+            jenkins.buildAndAssertSuccess(project);
         } catch (InterruptedException x) {
             // jglick: when using M2 this just hangs on my machine (pool-*-thread-* in java.net.SocketInputStream.socketRead0); sometimes passes in M3, but not consistently, and very very slowly when it does (network dependency)
             return; // TODO use JenkinsRule and throw AssumptionViolatedException
         }
 
         // this should succeed
-        HudsonTestCase.WebClient wc = new WebClient();
+        JenkinsRule.WebClient wc = jenkins.createWebClient();
         wc.getPage(project, "site");
         wc.getPage(project, "site/core");
         wc.getPage(project, "site/client");
 
         //@Bug(7577): check that site generation succeeds also if only a single module is build
         MavenModule coreModule = project.getModule("mmtest:core");
-        Assert.assertEquals("site", coreModule.getGoals());
+        assertEquals("site", coreModule.getGoals());
         try {
-            buildAndAssertSuccess(coreModule);
+            jenkins.buildAndAssertSuccess(coreModule);
         } catch (InterruptedException x) {
             return; // TODO as above
         }
         wc.getPage(project, "site/core");
     }
-    
+
+    @Test
     public void testNestedMultiModuleSiteBuild() throws Exception {
         MavenModuleSet project = createProject("maven-nested-multimodule-site.zip");
         project.setGoals("site");
 
         try {
-            buildAndAssertSuccess(project);
+            jenkins.buildAndAssertSuccess(project);
         } catch (InterruptedException x) {
             return; // TODO as above
         }
 
         // this should succeed
-        HudsonTestCase.WebClient wc = new WebClient();
+        JenkinsRule.WebClient wc = jenkins.createWebClient();
         wc.getPage(project, "site");
         wc.getPage(project, "site/core");
         wc.getPage(project, "site/client");
@@ -168,39 +177,43 @@ public class MavenProjectTest extends AbstractMavenTestCase {
      * Check if the the site goal will work when run from a slave.
      */
     @Bug(5943)
+    @Test
     public void testMultiModuleSiteBuildOnSlave() throws Exception {
         MavenModuleSet project = createProject("maven-multimodule-site.zip");
         project.setGoals("site");
-        project.setAssignedLabel(createSlave().getSelfLabel());
+        project.setAssignedLabel(jenkins.createSlave().getSelfLabel());
 
         try {
-            buildAndAssertSuccess(project);
+            jenkins.buildAndAssertSuccess(project);
         } catch (InterruptedException x) {
             return; // TODO as above
         }
 
         // this should succeed
-        HudsonTestCase.WebClient wc = new WebClient();
+        JenkinsRule.WebClient wc = jenkins.createWebClient();
         wc.getPage(project, "site");
         wc.getPage(project, "site/core");
         wc.getPage(project, "site/client");
     }
 
     @Bug(6779)
+    @Test
     public void testDeleteSetBuildDeletesModuleBuilds() throws Exception {
         MavenModuleSet project = createProject("maven-multimod.zip");
         project.setLocalRepository(new DefaultLocalRepositoryLocator());
         project.setGoals("install");
-        buildAndAssertSuccess(project);
-        buildAndAssertSuccess(project.getModule("org.jvnet.hudson.main.test.multimod:moduleB"));
-        buildAndAssertSuccess(project);
+        jenkins.buildAndAssertSuccess(project);
+        jenkins.buildAndAssertSuccess(project.getModule("org.jvnet.hudson.main.test.multimod:moduleB"));
+        jenkins.buildAndAssertSuccess(project);
         assertEquals(2, project.getBuilds().size()); // Module build does not add a ModuleSetBuild
         project.getFirstBuild().delete();
         // A#1, B#1 and B#2 should all be deleted too
         assertEquals(1, project.getModule("org.jvnet.hudson.main.test.multimod:moduleA").getBuilds().size());
         assertEquals(1, project.getModule("org.jvnet.hudson.main.test.multimod:moduleB").getBuilds().size());
     }
+
     @Bug(7261)
+    @Test
     public void testAbsolutePathPom() throws Exception {
         File pom = new File(this.getClass().getResource("test-pom-7162.xml").toURI());
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
@@ -208,10 +221,11 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         project.setMaven(mi.getName());
         project.setRootPOM(pom.getAbsolutePath());
         project.setGoals("install");
-        buildAndAssertSuccess(project);
+        jenkins.buildAndAssertSuccess(project);
     }
     
     @Bug(17177)
+    @Test
     public void testCorrectResultInPostStepAfterFailedPreBuildStep() throws Exception {
         MavenModuleSet p = createSimpleProject();
         MavenInstallation mi = ToolInstallations.configureDefaultMaven();
@@ -222,8 +236,8 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         p.getPrebuilders().add(pre);
         ResultExposingBuilder resultExposer = new ResultExposingBuilder();
         p.getPostbuilders().add(resultExposer);
-        
-        assertBuildStatus(Result.FAILURE, p.scheduleBuild2(0).get());
+
+        jenkins.assertBuildStatus(Result.FAILURE, p.scheduleBuild2(0).get());
         assertEquals("The result passed to the post build step was not the one from the pre build step", Result.FAILURE, resultExposer.getResult());
     }
     
@@ -231,13 +245,14 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     /**
      * Config roundtrip test around pre/post build step
      */
+    @Test
     public void testConfigRoundtrip() throws Exception {
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         Shell b1 = new Shell("1");
         Shell b2 = new Shell("2");
         m.getPrebuilders().add(b1);
         m.getPostbuilders().add(b2);
-        configRoundtrip((Item)m);
+        jenkins.configRoundtrip((Item)m);
 
         assertEquals(1,  m.getPrebuilders().size());
         assertNotSame(b1,m.getPrebuilders().get(Shell.class));
@@ -249,12 +264,12 @@ public class MavenProjectTest extends AbstractMavenTestCase {
 
         for (Result r : new Result[]{Result.SUCCESS, Result.UNSTABLE, Result.FAILURE}) {
             m.setRunPostStepsIfResult(r);
-            configRoundtrip((Item)m);
+            jenkins.configRoundtrip((Item)m);
             assertEquals(r,m.getRunPostStepsIfResult());
         }
     }
     
-    
+    @Test
     public void testDefaultSettingsProvider() throws Exception {
         {
             MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p1");

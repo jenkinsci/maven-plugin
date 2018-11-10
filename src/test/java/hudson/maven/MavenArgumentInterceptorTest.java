@@ -23,6 +23,7 @@ package hudson.maven;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -33,23 +34,29 @@ import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.util.ArgumentListBuilder;
+import net.sf.json.JSONObject;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.ToolInstallations;
+import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import net.sf.json.JSONObject;
-
-import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.jvnet.hudson.test.ToolInstallations;
-import org.kohsuke.stapler.StaplerRequest;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Dominik Bartholdi (imod)
  */
-public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
+public class MavenArgumentInterceptorTest {
 
+	@Rule
+	public JenkinsRule jenkins = new MavenJenkinsRule();
+
+	@Test
 	public void testSimpleMaven3BuildWithArgInterceptor_Goals() throws Exception {
 
 		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
@@ -62,10 +69,11 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 		// executed
 		m.getBuildWrappersList().add(new TestMvnBuildWrapper("clean"));
 
-		MavenModuleSetBuild b = buildAndAssertSuccess(m);
+		MavenModuleSetBuild b = jenkins.buildAndAssertSuccess(m);
 		assertTrue(MavenUtil.maven3orLater(b.getMavenVersionUsed()));
 	}
 
+	@Test
 	public void testSimpleMaven3BuildWithArgInterceptor_ArgBuilder() throws Exception {
 
 		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
@@ -78,7 +86,7 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 		// add an action to build, adding argument to skip the test execution
 		m.getBuildWrappersList().add(new TestMvnBuildWrapper(Arrays.asList("-DskipTests")));
 
-		MavenModuleSetBuild b = buildAndAssertSuccess(m);
+		MavenModuleSetBuild b = jenkins.buildAndAssertSuccess(m);
 		assertTrue(MavenUtil.maven3orLater(b.getMavenVersionUsed()));
 	}
 

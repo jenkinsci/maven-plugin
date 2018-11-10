@@ -3,23 +3,30 @@ package hudson.maven;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Result;
+import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
-
-import java.io.IOException;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 
-public class AbortedMavenBuildTest extends AbstractMavenTestCase {
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+
+public class AbortedMavenBuildTest {
+    @Rule
+    public JenkinsRule j = new MavenJenkinsRule();
+
     @Bug(8054)
+    @Test
     public void testBuildWrapperSeesAbortedStatus() throws Exception {
         ToolInstallations.configureDefaultMaven();
-        MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
-        TestBuildWrapper wrapper = new TestBuildWrapper();
+        MavenModuleSet project = j.createProject(MavenModuleSet.class, "p");
+        JenkinsRule.TestBuildWrapper wrapper = new JenkinsRule.TestBuildWrapper();
         project.getBuildWrappersList().add(wrapper);
         project.getReporters().add(new AbortingReporter());
         project.setGoals("clean");
-        project.setScm(new ExtractResourceSCM(getClass().getResource("maven-empty-mod.zip")));
+        project.setScm(new FolderResourceSCM("src/test/projects/maven-empty-mod"));
         MavenModuleSetBuild build = project.scheduleBuild2(0).get();
         assertEquals(Result.ABORTED, build.getResult());
         assertEquals(Result.ABORTED, wrapper.buildResultInTearDown);

@@ -1,30 +1,36 @@
 package hudson.maven;
 
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.ExtractResourceSCM;
-
-
 import hudson.Launcher;
 import hudson.model.BuildListener;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.ToolInstallations;
 
 import java.io.IOException;
-import org.jvnet.hudson.test.ToolInstallations;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Andrew Bayer
  */
-public class MavenEmptyModuleTest extends AbstractMavenTestCase {
+public class MavenEmptyModuleTest {
+
+    @Rule
+    public JenkinsRule jenkins = new MavenJenkinsRule();
+
     /**
      * Verify that a build will work with a module <module></module> and a module <module> </module>
      */
     @Bug(4442)
+    @Test
     public void testEmptyModuleParsesAndBuilds() throws Exception {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-empty-mod.zip")));
-        buildAndAssertSuccess(m);
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-empty-mod"));
+        jenkins.buildAndAssertSuccess(m);
     }
     
     private static class TestReporter extends MavenReporter {
