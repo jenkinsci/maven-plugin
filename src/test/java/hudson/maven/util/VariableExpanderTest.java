@@ -1,5 +1,6 @@
 package hudson.maven.util;
 
+import hudson.maven.FolderResourceSCM;
 import hudson.maven.MavenJenkinsRule;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
@@ -66,7 +67,7 @@ public class VariableExpanderTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "test");
         Maven.MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
         m.setMaven( mavenInstallation.getName() );
-        m.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/several-modules-in-directory.zip")));
+        m.setScm(new FolderResourceSCM( "src/test/projects/several-modules-in-directory"));
         m.setGoals( "clean validate" );
 
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);

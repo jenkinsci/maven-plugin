@@ -59,7 +59,7 @@ public class SurefireArchiverUnitTest {
     public void before() throws ComponentConfigurationException, URISyntaxException {
         this.archiver = new SurefireArchiver();
         this.build = mock(MavenBuild.class);
-        final List<Action> actions = new ArrayList<Action>();
+        final List<Action> actions = new ArrayList<>();
         when(build.getAction(Matchers.any(Class.class))).thenAnswer(new Answer<Action>() {
             @Override public Action answer(InvocationOnMock invocation) throws Throwable {
                 Class<?> type = (Class<?>) invocation.getArguments()[0];

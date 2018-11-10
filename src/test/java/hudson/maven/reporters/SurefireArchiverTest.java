@@ -25,19 +25,28 @@ package hudson.maven.reporters;
 
 import hudson.maven.AbstractMavenTestCase;
 import hudson.maven.MavenBuild;
+import hudson.maven.MavenJenkinsRule;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
 import hudson.maven.MavenProjectActionBuilder;
 import hudson.maven.reporters.SurefireArchiver.FactoryImpl;
 import hudson.model.Result;
+import org.junit.Rule;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-public class SurefireArchiverTest extends AbstractMavenTestCase {
+public class SurefireArchiverTest  {
+    @Rule
+    public JenkinsRule jenkins = new MavenJenkinsRule();
+
     public void testSerialization() throws Exception {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
@@ -45,7 +54,7 @@ public class SurefireArchiverTest extends AbstractMavenTestCase {
         m.setGoals("install");
 
         MavenModuleSetBuild b = m.scheduleBuild2(0).get();
-        assertBuildStatus(Result.UNSTABLE, b);
+        jenkins.assertBuildStatus(Result.UNSTABLE, b);
 
 
         MavenBuild mb = b.getModuleLastBuilds().values().iterator().next();

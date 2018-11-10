@@ -42,7 +42,7 @@ public class SurefireArchiverFilterReportsFileTest {
         }
     }
     
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void shouldExcludeReportFileTooOld() {
         File reportsDir = new File("bla");
         String[] reportFiles = { "a", "b", "c" };
@@ -61,16 +61,13 @@ public class SurefireArchiverFilterReportsFileTest {
         
         iterator.next();
         iterator.next();
-        
-        try {
-            iterator.next();
-            fail("Iterator should only have 2 elements");
-        } catch (NoSuchElementException e) {
-            // expected
-        }
+
+        iterator.next();
+        fail("Iterator should only have 2 elements");
+
     }
     
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void shouldExcludeReportFileTooYoung() {
         File reportsDir = new File("bla");
         String[] reportFiles = { "a", "b", "c" };
@@ -89,13 +86,9 @@ public class SurefireArchiverFilterReportsFileTest {
         
         iterator.next();
         iterator.next();
-        
-        try {
-            iterator.next();
-            fail("Iterator should only have 2 elements");
-        } catch (NoSuchElementException e) {
-            // expected
-        }
+
+        iterator.next();
+        fail("Iterator should only have 2 elements");
     }
 
 }
