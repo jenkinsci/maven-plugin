@@ -20,7 +20,7 @@ public class AbortedMavenBuildTest {
     @Bug(8054)
     @Test
     public void testBuildWrapperSeesAbortedStatus() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven3();
         MavenModuleSet project = j.createProject(MavenModuleSet.class, "p");
         JenkinsRule.TestBuildWrapper wrapper = new JenkinsRule.TestBuildWrapper();
         project.getBuildWrappersList().add(wrapper);
