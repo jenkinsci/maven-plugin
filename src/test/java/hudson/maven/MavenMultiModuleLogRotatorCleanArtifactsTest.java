@@ -64,9 +64,8 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest {
 		m.setBuildDiscarder(new LogRotator("-1", "2", "-1", "1"));
 		m.getReporters().add(new TestReporter());
 		m.getReporters().add(new MavenFingerprinter());
-		m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource(
-				"maven-multimod.zip"), getClass().getResource(
-				"maven-multimod-changes.zip")));
+		m.setScm(new FolderResourceWithChangesSCM( "src/test/projects/maven-multimod",
+												   "src/test/projects/maven-multimod-changes"));
 		j.buildAndAssertSuccess(m);
 		// Now run a second build with the changes.
 		m.setIncrementalBuild(false);

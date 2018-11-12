@@ -234,9 +234,7 @@ public class MavenBuildTest {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet project = j.jenkins.createProject(MavenModuleSet.class, "p");
         project.setGoals("clean package");
-        project.setScm(new ExtractResourceSCM(
-                getClass().getResource("/hudson/maven/maven-multimod.zip")
-        ));
+        project.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
 
         project.getReporters().add(new AbortInTheMiddleOfModuleB());
 

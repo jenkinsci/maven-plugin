@@ -180,7 +180,7 @@ public abstract class AbstractMaven3xBuildTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         m.setGoals( "-N validate" );
         assertTrue("MavenModuleSet.isNonRecursive() should be true", m.isNonRecursive());
         j.buildAndAssertSuccess(m);
@@ -282,7 +282,7 @@ public abstract class AbstractMaven3xBuildTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         m.setGoals("verify");
         j.buildAndAssertSuccess(m);
 
