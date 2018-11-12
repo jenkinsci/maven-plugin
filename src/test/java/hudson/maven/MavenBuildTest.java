@@ -145,7 +145,7 @@ public class MavenBuildTest {
         MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("several-modules-in-directory.zip")));
+        m.setScm(new FolderResourceSCM( "src/test/projects/several-modules-in-directory"));
         m.setGoals( "clean validate" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());
