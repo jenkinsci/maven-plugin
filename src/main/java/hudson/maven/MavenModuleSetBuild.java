@@ -322,7 +322,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
         int end = nb!=null ? nb.getNumber() : Integer.MAX_VALUE;
 
         // preserve the order by using LinkedHashMap
-        Map<MavenModule,List<MavenBuild>> r = new LinkedHashMap<MavenModule,List<MavenBuild>>(mods.size());
+        Map<MavenModule,List<MavenBuild>> r = new LinkedHashMap<>(mods.size());
 
         for (MavenModule m : mods) {
             List<MavenBuild> builds = new ArrayList<>();
@@ -656,87 +656,125 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                     project.getRootModule().scheduleBuild(new UpstreamCause((Run<?,?>)MavenModuleSetBuild.this));
                 } else {
                     // do builds here
-                    try {
-                        List<BuildWrapper> wrappers = new ArrayList<BuildWrapper>();
-                        for (BuildWrapper w : project.getBuildWrappersList())
-                            wrappers.add(w);
-                        ParametersAction parameters = getAction(ParametersAction.class);
-                        if (parameters != null)
-                            parameters.createBuildWrappers(MavenModuleSetBuild.this,wrappers);
+                    try
+                    {
+                        List<BuildWrapper> wrappers = new ArrayList<>();
+                        for ( BuildWrapper w : project.getBuildWrappersList() )
+                            wrappers.add( w );
+                        ParametersAction parameters = getAction( ParametersAction.class );
+                        if ( parameters != null ) parameters.createBuildWrappers( MavenModuleSetBuild.this, wrappers );
 
-                        for( BuildWrapper w : wrappers) {
-                            Environment e = w.setUp(MavenModuleSetBuild.this, launcher, listener);
-                            if(e==null){
-                                setResult(r = Result.FAILURE);
+                        for ( BuildWrapper w : wrappers )
+                        {
+                            Environment e = w.setUp( MavenModuleSetBuild.this, launcher, listener );
+                            if ( e == null )
+                            {
+                                setResult( r = Result.FAILURE );
                                 return r;
                             }
-                            buildEnvironments.add(e);
+                            buildEnvironments.add( e );
                         }
 
-                    	// run pre build steps
-                    	if(!preBuild(listener,project.getPrebuilders())
-                        || !preBuild(listener,project.getPostbuilders())
-                        || !preBuild(listener,project.getPublishers())){
-                    		setResult(r = FAILURE);
+                        // run pre build steps
+                        if ( !preBuild( listener, project.getPrebuilders() ) || !preBuild( listener,
+                                                                                           project.getPostbuilders() )
+                            || !preBuild( listener, project.getPublishers() ) )
+                        {
+                            setResult( r = FAILURE );
                             return r;
-                    	}
+                        }
 
-                    	if(!build(listener,project.getPrebuilders().toList())){
-                    		setResult(r = FAILURE);
+                        if ( !build( listener, project.getPrebuilders().toList() ) )
+                        {
+                            setResult( r = FAILURE );
                             return r;
-            			}
+                        }
 
                         // reflect changes made to environment variables via BuildWrappers and other EnvironmentContributingActions
-                        envVars = getEnvironment(listener);
-
-                        parsePoms(listener, logger, envVars, mvn, mavenVersion, mavenBuildInformation); // #5428 : do pre-build *before* parsing pom
-                        SplittableBuildListener slistener = new SplittableBuildListener(listener);
+                        envVars = getEnvironment( listener );
+                        try {
+                            parsePoms( listener, logger, envVars, mvn, mavenVersion, mavenBuildInformation ); // #5428 : do pre-build *before* parsing pom
+                        }  catch ( AbortException e ){
+                            // inform reporters with calling end and mark result as Aborted
+                            try{
+                                project.getReporters().stream().forEach( mavenReporter -> {
+                                    try
+                                    {
+                                        mavenReporter.end( null, launcher, listener );
+                                    }
+                                    catch ( Exception ignore ) { }
+                                } );
+                            }catch ( Exception ignore ){}
+                            r = Result.ABORTED;
+                            throw e;
+                        }
+                        SplittableBuildListener slistener = new SplittableBuildListener( listener );
                         proxies = new HashMap<>();
-                        List<ModuleName> changedModules = new ArrayList<ModuleName>();
+                        List<ModuleName> changedModules = new ArrayList<>();
                         boolean incrementalBuild;
-                        if (project.isIncrementalBuild()) {
-                            if (getChangeSet().isEmptySet()) {
-                                LOGGER.log(Level.FINER, "{0} has no changes and thus we are not doing an incremental build",
-                                           MavenModuleSetBuild.this);
+                        if ( project.isIncrementalBuild() )
+                        {
+                            if ( getChangeSet().isEmptySet() )
+                            {
+                                LOGGER.log( Level.FINER,
+                                            "{0} has no changes and thus we are not doing an incremental build",
+                                            MavenModuleSetBuild.this );
                                 incrementalBuild = false;
-                            } else {
+                            }
+                            else
+                            {
                                 incrementalBuild = true;
                             }
-                        } else {
+                        }
+                        else
+                        {
                             incrementalBuild = false;
                         }
-                        
-                        if (incrementalBuild) {
-                            changedModules.addAll(getUnbuiltModulesSinceLastSuccessfulBuild());
+
+                        if ( incrementalBuild )
+                        {
+                            changedModules.addAll( getUnbuiltModulesSinceLastSuccessfulBuild() );
                         }
 
-                        for (MavenModule m : project.sortedActiveModules) {
+                        for ( MavenModule m : project.sortedActiveModules )
+                        {
                             MavenBuild mb = m.newBuild();
                             // JENKINS-8418
                             mb.setBuiltOnStr( getBuiltOnStr() );
                             ModuleName moduleName = m.getModuleName();
 
-                            if (incrementalBuild) {
-                                if (!getChangeSetFor(m).isEmpty()) {
-                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because it has changes",
-                                               new Object[] {moduleName, MavenModuleSetBuild.this});
-                                    changedModules.add(moduleName);
-                                } else if (mb.getPreviousBuiltBuild() == null) {
-                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because we have never seen this module before",
-                                               new Object[] {moduleName, MavenModuleSetBuild.this});
-                                    changedModules.add(moduleName);
-                                } else if (mb.getPreviousBuiltBuild().getResult().isWorseThan(Result.SUCCESS)) {
-                                    LOGGER.log(Level.FINER, "adding {0} to changedModules for {1} because the previous build failed or was unstable",
-                                               new Object[] {moduleName, MavenModuleSetBuild.this});
-                                    changedModules.add(moduleName);
-                                } else {
-                                    LOGGER.log(Level.FINER, "no reason to add {0} to changedModules for {1}",
-                                               new Object[] {moduleName, MavenModuleSetBuild.this});
+                            if ( incrementalBuild )
+                            {
+                                if ( !getChangeSetFor( m ).isEmpty() )
+                                {
+                                    LOGGER.log( Level.FINER,
+                                                "adding {0} to changedModules for {1} because it has changes",
+                                                new Object[]{ moduleName, MavenModuleSetBuild.this } );
+                                    changedModules.add( moduleName );
+                                }
+                                else if ( mb.getPreviousBuiltBuild() == null )
+                                {
+                                    LOGGER.log( Level.FINER,
+                                                "adding {0} to changedModules for {1} because we have never seen this module before",
+                                                new Object[]{ moduleName, MavenModuleSetBuild.this } );
+                                    changedModules.add( moduleName );
+                                }
+                                else if ( mb.getPreviousBuiltBuild().getResult().isWorseThan( Result.SUCCESS ) )
+                                {
+                                    LOGGER.log( Level.FINER,
+                                                "adding {0} to changedModules for {1} because the previous build failed or was unstable",
+                                                new Object[]{ moduleName, MavenModuleSetBuild.this } );
+                                    changedModules.add( moduleName );
+                                }
+                                else
+                                {
+                                    LOGGER.log( Level.FINER, "no reason to add {0} to changedModules for {1}",
+                                                new Object[]{ moduleName, MavenModuleSetBuild.this } );
                                 }
                             }
 
-                            mb.setWorkspace(getModuleRoot().child(m.getRelativePath()));
-                            proxies.put(moduleName, mb.new ProxyImpl2(MavenModuleSetBuild.this,slistener));
+                            mb.setWorkspace( getModuleRoot().child( m.getRelativePath() ) );
+                            proxies.put( moduleName, mb.new ProxyImpl2( MavenModuleSetBuild.this, slistener ) );
                         }
 
                         // run the complete build here
@@ -745,15 +783,13 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         // choice of module root ('ws' in this method) is somewhat arbitrary
                         // when multiple CVS/SVN modules are checked out, so also check
                         // the path against the workspace root if that seems like what the user meant (see issue #1293)
-                        String rootPOM = project.getRootPOM(envVars); // JENKINS-13822
-                        FilePath pom = getModuleRoot().child(rootPOM);
-                        FilePath parentLoc = getWorkspace().child(rootPOM);
-                        if(!pom.exists() && parentLoc.exists())
-                            pom = parentLoc;
+                        String rootPOM = project.getRootPOM( envVars ); // JENKINS-13822
+                        FilePath pom = getModuleRoot().child( rootPOM );
+                        FilePath parentLoc = getWorkspace().child( rootPOM );
+                        if ( !pom.exists() && parentLoc.exists() ) pom = parentLoc;
 
-                        
                         final ProcessCache.MavenProcess process;
-                        
+
                         boolean maven3orLater = mavenBuildInformation.isMaven3OrLater();
 
                         MavenUtil.MavenVersion mavenVersionType = MavenUtil.getMavenVersion( mavenVersion );
@@ -764,135 +800,164 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
                         Class<?> maven3LauncherClass = null;
 
-                        String mavenOpts = getMavenOpts(listener, envVars);
-                        switch ( mavenVersionType ){
+                        String mavenOpts = getMavenOpts( listener, envVars );
+                        switch ( mavenVersionType )
+                        {
                             case MAVEN_2:
                                 LOGGER.fine( "using maven 2 " + mavenVersion );
-                                factory = new MavenProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,mavenOpts,
-                                                                  pom.getParent() );
+                                factory = new MavenProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,
+                                                                   mavenOpts, pom.getParent() );
                                 break;
                             case MAVEN_3_0_X:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                factory = new Maven3ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
-                                                                    pom.getParent() );
+                                factory = new Maven3ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,
+                                                                    mavenOpts, pom.getParent() );
                                 maven3MainClass = Maven3Main.class;
                                 maven3LauncherClass = Maven3Launcher.class;
                                 break;
                             case MAVEN_3_1:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                factory = new Maven31ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
-                                                                    pom.getParent() );
+                                factory =
+                                    new Maven31ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,
+                                                               mavenOpts, pom.getParent() );
                                 maven3MainClass = Maven31Main.class;
                                 maven3LauncherClass = Maven31Launcher.class;
                                 break;
                             case MAVEN_3_2:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                factory = new Maven32ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
-                                        pom.getParent() );
+                                factory =
+                                    new Maven32ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,
+                                                               mavenOpts, pom.getParent() );
                                 maven3MainClass = Maven32Main.class;
                                 maven3LauncherClass = Maven32Launcher.class;
                                 break;
                             case MAVEN_3_3:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                factory = new Maven33ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
-                                        pom.getParent() );
+                                factory =
+                                    new Maven33ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,
+                                                               mavenOpts, pom.getParent() );
                                 maven3MainClass = Maven33Main.class;
                                 maven3LauncherClass = Maven33Launcher.class;
                                 break;
                             default:
                                 LOGGER.fine( "using maven 3 " + mavenVersion );
-                                factory = new Maven35ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars, mavenOpts,
-                                                                    pom.getParent() );
+                                factory =
+                                    new Maven35ProcessFactory( project, MavenModuleSetBuild.this, launcher, envVars,
+                                                               mavenOpts, pom.getParent() );
                                 maven3MainClass = Maven35Main.class;
                                 maven3LauncherClass = Maven35Launcher.class;
                         }
 
-                        process = MavenBuild.mavenProcessCache.get( launcher.getChannel(), slistener, factory);
+                        process = MavenBuild.mavenProcessCache.get( launcher.getChannel(), slistener, factory );
 
+                        ArgumentListBuilder margs = new ArgumentListBuilder().add( "-B" ).add( "-f", pom.getRemote() );
+                        FilePath localRepo = project.getLocalRepository().locate( MavenModuleSetBuild.this );
+                        if ( localRepo != null ) margs.add( "-Dmaven.repo.local=" + localRepo.getRemote() );
 
-                        ArgumentListBuilder margs = new ArgumentListBuilder().add("-B").add("-f", pom.getRemote());
-                        FilePath localRepo = project.getLocalRepository().locate(MavenModuleSetBuild.this);
-                        if(localRepo!=null)
-                            margs.add("-Dmaven.repo.local="+localRepo.getRemote());
+                        FilePath remoteSettings =
+                            SettingsProvider.getSettingsFilePath( project.getSettings(), MavenModuleSetBuild.this,
+                                                                  listener );
+                        if ( remoteSettings != null ) margs.add( "-s", remoteSettings.getRemote() );
 
-                        FilePath remoteSettings = SettingsProvider.getSettingsFilePath(project.getSettings(), MavenModuleSetBuild.this, listener);
-                        if (remoteSettings != null)
-                            margs.add("-s" , remoteSettings.getRemote());
+                        FilePath remoteGlobalSettings =
+                            GlobalSettingsProvider.getSettingsFilePath( project.getGlobalSettings(), MavenModuleSetBuild.this, listener );
+                        if ( remoteGlobalSettings != null ) margs.add( "-gs", remoteGlobalSettings.getRemote() );
 
-                        FilePath remoteGlobalSettings = GlobalSettingsProvider.getSettingsFilePath(project.getGlobalSettings(), MavenModuleSetBuild.this, listener);
-                        if (remoteGlobalSettings != null)
-                            margs.add("-gs" , remoteGlobalSettings.getRemote());
-
-                        if (changedModules.isEmpty()) {
-                            LOGGER.log(Level.FINER, "{0} was not configured to do incremental builds or had no changed modules, so skipping incremental build", MavenModuleSetBuild.this);
-                        } else if (new ComparableVersion(mavenVersion).compareTo(new ComparableVersion("2.1")) < 0) {
-                            LOGGER.log(Level.FINER, "{0} is using Maven {1} but need 2.1+ for incremental builds", new Object[] {MavenModuleSetBuild.this, mavenVersion});
-                        } else if (getPreviousCompletedBuild() != null && getPreviousCompletedBuild().getAction(NeedsFullBuildAction.class) != null && /* PR #31 */getCause(UpstreamCause.class) != null) {
-                            LOGGER.log(Level.FINER, "{0} had a previous build asking for this one to not be incremental", MavenModuleSetBuild.this);
-                        } else {
-                            LOGGER.log(Level.FINER, "{0} can do an incremental build on {1}", new Object[] {MavenModuleSetBuild.this, changedModules});
-                            margs.add("-amd");
-                            margs.add("-pl", Util.join(changedModules, ","));
+                        if ( changedModules.isEmpty() )
+                        {
+                            LOGGER.log( Level.FINER,
+                                        "{0} was not configured to do incremental builds or had no changed modules, so skipping incremental build",
+                                        MavenModuleSetBuild.this );
+                        }
+                        else if ( new ComparableVersion( mavenVersion ).compareTo( new ComparableVersion( "2.1" ) )
+                            < 0 )
+                        {
+                            LOGGER.log( Level.FINER, "{0} is using Maven {1} but need 2.1+ for incremental builds",
+                                        new Object[]{ MavenModuleSetBuild.this, mavenVersion } );
+                        }
+                        else if ( getPreviousCompletedBuild() != null
+                            && getPreviousCompletedBuild().getAction( NeedsFullBuildAction.class ) != null
+                            && /* PR #31 */getCause( UpstreamCause.class ) != null )
+                        {
+                            LOGGER.log( Level.FINER,
+                                        "{0} had a previous build asking for this one to not be incremental",
+                                        MavenModuleSetBuild.this );
+                        }
+                        else
+                        {
+                            LOGGER.log( Level.FINER, "{0} can do an incremental build on {1}",
+                                        new Object[]{ MavenModuleSetBuild.this, changedModules } );
+                            margs.add( "-amd" );
+                            margs.add( "-pl", Util.join( changedModules, "," ) );
                         }
 
+                        final List<MavenArgumentInterceptorAction> argInterceptors =
+                            this.getBuild().getActions( MavenArgumentInterceptorAction.class );
 
-                        
-                        final List<MavenArgumentInterceptorAction> argInterceptors = this.getBuild().getActions(MavenArgumentInterceptorAction.class);
-                        
-						// find the correct maven goals and options, there might by an action overruling the defaults
+                        // find the correct maven goals and options, there might by an action overruling the defaults
                         String goals = project.getGoals(); // default
-                        for (MavenArgumentInterceptorAction mavenArgInterceptor : argInterceptors) {
-                        	final String goalsAndOptions = mavenArgInterceptor.getGoalsAndOptions(this.getBuild());
-							if(StringUtils.isNotBlank(goalsAndOptions)){
-                        		goals = goalsAndOptions;
+                        for ( MavenArgumentInterceptorAction mavenArgInterceptor : argInterceptors )
+                        {
+                            final String goalsAndOptions = mavenArgInterceptor.getGoalsAndOptions( this.getBuild() );
+                            if ( StringUtils.isNotBlank( goalsAndOptions ) )
+                            {
+                                goals = goalsAndOptions;
                                 // only one interceptor is allowed to overwrite the whole "goals and options" string
-                        		break;
-                        	}
-						}
-						margs.addTokenized(envVars.expand(goals));
-
-						// enable the interceptors to change the whole command argument list
-						// all available interceptors are allowed to modify the argument list
-						for (MavenArgumentInterceptorAction mavenArgInterceptor : argInterceptors) {
-							final ArgumentListBuilder newMargs = mavenArgInterceptor.intercept(margs, this.getBuild());
-							if (newMargs != null) {
-								margs = newMargs;
-							}
-						}
-                        
-                        final AbstractMavenBuilder builder;
-                        if (maven3orLater) {
-                            Maven3Builder.Maven3BuilderRequest maven3BuilderRequest = new Maven3Builder.Maven3BuilderRequest();
-                            maven3BuilderRequest.listener=slistener;
-                            maven3BuilderRequest.proxies=proxies;
-                            maven3BuilderRequest.modules=project.sortedActiveModules;
-                            maven3BuilderRequest.goals=margs.toList();
-                            maven3BuilderRequest.systemProps=envVars;
-                            maven3BuilderRequest.mavenBuildInformation=mavenBuildInformation;
-                            maven3BuilderRequest.maven3MainClass=maven3MainClass;
-                            maven3BuilderRequest.maven3LauncherClass=maven3LauncherClass;
-                            maven3BuilderRequest.supportEventSpy = MavenUtil.supportEventSpy( mavenVersion );
-                            builder = new Maven3Builder(maven3BuilderRequest);
-                        } else {
-                            builder = 
-                                new Maven2Builder(slistener, proxies, project.sortedActiveModules, margs.toList(), envVars, mavenBuildInformation);
+                                break;
+                            }
                         }
-                        
-                        MavenProbeAction mpa=null;
-                        try {
-                            mpa = new MavenProbeAction(project, process.channel, MavenModuleSetBuild.this);
-                            addAction(mpa);
-                            r = process.call(builder);
-                            for (ProxyImpl2 proxy : proxies.values()) {
-                                proxy.performArchiving(launcher, listener);
+                        margs.addTokenized( envVars.expand( goals ) );
+
+                        // enable the interceptors to change the whole command argument list
+                        // all available interceptors are allowed to modify the argument list
+                        for ( MavenArgumentInterceptorAction mavenArgInterceptor : argInterceptors )
+                        {
+                            final ArgumentListBuilder newMargs = mavenArgInterceptor.intercept( margs, this.getBuild() );
+                            if ( newMargs != null )
+                            {
+                                margs = newMargs;
+                            }
+                        }
+
+                        final AbstractMavenBuilder builder;
+                        if ( maven3orLater )
+                        {
+                            Maven3Builder.Maven3BuilderRequest maven3BuilderRequest = new Maven3Builder.Maven3BuilderRequest();
+                            maven3BuilderRequest.listener = slistener;
+                            maven3BuilderRequest.proxies = proxies;
+                            maven3BuilderRequest.modules = project.sortedActiveModules;
+                            maven3BuilderRequest.goals = margs.toList();
+                            maven3BuilderRequest.systemProps = envVars;
+                            maven3BuilderRequest.mavenBuildInformation = mavenBuildInformation;
+                            maven3BuilderRequest.maven3MainClass = maven3MainClass;
+                            maven3BuilderRequest.maven3LauncherClass = maven3LauncherClass;
+                            maven3BuilderRequest.supportEventSpy = MavenUtil.supportEventSpy( mavenVersion );
+                            builder = new Maven3Builder( maven3BuilderRequest );
+                        }
+                        else
+                        {
+                            builder = new Maven2Builder( slistener, proxies, project.sortedActiveModules, margs.toList(),
+                                                         envVars, mavenBuildInformation );
+                        }
+
+                        MavenProbeAction mpa = null;
+                        try
+                        {
+                            mpa = new MavenProbeAction( project, process.channel, MavenModuleSetBuild.this );
+                            addAction( mpa );
+                            r = process.call( builder );
+                            for ( ProxyImpl2 proxy : proxies.values() )
+                            {
+                                proxy.performArchiving( launcher, listener );
                             }
                             return r;
-                        } finally {
-                            builder.end(launcher);
-                            getActions().remove(mpa);
+                        }
+                        finally
+                        {
+                            builder.end( launcher );
+                            getActions().remove( mpa );
                             process.discard();
-                        }                            
-                        
+                        }
                     } catch (InterruptedException e) {
                         r = Executor.currentExecutor().abortResult();
                         throw e;
@@ -1391,9 +1456,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                     pi.cutCycle();
 
                 return new Result(new ArrayList<>(infos), modelParents);
-            } catch (MavenEmbedderException e) {
-                throw new MavenExecutionException(e);
-            } catch (ProjectBuildingException e) {
+            } catch (MavenEmbedderException|ProjectBuildingException e) {
                 throw new MavenExecutionException(e);
             }
         }

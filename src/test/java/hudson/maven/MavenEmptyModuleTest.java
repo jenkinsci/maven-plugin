@@ -2,9 +2,11 @@ package hudson.maven;
 
 import hudson.Launcher;
 import hudson.model.BuildListener;
+import hudson.model.Cause;
+import hudson.model.Result;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 
@@ -21,16 +23,17 @@ public class MavenEmptyModuleTest {
     public JenkinsRule jenkins = new MavenJenkinsRule();
 
     /**
+     * <b>behaviour has changed when upgrading to maven 3.5.4</b>
      * Verify that a build will work with a module <module></module> and a module <module> </module>
      */
-    @Bug(4442)
+    @Issue("JENKINS-4442")
     @Test
     public void testEmptyModuleParsesAndBuilds() throws Exception {
         ToolInstallations.configureDefaultMaven();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceSCM("src/test/projects/maven-empty-mod"));
-        jenkins.buildAndAssertSuccess(m);
+        jenkins.assertBuildStatus( Result.ABORTED, m.scheduleBuild2( 0 ).get());
     }
     
     private static class TestReporter extends MavenReporter {
