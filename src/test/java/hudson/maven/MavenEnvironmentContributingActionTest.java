@@ -49,7 +49,7 @@ public class MavenEnvironmentContributingActionTest {
         final MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "mvn");
 
         p.setMaven(ToolInstallations.configureMaven3().getName());
-        p.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
+        p.setScm(new FolderResourceSCM("src/test/projects/maven3-project"));
         p.setGoals("initialize -Dval=${KEY}");
 
         p.getBuildWrappersList().add(new TestMvnBuildWrapper("-Dval=MY_VALUE"));

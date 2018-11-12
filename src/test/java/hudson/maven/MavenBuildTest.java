@@ -131,7 +131,7 @@ public class MavenBuildTest {
         MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("incorrect-inheritence-testcase.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/incorrect-inheritence-testcase"));
         m.setGoals( "clean validate" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());
@@ -163,7 +163,7 @@ public class MavenBuildTest {
         m.addProperty( parametersDefinitionProperty );
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("envars-maven-project.zip")));
+        m.setScm(new FolderResourceSCM( "src/test/projects/envars-maven-project"));
         m.setGoals( "clean test-compile" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());

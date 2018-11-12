@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mycompany.app</groupId>
+  <artifactId>my-app-root</artifactId>
+  <packaging>pom</packaging>
+  <name>my-app-root</name>
+  <version>1.5</version>
+  <scm>
+    <connection>scm:git:git://github.com/olamy/scm-git-test.git/</connection>
+    <developerConnection>scm:git:git@github.com:olamy/scm-git-test.git</developerConnection>
+  </scm>
+  <modules>
+    <module>my-app</module>
+    <module>my-app-webapp</module>
+  </modules>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.mycompany.app</groupId>
+        <artifactId>my-app</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.mycompany.app</groupId>
+        <artifactId>my-app-webapp</artifactId>
+        <version>${pom.version}</version>
+      </dependency>      
+    </dependencies>
+  </dependencyManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>  
+        <artifactId>maven-release-plugin</artifactId>       
+        <version>2.2-SNAPSHOT</version>
+        <configuration>
+         <ignoreSnapshots>true</ignoreSnapshots>
+        </configuration> 
+      </plugin>
+    </plugins>
+ 
+  </build>
+  <distributionManagement>
+    <repository>
+      <id>local.repo</id>
+      <name>file repository to svn</name>
+      <url>file://${basedir}/mavenrepo</url>
+    </repository>
+    <snapshotRepository>
+      <id>local.repo</id>
+      <name>file repository to svn</name>
+      <url>file://${basedir}/mavenreposnapshot</url>    
+    </snapshotRepository>
+  </distributionManagement>
+  
+</project>

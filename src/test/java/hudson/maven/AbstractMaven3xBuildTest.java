@@ -61,7 +61,7 @@ public abstract class AbstractMaven3xBuildTest {
         MavenInstallation mavenInstallation = configureMaven3x();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven3-project"));
         m.setGoals( "clean install" );
         MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
         assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
@@ -77,7 +77,7 @@ public abstract class AbstractMaven3xBuildTest {
         FileUtils.cleanDirectory( repo );
         m.getReporters().add(new TestReporter());
         m.getPublishersList().add(new RedeployPublisher("",repo.toURI().toString(),true, false));
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven3-project"));
         m.setGoals( "clean install" );
         MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
         assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
@@ -102,7 +102,7 @@ public abstract class AbstractMaven3xBuildTest {
         MavenInstallation mavenInstallation = configureMaven3x();
         m.setMaven( mavenInstallation.getName() );        
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven3-project"));
         m.setGoals("-e clean site");
         MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
         assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
@@ -133,7 +133,7 @@ public abstract class AbstractMaven3xBuildTest {
         MavenInstallation mavenInstallation = configureMaven3x();
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("incorrect-inheritence-testcase.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/incorrect-inheritence-testcase"));
         m.setGoals( "clean validate" );
         MavenModuleSetBuild mmsb =  m.scheduleBuild2( 0 ).get();
         j.assertBuildStatus( Result.FAILURE, mmsb );
@@ -167,7 +167,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.addProperty( parametersDefinitionProperty );
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("envars-maven-project.zip")));
+        m.setScm(new FolderResourceSCM( "src/test/projects/envars-maven-project"));
         m.setGoals( "clean test-compile" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());

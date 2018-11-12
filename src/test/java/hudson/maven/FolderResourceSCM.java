@@ -36,12 +36,21 @@ import java.io.IOException;
 public class FolderResourceSCM extends NullSCM
 {
     private final String directory;
+    private String parentFolder;
 
     public FolderResourceSCM( String directory ) {
         if (!new File( directory ).isDirectory()){
             throw new IllegalArgumentException( directory + " must be an existing directory" );
         }
         this.directory = directory;
+    }
+
+    public FolderResourceSCM( String directory, String parentFolder) {
+        if (!new File( directory ).isDirectory()){
+            throw new IllegalArgumentException( directory + " must be an existing directory" );
+        }
+        this.directory = directory;
+        this.parentFolder = parentFolder;
     }
 
     public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File changeLogFile)
@@ -55,7 +64,9 @@ public class FolderResourceSCM extends NullSCM
         FileUtils.copyDirectory( new File( this.directory), //
                                  new File( workspace.getRemote()));
 
-
+        if (this.parentFolder != null) {
+            FileUtils.copyDirectory(new File(workspace.getRemote() + "/" + this.parentFolder), new File(workspace.getRemote()));
+        }
         return true;
     }
 }

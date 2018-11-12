@@ -37,7 +37,6 @@ import hudson.util.ArgumentListBuilder;
 import net.sf.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 import org.kohsuke.stapler.StaplerRequest;
@@ -62,7 +61,7 @@ public class MavenArgumentInterceptorTest {
 		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
 		MavenInstallation mavenInstallation = ToolInstallations.configureMaven3();
 		m.setMaven(mavenInstallation.getName());
-		m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven3-project"));
 		m.setGoals("dummygoal"); // build would fail with this goal
 
 		// add an action to build, redefining the goals and options to be
