@@ -30,8 +30,8 @@ public class MavenMultiModuleTestIncremental {
         MavenModuleSet m = j.createProject(MavenModuleSet.class, "p");
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-rel-base.zip"),
-						   getClass().getResource("maven-multimod-changes.zip")));
+        m.setScm(new FolderResourceWithChangesSCM("src/test/projects/maven-multimod-rel-base", //
+                                                  "src/test/projects/maven-multimod-changes"));
         
     	j.buildAndAssertSuccess(m);
             
