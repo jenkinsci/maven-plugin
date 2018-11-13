@@ -300,8 +300,8 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-incr.zip"),
-						   getClass().getResource("maven-multimod-changes.zip")));
+        m.setScm(new FolderResourceWithChangesSCM("src/test/projects/maven-multimod-incr", //
+						   "src/test/projects/maven-multimod-changes"));
 
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
         MavenModuleSetBuild pBuild = m.getLastBuild();
@@ -364,8 +364,8 @@ public class MavenMultiModuleTest {
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
         m.getPublishers().add(new DummyRedeployPublisher());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-incr.zip"),
-                           getClass().getResource("maven-multimod-changes.zip")));
+        m.setScm(new FolderResourceWithChangesSCM("src/test/projects/maven-multimod-incr", //
+                                                  "src/test/projects/maven-multimod-changes"));
 
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
         MavenModuleSetBuild pBuild = m.getLastBuild();
@@ -425,7 +425,7 @@ public class MavenMultiModuleTest {
         ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod-incr.zip")));
+        m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod-incr"));
 
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
 
