@@ -90,15 +90,8 @@ public class MavenProjectTest {
         project.setScm(new FolderResourceSCM("src/test/projects/"+scmResource));
         project.setMaven(mi.getName());
         //project.setLocalRepository(new PerJobLocalRepositoryLocator());
-        //project.setLocalRepository( new DefaultLocalRepositoryLocator());
-//        project.setLocalRepository( new DefaultLocalRepositoryLocator() {
-//            @Override
-//            public FilePath locate( AbstractMavenBuild build )
-//            {
-//                 return new FilePath(new File(System.getProperty( "localRepository")));
-//            }
-//        });
-        project.setLocalRepository( new TestLocalRepositoryLocator(System.getProperty( "localRepository")) );
+        project.setLocalRepository( new TestLocalRepositoryLocator(System.getProperty( "localRepository")
+                                                                       + "/" + getClass().getName()) );
         return project;
     }
 

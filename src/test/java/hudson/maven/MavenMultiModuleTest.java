@@ -51,6 +51,11 @@ public class MavenMultiModuleTest {
 
     String MAVEN_3_5_VERSION = "apache-maven-3.5.0";
 
+    private void decorateProject(MavenModuleSet mavenModuleSet){
+        mavenModuleSet.setLocalRepository( new TestLocalRepositoryLocator(System.getProperty( "localRepository")
+                                                                       + "/" + getClass().getName()) );
+    }
+
     /**
      * NPE in {@code build.getProject().getWorkspace()} for {@link MavenBuild}.
      */
@@ -58,6 +63,7 @@ public class MavenMultiModuleTest {
     @Test public void multiModMavenWsExists() throws Exception {
         ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
+        decorateProject(m);
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
 	    assertFalse("MavenModuleSet.isNonRecursive() should be false", m.isNonRecursive());
@@ -69,6 +75,7 @@ public class MavenMultiModuleTest {
         Assume.assumeFalse(Functions.isWindows());
         ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
+        decorateProject(mms);
         mms.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         j.buildAndAssertSuccess(mms);
         MavenModule mm = mms.getModule("org.jvnet.hudson.main.test.multimod:moduleA");
@@ -103,7 +110,8 @@ public class MavenMultiModuleTest {
         m.getReporters().add(new MavenFingerprinter());
         m.setScm(new FolderResourceWithChangesSCM("src/test/projects/maven-multimod",
                                                   "src/test/projects/maven-multimod-changes"));
-    
+
+        decorateProject(m);
     	j.buildAndAssertSuccess(m);
     
     	// Now run a second build with the changes.
@@ -178,7 +186,7 @@ public class MavenMultiModuleTest {
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceWithChangesSCM("src/test/projects/maven-multimod-rel-base", //
                                                   "src/test/projects/maven-multimod-changes"));
-        
+        decorateProject(m);
         j.buildAndAssertSuccess(m);
         
         // Now run a second build with the changes.
@@ -221,7 +229,7 @@ public class MavenMultiModuleTest {
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceWithChangesSCM( "src/test/projects/maven-multimod",
                                                    "src/test/projects/maven-multimod-changes"));
-
+        decorateProject(m);
         j.buildAndAssertSuccess(m);
 
         // Now run a second, incremental build with the changes.
@@ -255,6 +263,7 @@ public class MavenMultiModuleTest {
                                                    "src/test/projects/maven-multimod-changes"));
 
         m.setIncrementalBuild(true);
+        decorateProject(m);
         j.buildAndAssertSuccess(m);
     }
 
@@ -268,7 +277,7 @@ public class MavenMultiModuleTest {
         m.setGoals("clean install -N");
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
-
+        decorateProject(m);
         j.buildAndAssertSuccess(m);
 
         MavenModuleSetBuild pBuild = m.getLastBuild();
@@ -304,7 +313,7 @@ public class MavenMultiModuleTest {
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceWithChangesSCM("src/test/projects/maven-multimod-incr", //
 						   "src/test/projects/maven-multimod-changes"));
-
+        decorateProject(m);
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
         MavenModuleSetBuild pBuild = m.getLastBuild();
         
@@ -368,7 +377,7 @@ public class MavenMultiModuleTest {
         m.getPublishers().add(new DummyRedeployPublisher());
         m.setScm(new FolderResourceWithChangesSCM("src/test/projects/maven-multimod-incr", //
                                                   "src/test/projects/maven-multimod-changes"));
-
+        decorateProject(m);
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
         MavenModuleSetBuild pBuild = m.getLastBuild();
         
@@ -428,7 +437,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod-incr"));
-
+        decorateProject(m);
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
 
         MavenModuleSetBuild pBuild = m.getLastBuild();
@@ -460,15 +469,17 @@ public class MavenMultiModuleTest {
         m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         m.setGoals( "-N validate" );
         assertTrue("MavenModuleSet.isNonRecursive() should be true", m.isNonRecursive());
+        decorateProject(m);
         j.buildAndAssertSuccess(m);
         assertEquals("not only one module", 1, m.getModules().size());
     }    
 
     @Bug(17713)
     @Test public void modulesPageLinks() throws Exception {
-        ToolInstallations.configureMaven3();
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION,MavenInstallation.MAVEN_30);
         MavenModuleSet ms = j.jenkins.createProject(MavenModuleSet.class, "p");
         ms.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
+        decorateProject(ms);
         j.buildAndAssertSuccess(ms);
         MavenModule m = ms.getModule("org.jvnet.hudson.main.test.multimod:moduleA");
         assertNotNull(m);
@@ -485,11 +496,14 @@ public class MavenMultiModuleTest {
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         mms.setAssignedNode(j.createOnlineSlave());
+        //decorateProject(mms);
         j.buildAndAssertSuccess(mms);
         // We want all the artifacts in a given module to be archived in one operation. But modules are archived separately.
-        Map<String,Map<String,FilePath>> expected = new TreeMap<String,Map<String,FilePath>>();
+        Map<String,Map<String,FilePath>> expected = new TreeMap<>();
         FilePath ws = mms.getModule("org.jvnet.hudson.main.test.multimod$multimod-top").getBuildByNumber(1).getWorkspace();
-        expected.put("org.jvnet.hudson.main.test.multimod:multimod-top", Collections.singletonMap("org.jvnet.hudson.main.test.multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom", new FilePath(ws.getChannel(), "…/org/jvnet/hudson/main/test/multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom")));
+        expected.put("org.jvnet.hudson.main.test.multimod:multimod-top",
+                     Collections.singletonMap("org.jvnet.hudson.main.test.multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom",
+                                              new FilePath(ws.getChannel(), "…/org/jvnet/hudson/main/test/multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom")));
         for (String module : new String[] {"moduleA", "moduleB", "moduleC"}) {
             Map<String,FilePath> m = new TreeMap<String,FilePath>();
             ws = mms.getModule("org.jvnet.hudson.main.test.multimod$" + module).getBuildByNumber(1).getWorkspace();
@@ -497,14 +511,18 @@ public class MavenMultiModuleTest {
             m.put("org.jvnet.hudson.main.test.multimod/" + module + "/1.0-SNAPSHOT/" + module + "-1.0-SNAPSHOT.jar", ws.child("target/" + module + "-1.0-SNAPSHOT.jar"));
             expected.put("org.jvnet.hudson.main.test.multimod:" + module, m);
         }
-        assertEquals(expected.toString(), TestAM.archivings.toString()); // easy to read
+        System.out.println( "Current" );
+        TestAM.archivings.values().stream().forEach( stringFilePathMap -> System.out.println( stringFilePathMap ) );
+        System.out.println( "Expected" );
+        expected.values().stream().forEach( stringFilePathMap -> System.out.println( stringFilePathMap ) );
+        assertEquals("current:"+TestAM.archivings.toString(), expected.toString(), TestAM.archivings.toString()); // easy to read
         assertEquals(expected, TestAM.archivings); // compares also FileChannel
         // Also check single-module build.
         expected.clear();
         TestAM.archivings.clear();
         MavenBuild isolated = j.buildAndAssertSuccess(mms.getModule("org.jvnet.hudson.main.test.multimod$moduleA"));
         assertEquals(2, isolated.number);
-        Map<String,FilePath> m = new TreeMap<String,FilePath>();
+        Map<String,FilePath> m = new TreeMap<>();
         ws = isolated.getWorkspace();
         m.put("org.jvnet.hudson.main.test.multimod/moduleA/1.0-SNAPSHOT/moduleA-1.0-SNAPSHOT.pom", ws.child("pom.xml"));
         m.put("org.jvnet.hudson.main.test.multimod/moduleA/1.0-SNAPSHOT/moduleA-1.0-SNAPSHOT.jar", ws.child("target/moduleA-1.0-SNAPSHOT.jar"));
@@ -513,13 +531,13 @@ public class MavenMultiModuleTest {
     }
 
     @Issue("JENKINS-24832")
-    @Test
-    public void testMultiModulesFailureWithParallelThreads() throws Exception {
+    @Test public void testMultiModulesFailureWithParallelThreads() throws Exception {
         ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet project = j.createProject(MavenModuleSet.class, "mp");
-        project.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod-failure.zip")));
+        project.setScm(new FolderResourceSCM("src/test/projects/maven-multimod-failure"));
         // Without the parallel option it is correctly failing
         project.setGoals("test");
+        decorateProject(project);
         j.assertBuildStatus(Result.FAILURE, project.scheduleBuild2(0).get());
         // With the parallel option it was previously reported as aborted
         project.setGoals("test -T 2");
@@ -533,7 +551,7 @@ public class MavenMultiModuleTest {
         }
     }
     public static final class TestAM extends ArtifactManager {
-        static final Map</* module name */String,Map</* archive path */String,/* file in workspace */FilePath>> archivings = new TreeMap<String,Map<String,FilePath>>();
+        static final Map</* module name */String,Map</* archive path */String,/* file in workspace */FilePath>> archivings = new TreeMap<>();
         transient Run<?,?> build;
         TestAM(Run<?,?> build) {
             onLoad(build);
@@ -547,7 +565,7 @@ public class MavenMultiModuleTest {
                 // Would be legitimate only if some archived files for a given module were outside workspace, such as repository parent POM, *and* others were inside, which is not the case in this test.
                 throw new IOException("repeated archiving to " + name);
             }
-            Map<String,FilePath> m = new TreeMap<String,FilePath>();
+            Map<String,FilePath> m = new TreeMap<>();
             for (Map.Entry<String,String> e : artifacts.entrySet()) {
                 FilePath f = workspace.child(e.getValue());
                 if (f.exists()) {
