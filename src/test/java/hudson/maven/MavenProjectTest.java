@@ -23,6 +23,7 @@
  */
 package hudson.maven;
 
+import hudson.FilePath;
 import hudson.maven.local_repo.DefaultLocalRepositoryLocator;
 import hudson.maven.local_repo.PerJobLocalRepositoryLocator;
 import hudson.model.AbstractProject;
@@ -88,7 +89,16 @@ public class MavenProjectTest {
         MavenInstallation mi = ToolInstallations.configureMaven35();
         project.setScm(new FolderResourceSCM("src/test/projects/"+scmResource));
         project.setMaven(mi.getName());
-        project.setLocalRepository(new PerJobLocalRepositoryLocator());
+        //project.setLocalRepository(new PerJobLocalRepositoryLocator());
+        //project.setLocalRepository( new DefaultLocalRepositoryLocator());
+//        project.setLocalRepository( new DefaultLocalRepositoryLocator() {
+//            @Override
+//            public FilePath locate( AbstractMavenBuild build )
+//            {
+//                 return new FilePath(new File(System.getProperty( "localRepository")));
+//            }
+//        });
+        project.setLocalRepository( new TestLocalRepositoryLocator(System.getProperty( "localRepository")) );
         return project;
     }
 
