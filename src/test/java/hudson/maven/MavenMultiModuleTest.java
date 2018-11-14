@@ -49,12 +49,14 @@ public class MavenMultiModuleTest {
 
     @Rule public JenkinsRule j = new MavenJenkinsRule();
 
+    String MAVEN_3_5_VERSION = "apache-maven-3.5.0";
+
     /**
      * NPE in {@code build.getProject().getWorkspace()} for {@link MavenBuild}.
      */
     @Bug(4192)
     @Test public void multiModMavenWsExists() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
@@ -65,7 +67,7 @@ public class MavenMultiModuleTest {
     @Bug(18846)
     @Test public void symlinksUpdated() throws Exception {
         Assume.assumeFalse(Functions.isWindows());
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         j.buildAndAssertSuccess(mms);
@@ -85,7 +87,7 @@ public class MavenMultiModuleTest {
         assertTrue(permalinks(mm).containsAll(Arrays.asList("lastBuild", "lastStableBuild", "lastSuccessfulBuild")));
     }
     private static Set<String> permalinks(Job<?,?> j) {
-        Set<String> r = new TreeSet<String>();
+        Set<String> r = new TreeSet<>();
         for (PermalinkProjectAction.Permalink l : j.getPermalinks()) {
             if (l.resolve(j) != null) {
                 r.add(l.getId());
@@ -95,7 +97,7 @@ public class MavenMultiModuleTest {
     }
 
     @Test public void incrementalMultiModMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.getReporters().add(new MavenFingerprinter());
@@ -170,7 +172,7 @@ public class MavenMultiModuleTest {
 
     @Bug(5357)
     @Test public void incrRelMultiModMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
@@ -214,7 +216,7 @@ public class MavenMultiModuleTest {
     @Ignore("kutzi 10/10/11 ignore test until I can figure out why it fails sometimes")
     @Test public void estimatedDurationForIncrementalMultiModMaven()
             throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceWithChangesSCM( "src/test/projects/maven-multimod",
@@ -246,7 +248,7 @@ public class MavenMultiModuleTest {
      * enabled and a new module is added.
      */
     @Test public void newModMultiModMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceWithChangesSCM( "src/test/projects/maven-multimod",
@@ -261,7 +263,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4491)
     @Test public void multiModMavenNonRecursiveParsing() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install -N");
         m.getReporters().add(new TestReporter());
@@ -296,7 +298,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4152)
     @Test public void incrementalMultiModWithErrorsMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
@@ -359,7 +361,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(5121)
     @Test public void incrementalRedeployAfterAggregatorError() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
@@ -422,7 +424,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4378)
     @Test public void multiModWithTestFailuresMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod-incr"));
@@ -452,7 +454,7 @@ public class MavenMultiModuleTest {
     
     @Bug(8484)
     @Test public void multiModMavenNonRecursive() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
@@ -479,7 +481,7 @@ public class MavenMultiModuleTest {
     @Bug(17236)
     @Test public void artifactArchiving() throws Exception {
         ArtifactManagerConfiguration.get().getArtifactManagerFactories().add(new TestAMF());
-        ToolInstallations.configureDefaultMaven(); // using Maven 2 so we can test single-module builds
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setScm(new FolderResourceSCM("src/test/projects/maven-multimod"));
         mms.setAssignedNode(j.createOnlineSlave());
@@ -513,7 +515,7 @@ public class MavenMultiModuleTest {
     @Issue("JENKINS-24832")
     @Test
     public void testMultiModulesFailureWithParallelThreads() throws Exception {
-        ToolInstallations.configureMaven3();
+        ToolInstallations.configureDefaultMaven(MAVEN_3_5_VERSION, MavenInstallation.MAVEN_30);
         MavenModuleSet project = j.createProject(MavenModuleSet.class, "mp");
         project.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod-failure.zip")));
         // Without the parallel option it is correctly failing
