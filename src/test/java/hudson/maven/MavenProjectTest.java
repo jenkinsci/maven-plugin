@@ -39,7 +39,6 @@ import jenkins.mvn.GlobalMavenConfig;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 
@@ -81,14 +80,13 @@ public class MavenProjectTest {
     }
 
     private MavenModuleSet createSimpleProject() throws Exception {
-        return createProject("/simple-projects.zip");
+        return createProject("/simple-projects");
     }
 
     private MavenModuleSet createProject(final String scmResource) throws Exception {
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
-        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
-        project.setScm(new ExtractResourceSCM(getClass().getResource(
-                scmResource)));
+        MavenInstallation mi = ToolInstallations.configureMaven35();
+        project.setScm(new FolderResourceSCM("src/test/projects/"+scmResource));
         project.setMaven(mi.getName());
         project.setLocalRepository(new PerJobLocalRepositoryLocator());
         return project;
@@ -125,7 +123,7 @@ public class MavenProjectTest {
      */
     @Test
     public void testMultiModuleSiteBuild() throws Exception {
-        MavenModuleSet project = createProject("maven-multimodule-site.zip");
+        MavenModuleSet project = createProject("maven-multimodule-site");
         project.setGoals("site");
 
         try {
@@ -154,7 +152,7 @@ public class MavenProjectTest {
 
     @Test
     public void testNestedMultiModuleSiteBuild() throws Exception {
-        MavenModuleSet project = createProject("maven-nested-multimodule-site.zip");
+        MavenModuleSet project = createProject("maven-nested-multimodule-site");
         project.setGoals("site");
 
         try {
@@ -179,7 +177,7 @@ public class MavenProjectTest {
     @Bug(5943)
     @Test
     public void testMultiModuleSiteBuildOnSlave() throws Exception {
-        MavenModuleSet project = createProject("maven-multimodule-site.zip");
+        MavenModuleSet project = createProject("maven-multimodule-site");
         project.setGoals("site");
         project.setAssignedLabel(jenkins.createSlave().getSelfLabel());
 
@@ -199,7 +197,7 @@ public class MavenProjectTest {
     @Bug(6779)
     @Test
     public void testDeleteSetBuildDeletesModuleBuilds() throws Exception {
-        MavenModuleSet project = createProject("maven-multimod.zip");
+        MavenModuleSet project = createProject("maven-multimod");
         project.setLocalRepository(new DefaultLocalRepositoryLocator());
         project.setGoals("install");
         jenkins.buildAndAssertSuccess(project);
@@ -217,7 +215,7 @@ public class MavenProjectTest {
     public void testAbsolutePathPom() throws Exception {
         File pom = new File(this.getClass().getResource("test-pom-7162.xml").toURI());
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
-        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
+        MavenInstallation mi = ToolInstallations.configureMaven35();
         project.setMaven(mi.getName());
         project.setRootPOM(pom.getAbsolutePath());
         project.setGoals("install");
@@ -228,7 +226,7 @@ public class MavenProjectTest {
     @Test
     public void testCorrectResultInPostStepAfterFailedPreBuildStep() throws Exception {
         MavenModuleSet p = createSimpleProject();
-        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
+        MavenInstallation mi = ToolInstallations.configureMaven35();
         p.setMaven(mi.getName());
         p.setGoals("initialize");
         
@@ -282,13 +280,18 @@ public class MavenProjectTest {
         {
             GlobalMavenConfig globalMavenConfig = GlobalMavenConfig.get();
             assertNotNull("No global Maven Config available", globalMavenConfig);
-            globalMavenConfig.setSettingsProvider(new FilePathSettingsProvider("/tmp/settigns.xml"));
-            globalMavenConfig.setGlobalSettingsProvider(new FilePathGlobalSettingsProvider("/tmp/global-settigns.xml"));
+
+            globalMavenConfig.setSettingsProvider(new FilePathSettingsProvider(System.getProperty( "java.io.tmpdir" )
+                                                                                   + "/settigns.xml"));
+            globalMavenConfig.setGlobalSettingsProvider(new FilePathGlobalSettingsProvider(System.getProperty( "java.io.tmpdir" )
+                                                                                               + "/global-settigns.xml"));
             
             MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p2");
             assertEquals(FilePathSettingsProvider.class, m.getSettings().getClass());
-            assertEquals("/tmp/settigns.xml", ((FilePathSettingsProvider)m.getSettings()).getPath());
-            assertEquals("/tmp/global-settigns.xml", ((FilePathGlobalSettingsProvider)m.getGlobalSettings()).getPath());
+            assertEquals(System.getProperty( "java.io.tmpdir" ) + "/settigns.xml",
+                         ((FilePathSettingsProvider)m.getSettings()).getPath());
+            assertEquals(System.getProperty( "java.io.tmpdir" ) + "/global-settigns.xml",
+                         ((FilePathGlobalSettingsProvider)m.getGlobalSettings()).getPath());
         }
     }
 }
