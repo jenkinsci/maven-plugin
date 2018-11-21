@@ -87,7 +87,7 @@ public final class MavenProbeAction implements Action {
         
         if (build != null) {
             final Set<String> sensitiveBuildVars = build.getSensitiveBuildVariables();
-            props = new TreeMap<Object, Object>(Maps.transformEntries(props,
+            props = new TreeMap<>(Maps.transformEntries(props,
                 new Maps.EntryTransformer<Object, Object, Object>() {
                     public Object transformEntry(Object key, Object value) {
                         return sensitiveBuildVars.contains(key.toString()) ? "********" : value;

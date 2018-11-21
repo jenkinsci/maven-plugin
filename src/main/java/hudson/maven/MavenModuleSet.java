@@ -1020,7 +1020,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 	
     private List<String> getMavenArgument(String shortForm, String longForm) {
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         boolean switchFound=false;
         for (String t : Util.tokenize(getGoals())) {
             if(switchFound) {
@@ -1164,7 +1164,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 
     private List<Queue.Item> filter(Collection<Queue.Item> base) {
-        List<Queue.Item> r = new ArrayList<Queue.Item>();
+        List<Queue.Item> r = new ArrayList<>();
         for( Queue.Item item : base) {
             Task t = item.task;
             if((t instanceof MavenModule && ((MavenModule)t).getParent()==this) || t ==this)
@@ -1313,7 +1313,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         /**
          * @since 1.394
          */
-        private Map<String, Integer> mavenValidationLevels = new LinkedHashMap<String, Integer>();
+        private Map<String, Integer> mavenValidationLevels = new LinkedHashMap<>();
 
         /**
          * @since 1.448

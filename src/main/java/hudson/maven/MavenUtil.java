@@ -40,7 +40,6 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.cli.logging.Slf4jLoggerManager;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
-import org.codehaus.plexus.PlexusConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -241,7 +240,7 @@ public class MavenUtil {
         File basedir = project.getFile().getParentFile();
         relativePathInfo.put( project, rel );
 
-        List<MavenProject> modules = new ArrayList<MavenProject>();
+        List<MavenProject> modules = new ArrayList<>();
 
         if ( !nonRecursive ) {
             for ( String modulePath : project.getModules()) {

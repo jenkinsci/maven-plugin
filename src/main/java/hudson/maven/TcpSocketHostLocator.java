@@ -2,7 +2,6 @@ package hudson.maven;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import jenkins.model.Jenkins;
 
 import javax.annotation.CheckForNull;
 import java.io.IOException;
