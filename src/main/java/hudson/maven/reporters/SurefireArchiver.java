@@ -330,7 +330,7 @@ public class SurefireArchiver extends TestFailureDetector {
     // I'm not sure if SurefireArchiver is actually ever (de-)serialized,
     // but just to be sure, set fileSets here
     protected Object readResolve() {
-        parsedFiles = new ConcurrentHashMap<File, Long>();
+        parsedFiles = new ConcurrentHashMap<>();
         return this;
     }
 

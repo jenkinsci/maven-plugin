@@ -170,32 +170,32 @@ public class MavenArtifactRecord extends MavenAbstractArtifactRecord<MavenBuild>
         ArtifactDeployer deployer;
         MavenArtifact.CloseableArtifact mainC = mainArtifact.toCloseableArtifact(handlerManager, artifactFactory, parent);
         try {
-        Artifact main = mainC.get();
-        MavenArtifact.TemporaryFile pomFile = null;
-        if (!isPOM()) {
-            pomFile = pomArtifact.getTemporaryFile(parent);
-            main.addMetadata(new ProjectArtifactMetadata(main, pomFile.getFile()));
-        }
-        try {
-        if (main.getType().equals("maven-plugin")) {
-            GroupRepositoryMetadata metadata = new GroupRepositoryMetadata(main.getGroupId());
-            String goalPrefix = PluginDescriptor.getGoalPrefixFromArtifactId(main.getArtifactId());
-            metadata.addPluginMapping(goalPrefix, main.getArtifactId(), null);
-            main.addMetadata(metadata);
-        }
-
-        deployer = embedder.lookup(ArtifactDeployer.class, uniqueVersion ? "default" : "maven2");
-        logger.println(
-                "[INFO] Deployment in " + deploymentRepository.getUrl() + " (id=" + deploymentRepository.getId() + ",uniqueVersion=" + deploymentRepository.isUniqueVersion()+")");
-
-        // deploy the main artifact. This also deploys the POM
-        logger.println(Messages.MavenArtifact_DeployingMainArtifact(main.getFile().getName()));
-        deployer.deploy(main.getFile(), main, deploymentRepository, embedder.getLocalRepository());
-        } finally {
-            if (pomFile != null) {
-                pomFile.close();
+            Artifact main = mainC.get();
+            MavenArtifact.TemporaryFile pomFile = null;
+            if (!isPOM()) {
+                pomFile = pomArtifact.getTemporaryFile(parent);
+                main.addMetadata(new ProjectArtifactMetadata(main, pomFile.getFile()));
             }
-        }
+            try {
+                if (main.getType().equals("maven-plugin")) {
+                    GroupRepositoryMetadata metadata = new GroupRepositoryMetadata(main.getGroupId());
+                    String goalPrefix = PluginDescriptor.getGoalPrefixFromArtifactId(main.getArtifactId());
+                    metadata.addPluginMapping(goalPrefix, main.getArtifactId(), null);
+                    main.addMetadata(metadata);
+                }
+
+                deployer = embedder.lookup(ArtifactDeployer.class, uniqueVersion ? "default" : "maven2");
+                logger.println(
+                        "[INFO] Deployment in " + deploymentRepository.getUrl() + " (id=" + deploymentRepository.getId() + ",uniqueVersion=" + deploymentRepository.isUniqueVersion()+")");
+
+                // deploy the main artifact. This also deploys the POM
+                logger.println(Messages.MavenArtifact_DeployingMainArtifact(main.getFile().getName()));
+                deployer.deploy(main.getFile(), main, deploymentRepository, embedder.getLocalRepository());
+            } finally {
+                if (pomFile != null) {
+                    pomFile.close();
+                }
+            }
         } finally {
             mainC.close();
         }

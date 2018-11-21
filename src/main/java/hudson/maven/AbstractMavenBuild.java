@@ -98,11 +98,7 @@ public abstract class AbstractMavenBuild<P extends AbstractMavenProject<P,B>,B e
             return (String) expandMethod.invoke( null, this, listener, str );
             //opts = TokenMacro.expand(this, listener, opts);
         }
-        catch(Exception tokenException) {
-            //Token plugin not present. Ignore, this is OK.
-            LOGGER.log(Level.FINE, "Ignore problem in expanding tokens", tokenException);
-        }
-        catch(LinkageError linkageError) {
+        catch(Exception | LinkageError linkageError) {
             // Token plugin not present. Ignore, this is OK.
             LOGGER.log(Level.FINE, "Ignore problem in expanding tokens", linkageError);
         }
