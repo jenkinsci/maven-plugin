@@ -86,12 +86,12 @@ final class PomInfo implements Serializable {
      *
      * See Maven's ProjectSorter class for the definition of the 'dependencies' in Maven.
      */
-    public final Set<ModuleDependency> dependencies = new HashSet<ModuleDependency>();
+    public final Set<ModuleDependency> dependencies = new HashSet<>();
 
     /**
      * Children of this module.
      */
-    public final List<ModuleName> children = new ArrayList<ModuleName>();
+    public final List<ModuleName> children = new ArrayList<>();
 
     /**
      * The default goal specified in POM or null.
@@ -177,7 +177,7 @@ final class PomInfo implements Serializable {
         CiManagement ciMgmt = project.getCiManagement();
         if ((ciMgmt != null) && (ciMgmt.getSystem()==null || ciMgmt.getSystem().equals("hudson"))) {
             Notifier mailNotifier = null;
-            for (Notifier n : (List<Notifier>)ciMgmt.getNotifiers()) {
+            for (Notifier n : ciMgmt.getNotifiers()) {
                 if (n.getType().equals("mail")) {
                     mailNotifier = n;
                     break;

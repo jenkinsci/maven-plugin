@@ -247,13 +247,13 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
     public void registerAsProjectAction(MavenReporter reporter) {
         if(projectActionReporters==null)
-            projectActionReporters = new ArrayList<MavenProjectActionBuilder>();
+            projectActionReporters = new ArrayList<>();
         projectActionReporters.add(reporter);
     }
 
     public void registerAsProjectAction(MavenProjectActionBuilder builder) {
         if(projectActionReporters==null)
-            projectActionReporters = new ArrayList<MavenProjectActionBuilder>();
+            projectActionReporters = new ArrayList<>();
         projectActionReporters.add(builder);
     }
 
@@ -446,7 +446,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
     class ProxyImpl implements MavenBuildProxy, Serializable {
         private static final long serialVersionUID = 8865133776526671879L;
 
-        private final Map<String,String> artifacts = new LinkedHashMap<String,String>();
+        private final Map<String,String> artifacts = new LinkedHashMap<>();
 
         public <V, T extends Throwable> V execute(BuildCallable<V, T> program) throws T, IOException, InterruptedException {
             return program.call(MavenBuild.this);
@@ -495,7 +495,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             }
             ArtifactManager am = pickArtifactManager();
             FilePath ws = getWorkspace();
-            Map<String,String> artifactsInsideWorkspace = new LinkedHashMap<String,String>();
+            Map<String,String> artifactsInsideWorkspace = new LinkedHashMap<>();
             String prefix = ws.act(new CanonicalPath()) + '/'; // try to relativize paths to workspace
             Iterator<Map.Entry<String,String>> it = artifacts.entrySet().iterator();
             while (it.hasNext()) {
@@ -956,7 +956,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             request.modules = Collections.singleton(module);
             request.goals = goals;
             request.systemProps = systemProps;
-            request.proxies = new HashMap<ModuleName, ProxyImpl2>();
+            request.proxies = new HashMap<>();
             request.proxies.put(module.getModuleName(), buildProxy);
             request.mavenBuildInformation = mavenBuildInformation;
             request.supportEventSpy = MavenUtil.supportEventSpy(mavenVersion);

@@ -366,11 +366,11 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
         MavenExecutionListener(Maven3Builder maven3Builder) {
             this.maven3Builder = maven3Builder;
-            this.proxies = new ConcurrentHashMap<ModuleName, FilterImpl>(maven3Builder.proxies);
+            this.proxies = new ConcurrentHashMap<>(maven3Builder.proxies);
             for (ModuleName name : this.proxies.keySet()) {
                 executedMojosPerModule.put( name, new CopyOnWriteArrayList<ExecutedMojo>() );
             }
-            this.reporters = new ConcurrentHashMap<ModuleName, List<MavenReporter>>(maven3Builder.reporters);
+            this.reporters = new ConcurrentHashMap<>(maven3Builder.reporters);
 
 
             // E.g. there's also the option to redirect logging to a file which is handled there, but not here.
@@ -480,7 +480,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
         private Map<ModuleName, MavenProject> getSessionProjects(ExecutionEvent event) {
             List<MavenProject> projects = event.getSession().getProjects();
             debug("Projects to build: " + projects);
-            Map<ModuleName,MavenProject> buildingProjects = new HashMap<ModuleName,MavenProject>();
+            Map<ModuleName,MavenProject> buildingProjects = new HashMap<>();
             for (MavenProject p : projects) {
                 buildingProjects.put(new ModuleName(p), p);
             }
@@ -648,7 +648,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             MavenProject p = event.getProject();
             List<ExecutedMojo> m = executedMojosPerModule.get(new ModuleName(p));
             if (m==null)    // defensive check
-                executedMojosPerModule.put(new ModuleName(p), m=new CopyOnWriteArrayList<ExecutedMojo>());
+                executedMojosPerModule.put(new ModuleName(p), m=new CopyOnWriteArrayList<>());
 
             Long startTime = getMojoStartTime( event.getProject() );
             m.add(new ExecutedMojo( mojoInfo, startTime == null ? 0 : System.currentTimeMillis() - startTime ));

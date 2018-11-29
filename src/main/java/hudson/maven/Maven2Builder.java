@@ -54,7 +54,7 @@ import org.apache.maven.project.MavenProject;
  */
 @SuppressWarnings("deprecation") // as we're restricted to Maven 2.x API here, but compile against Maven 3.x, we cannot avoid deprecations
 final class Maven2Builder extends MavenBuilder {
-    private final Map<ModuleName,List<ExecutedMojo>> executedMojos = new HashMap<ModuleName,List<ExecutedMojo>>();
+    private final Map<ModuleName,List<ExecutedMojo>> executedMojos = new HashMap<>();
     private long mojoStartTime;
 
     private MavenBuildProxy2 lastProxy;
@@ -64,7 +64,7 @@ final class Maven2Builder extends MavenBuilder {
     public Maven2Builder(BuildListener listener,Map<ModuleName,ProxyImpl2> proxies, Collection<MavenModule> modules, List<String> goals, Map<String,String> systemProps,  MavenBuildInformation mavenBuildInformation) {
         super(listener,modules,goals,systemProps);
         this.sourceProxies.putAll(proxies);
-        this.proxies = new HashMap<ModuleName, FilterImpl>();
+        this.proxies = new HashMap<>();
         for (Entry<ModuleName,ProxyImpl2> e : this.sourceProxies.entrySet()) {
             this.proxies.put(e.getKey(), new FilterImpl(e.getValue(), mavenBuildInformation));
         }
@@ -89,7 +89,7 @@ final class Maven2Builder extends MavenBuilder {
         // set all modules which are not actually being build (in incremental builds) to NOT_BUILD
         
         List<MavenProject> projects = rm.getSortedProjects();
-        Set<ModuleName> buildingProjects = new HashSet<ModuleName>();
+        Set<ModuleName> buildingProjects = new HashSet<>();
         for (MavenProject p : projects) {
             buildingProjects.add(new ModuleName(p));
         }
@@ -149,7 +149,7 @@ final class Maven2Builder extends MavenBuilder {
 
         List<ExecutedMojo> mojoList = executedMojos.get(name);
         if(mojoList==null)
-            executedMojos.put(name,mojoList=new ArrayList<ExecutedMojo>());
+            executedMojos.put(name,mojoList=new ArrayList<>());
         mojoList.add(new ExecutedMojo(mojoInfo,System.currentTimeMillis()-mojoStartTime));
 
         MavenBuildProxy2 proxy = proxies.get(name);

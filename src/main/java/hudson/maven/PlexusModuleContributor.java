@@ -53,7 +53,7 @@ public abstract class PlexusModuleContributor implements Serializable {
      * These jar files must represent the files on the computer on which Maven process is running.
      */
     public static PlexusModuleContributor of(List<FilePath> jars) {
-        final List<String> files = new ArrayList<String>(jars.size());
+        final List<String> files = new ArrayList<>(jars.size());
         for (FilePath jar : jars) {
             files.add(jar.getRemote());
         }
@@ -72,7 +72,7 @@ public abstract class PlexusModuleContributor implements Serializable {
         @Override
         public List<URL> getPlexusComponentJars() {
             try {
-                List<URL> r = new ArrayList<URL>(files.size());
+                List<URL> r = new ArrayList<>(files.size());
                 for (String file : files) {
                     r.add(new File(file).toURI().toURL());
                 }

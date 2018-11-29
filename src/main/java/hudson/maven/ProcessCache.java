@@ -178,11 +178,11 @@ public final class ProcessCache {
         /**
          * Cached processes.
          */
-        private final LinkedList<MavenProcess> processes = new LinkedList<MavenProcess>();
+        private final LinkedList<MavenProcess> processes = new LinkedList<>();
     }
 
     // use WeakHashMap to avoid keeping VirtualChannel in memory.
-    private final Map<VirtualChannel,PerChannel> cache = new WeakHashMap<VirtualChannel,PerChannel>();
+    private final Map<VirtualChannel,PerChannel> cache = new WeakHashMap<>();
     private final int maxProcess;
 
     /**

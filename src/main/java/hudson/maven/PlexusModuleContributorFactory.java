@@ -47,7 +47,7 @@ public abstract class PlexusModuleContributorFactory implements ExtensionPoint {
      */
     public static PlexusModuleContributor aggregate(AbstractBuild<?,?> context) throws IOException, InterruptedException {
         // capture in a serializable form
-        final List<PlexusModuleContributor> all = new ArrayList<PlexusModuleContributor>();
+        final List<PlexusModuleContributor> all = new ArrayList<>();
         for (PlexusModuleContributorFactory pmcf : all()) {
             PlexusModuleContributor pmc = pmcf.createFor(context);
             if (pmc!=null)
@@ -67,7 +67,7 @@ public abstract class PlexusModuleContributorFactory implements ExtensionPoint {
 
         @Override
         public List<URL> getPlexusComponentJars() {
-            List<URL> urls = new ArrayList<URL>();
+            List<URL> urls = new ArrayList<>();
             for (PlexusModuleContributor pc : all) {
                 urls.addAll(pc.getPlexusComponentJars());
             }

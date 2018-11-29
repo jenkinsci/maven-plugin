@@ -45,7 +45,7 @@ public class MavenBuildInformation implements Serializable {
      * @see Model#getParent
      * @since 1.515
      */
-    public final Map<String,String> modelParents = new HashMap<String,String>();
+    public final Map<String,String> modelParents = new HashMap<>();
     
     public MavenBuildInformation(String mavenVersion) {
         this.mavenVersion = mavenVersion;

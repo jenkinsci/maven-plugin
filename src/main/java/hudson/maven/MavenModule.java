@@ -77,8 +77,7 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> implements Saveable {
-    private DescribableList<MavenReporter,Descriptor<MavenReporter>> reporters =
-        new DescribableList<MavenReporter,Descriptor<MavenReporter>>(this);
+    private DescribableList<MavenReporter,Descriptor<MavenReporter>> reporters = new DescribableList<>(this);
 
 
     /**
@@ -281,13 +280,13 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
     public void onLoad(ItemGroup<? extends Item> parent, String name) throws IOException {
         super.onLoad(parent,name);
         if(reporters==null)
-            reporters = new DescribableList<MavenReporter, Descriptor<MavenReporter>>(this);
+            reporters = new DescribableList<>(this);
         reporters.setOwner(this);
         if(dependencies==null)
             dependencies = Collections.emptySet();
         else {
             // Until 1.207, we used to have ModuleName in dependencies. So convert.
-            Set<ModuleDependency> deps = new HashSet<ModuleDependency>(dependencies.size());
+            Set<ModuleDependency> deps = new HashSet<>(dependencies.size());
             for (Object d : (Set<?>)dependencies) {
                 if (d instanceof ModuleDependency) {
                     deps.add((ModuleDependency) d);
@@ -372,7 +371,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
 
     public DescribableList<Publisher,Descriptor<Publisher>> getPublishersList() {
         // TODO
-        return new DescribableList<Publisher,Descriptor<Publisher>>(this);
+        return new DescribableList<>(this);
     }
 
     @Override
@@ -505,7 +504,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         // ONLY if we find a such an old MavenModule in this Jenkins instance.
         final boolean hasDependenciesWithUnknownVersion = hasDependenciesWithUnknownVersion();
         if (data == null) {
-            Map<ModuleDependency,MavenModule> modules = new HashMap<ModuleDependency,MavenModule>();
+            Map<ModuleDependency,MavenModule> modules = new HashMap<>();
     
             for (MavenModule m : getAllMavenModules()) {
                 if(!m.isBuildable() || m.getParent().isDisableTriggerDownstreamProjects())  continue;
@@ -686,9 +685,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
          * All {@link MavenModule}s in this Jenkins, keyed by their {@link MavenModule#asDependency()}.
          */
         private final Map<ModuleDependency,MavenModule> allModules;
-        
-        //Map<MavenModuleSet, Map<ModuleDependency,MavenModule>> modulesPerParent = new HashMap<MavenModuleSet, Map<ModuleDependency,MavenModule>>();
-        
+
         public MavenDependencyComputationData(Map<ModuleDependency, MavenModule> modules) {
             this.allModules = modules;
         }
@@ -760,7 +757,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
      * Creates a list of {@link MavenReporter}s to be used for a build of this project.
      */
     protected List<MavenReporter> createReporters() {
-    	Set<MavenReporter> reporterSet = new TreeSet<MavenReporter>(new Comparator<MavenReporter>() {
+    	Set<MavenReporter> reporterSet = new TreeSet<>(new Comparator<MavenReporter>() {
 			@Override
 			public int compare(MavenReporter o1, MavenReporter o2) {
 				if (o1.getClass() == o2.getClass()) {
@@ -790,7 +787,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
      * @since 2.2
      */
     public Set<ModuleDependency> getDependencies() {
-        return new HashSet<ModuleDependency>( dependencies);
+        return new HashSet<>( dependencies);
     }
 
     /**

@@ -817,8 +817,8 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         // update the transient nest level field.
         MavenModule root = getRootModule();
         if(root!=null && root.getChildren()!=null) {
-            List<MavenModule> sortedList = new ArrayList<MavenModule>();
-            Stack<MavenModule> q = new Stack<MavenModule>();
+            List<MavenModule> sortedList = new ArrayList<>();
+            Stack<MavenModule> q = new Stack<>();
             root.nestLevel = 0;
             q.push(root);
             while(!q.isEmpty()) {
@@ -847,23 +847,23 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         }
 
         if(reporters==null){
-            reporters = new DescribableList<MavenReporter, Descriptor<MavenReporter>>(this);
+            reporters = new DescribableList<>(this);
         }
         reporters.setOwner(this);
         if(publishers==null){
-            publishers = new DescribableList<Publisher,Descriptor<Publisher>>(this);
+            publishers = new DescribableList<>(this);
         }
         publishers.setOwner(this);
         if(buildWrappers==null){
-            buildWrappers = new DescribableList<BuildWrapper, Descriptor<BuildWrapper>>(this);
+            buildWrappers = new DescribableList<>(this);
         }
         buildWrappers.setOwner(this);
         if(prebuilders==null){
-        	prebuilders = new DescribableList<Builder,Descriptor<Builder>>(this);
+        	prebuilders = new DescribableList<>(this);
         }
         prebuilders.setOwner(this);
         if(postbuilders==null){
-        	postbuilders = new DescribableList<Builder,Descriptor<Builder>>(this);
+        	postbuilders = new DescribableList<>(this);
         }
         postbuilders.setOwner(this);
         
@@ -1020,7 +1020,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 	
     private List<String> getMavenArgument(String shortForm, String longForm) {
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         boolean switchFound=false;
         for (String t : Util.tokenize(getGoals())) {
             if(switchFound) {
@@ -1164,7 +1164,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 
     private List<Queue.Item> filter(Collection<Queue.Item> base) {
-        List<Queue.Item> r = new ArrayList<Queue.Item>();
+        List<Queue.Item> r = new ArrayList<>();
         for( Queue.Item item : base) {
             Task t = item.task;
             if((t instanceof MavenModule && ((MavenModule)t).getParent()==this) || t ==this)
@@ -1313,7 +1313,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         /**
          * @since 1.394
          */
-        private Map<String, Integer> mavenValidationLevels = new LinkedHashMap<String, Integer>();
+        private Map<String, Integer> mavenValidationLevels = new LinkedHashMap<>();
 
         /**
          * @since 1.448

@@ -157,7 +157,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
      * Records of a deployment.
      */
     @Exported
-    public final CopyOnWriteArrayList<Record> records = new CopyOnWriteArrayList<Record>();
+    public final CopyOnWriteArrayList<Record> records = new CopyOnWriteArrayList<>();
 
     /**
      * Gets the parent build object to which this record is registered.

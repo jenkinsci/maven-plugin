@@ -199,9 +199,9 @@ public final class ExecutedMojo implements Serializable {
 
     public String getGoalLink(Cache c) {
         if(groupId.equals("org.apache.maven.plugins"))
-            return "http://maven.apache.org/plugins/"+artifactId+'/'+goal+"-mojo.html";
+            return "https://maven.apache.org/plugins/"+artifactId+'/'+goal+"-mojo.html";
         if (groupId.equals("org.codehaus.mojo"))
-            return "http://mojo.codehaus.org/"+artifactId+'/'+goal+"-mojo.html";
+            return "https://mojohaus.org/"+artifactId+'/'+goal+"-mojo.html";
         return null;
     }
 
