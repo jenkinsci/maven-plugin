@@ -135,10 +135,7 @@ public class SurefireArchiver extends TestFailureDetector {
                 if(result==null)    result = new TestResult();
                 
                 // filter all the already parsed files:
-                fileSet = Iterables.filter(fileSet, new Predicate<File>(){
-                    public boolean apply(File input) {
-                        return !parsedFiles.containsKey(input) || parsedFiles.get(input) != input.lastModified();
-                }});
+                fileSet = Iterables.filter(fileSet, new SurefireArchiverPredicate(parsedFiles));
                 
                 if (!fileSet.iterator().hasNext())
                     return true;
@@ -155,20 +152,7 @@ public class SurefireArchiver extends TestFailureDetector {
                 // final reference in order to serialize it:
                 final TestResult r = result;
                 
-                int failCount = build.execute( new BuildCallable<Integer, IOException>() {
-                    private static final long serialVersionUID = 1L;
-                    public Integer call(MavenBuild build) throws IOException, InterruptedException {
-                        SurefireReport sr = build.getAction(SurefireReport.class);
-                        if(sr==null)
-                            build.addAction(new SurefireReport(build, r, listener));
-                        else
-                            sr.setResult(r,listener);
-                        if(r.getFailCount()>0)
-                            build.setResult(Result.UNSTABLE);
-                        build.registerAsProjectAction(new FactoryImpl());
-                        return r.getFailCount();
-                    }
-                });
+                int failCount = build.execute( new SurefireArchiverBuildCallable(r, listener));
                 
                 // if surefire plugin is going to kill maven because of a test failure,
                 // intercept that (or otherwise build will be marked as failure)
@@ -186,24 +170,37 @@ public class SurefireArchiver extends TestFailureDetector {
         private TestResult r;
         private BuildListener listener;
 
+        private static final long serialVersionUID = -1023888330720922136L;
+
         public SurefireArchiverBuildCallable( TestResult r, BuildListener listener )
         {
             this.r = r;
             this.listener = listener;
         }
 
-        private static final long serialVersionUID = -1023888330720922136L;
-
         public Integer call(MavenBuild build) throws java.io.IOException, InterruptedException {
             SurefireReport sr = build.getAction(SurefireReport.class);
             if(sr==null)
-                build.addAction(new SurefireReport(build, r, listener));
+                build.getActions().add(new SurefireReport(build, r, listener));
             else
                 sr.setResult(r,listener);
             if(r.getFailCount()>0)
                 build.setResult(Result.UNSTABLE);
             build.registerAsProjectAction(new FactoryImpl());
             return r.getFailCount();
+        }
+    }
+
+    private static class SurefireArchiverPredicate implements Predicate<File> {
+        private final transient ConcurrentMap<File, Long> parsedFiles;
+        private static final long serialVersionUID = -1L;
+
+        public SurefireArchiverPredicate( ConcurrentMap<File, Long> parsedFiles ) {
+            this.parsedFiles = parsedFiles;
+        }
+
+        public boolean apply( File input) {
+            return !parsedFiles.containsKey(input) || parsedFiles.get(input) != input.lastModified();
         }
     }
 
