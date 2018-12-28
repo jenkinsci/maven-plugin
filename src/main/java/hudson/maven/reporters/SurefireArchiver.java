@@ -135,7 +135,10 @@ public class SurefireArchiver extends TestFailureDetector {
                 if(result==null)    result = new TestResult();
                 
                 // filter all the already parsed files:
-                fileSet = Iterables.filter(fileSet, new SurefireArchiverPredicate(this.parsedFiles));
+                fileSet = Iterables.filter(fileSet, new Predicate<File>(){
+                    public boolean apply(File input) {
+                        return !parsedFiles.containsKey(input) || parsedFiles.get(input) != input.lastModified();
+                }});
                 
                 if (!fileSet.iterator().hasNext())
                     return true;
@@ -165,21 +168,7 @@ public class SurefireArchiver extends TestFailureDetector {
 
         return true;
     }
-
-    private static class SurefireArchiverPredicate implements Predicate<File> {
-        private static final long serialVersionUID = -1L;
-        private ConcurrentMap<File, Long> parsedFiles;
-
-        public SurefireArchiverPredicate( ConcurrentMap<File, Long> parsedFiles ) {
-            this.parsedFiles = parsedFiles;
-        }
-
-        @Override
-        public boolean apply(File input) {
-            return !parsedFiles.containsKey(input) || parsedFiles.get(input) != input.lastModified();
-        }
-    }
-
+    
     private static class SurefireArchiverBuildCallable implements BuildCallable<Integer, IOException> {
         private TestResult r;
         private BuildListener listener;
