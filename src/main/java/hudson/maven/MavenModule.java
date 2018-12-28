@@ -753,19 +753,21 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         getParent().onModuleDeleted( this );
     }
 
+    private static final Comparator COMPARATOR = new Comparator<MavenReporter>() {
+        @Override
+        public int compare(MavenReporter o1, MavenReporter o2) {
+            if (o1.getClass() == o2.getClass()) {
+                return 0;
+            }
+            return 1;
+        }
+    };
+
     /**
      * Creates a list of {@link MavenReporter}s to be used for a build of this project.
      */
     protected List<MavenReporter> createReporters() {
-    	Set<MavenReporter> reporterSet = new TreeSet<>(new Comparator<MavenReporter>() {
-			@Override
-			public int compare(MavenReporter o1, MavenReporter o2) {
-				if (o1.getClass() == o2.getClass()) {
-					return 0;
-				}
-				return 1;
-			}
-		});
+    	Set<MavenReporter> reporterSet = new TreeSet<>(COMPARATOR);
 
         getReporters().addAllTo( reporterSet );
         getParent().getReporters().addAllTo(reporterSet);

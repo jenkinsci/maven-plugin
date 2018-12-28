@@ -77,7 +77,7 @@ public class SurefireArchiver extends TestFailureDetector {
      * Store result files and modification timestamps already parsed, so we don't parse them again
      * if a later running MOJO specifies the same reports directory.
      */
-    private transient ConcurrentMap<File, Long> parsedFiles = new ConcurrentHashMap<File, Long>();
+    private transient ConcurrentMap<File, Long> parsedFiles = new ConcurrentHashMap<>();
     
     @Override
     public boolean hasTestFailures() {
@@ -135,12 +135,7 @@ public class SurefireArchiver extends TestFailureDetector {
                 if(result==null)    result = new TestResult();
                 
                 // filter all the already parsed files:
-                fileSet = Iterables.filter(fileSet, new Predicate<File>() {
-                    @Override
-                    public boolean apply(File input) {
-                        return !parsedFiles.containsKey(input) || parsedFiles.get(input) != input.lastModified();
-                    }
-                });
+                fileSet = Iterables.filter(fileSet, new SurefireArchiverPredicate(this.parsedFiles));
                 
                 if (!fileSet.iterator().hasNext())
                     return true;
@@ -171,6 +166,20 @@ public class SurefireArchiver extends TestFailureDetector {
         return true;
     }
 
+    private static class SurefireArchiverPredicate implements Predicate<File> {
+        private static final long serialVersionUID = -1L;
+        private ConcurrentMap<File, Long> parsedFiles;
+
+        public SurefireArchiverPredicate( ConcurrentMap<File, Long> parsedFiles ) {
+            this.parsedFiles = parsedFiles;
+        }
+
+        @Override
+        public boolean apply(File input) {
+            return !parsedFiles.containsKey(input) || parsedFiles.get(input) != input.lastModified();
+        }
+    }
+
     private static class SurefireArchiverBuildCallable implements BuildCallable<Integer, IOException> {
         private TestResult r;
         private BuildListener listener;
@@ -186,7 +195,7 @@ public class SurefireArchiver extends TestFailureDetector {
         public Integer call(MavenBuild build) throws java.io.IOException, InterruptedException {
             SurefireReport sr = build.getAction(SurefireReport.class);
             if(sr==null)
-                build.getActions().add(new SurefireReport(build, r, listener));
+                build.addAction(new SurefireReport(build, r, listener));
             else
                 sr.setResult(r,listener);
             if(r.getFailCount()>0)
