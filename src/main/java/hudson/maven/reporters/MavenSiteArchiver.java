@@ -107,18 +107,7 @@ public class MavenSiteArchiver extends MavenReporter {
      * @throws InterruptedException
      */
     private FilePath getModulePath(MavenBuildProxy build, MavenProject pom) throws IOException, InterruptedException {
-        String rootArtifactId = build.execute(new BuildCallable<String, IOException>() {
-            private static final long serialVersionUID = 1L;
-
-            //@Override
-            public String call(MavenBuild mavenBuild) throws IOException, InterruptedException {
-                MavenModuleSet moduleSet = mavenBuild.getModuleSetBuild().getParent();
-                if (moduleSet == null) {
-                    throw new IOException("Parent build not found!");
-                }
-                return moduleSet.getRootModule().getArtifactId();
-            }
-        });
+        String rootArtifactId = build.execute(new MavenSiteArchiverBuildCallable());
 
         String path = "";
         MavenProject currentLevel = pom;
@@ -131,6 +120,19 @@ public class MavenSiteArchiver extends MavenReporter {
         return build.getModuleSetRootDir().child("site").child(path);
     }
 
+
+    static class MavenSiteArchiverBuildCallable implements BuildCallable<String, IOException>  {
+        private static final long serialVersionUID = 1L;
+
+        //@Override
+        public String call(MavenBuild mavenBuild) throws IOException, InterruptedException {
+            MavenModuleSet moduleSet = mavenBuild.getModuleSetBuild().getParent();
+            if (moduleSet == null) {
+                throw new IOException("Parent build not found!");
+            }
+            return moduleSet.getRootModule().getArtifactId();
+        }
+    }
 
     public Collection<? extends Action> getProjectActions(MavenModule project) {
         return Collections.singleton(new SiteAction(project));

@@ -62,21 +62,7 @@ public class BuildInfoRecorder extends MavenReporter {
         && keys.contains(mojo.pluginName.artifactId+':'+mojo.getGoal())) {
             // touch <archive><manifestEntries><Build-Numer>#n
 
-            Map<String,String> props = build.execute(new BuildCallable<Map<String,String>,IOException>() {
-                private static final long serialVersionUID = 7810179928341972415L;
-
-                public Map<String,String> call(MavenBuild build) throws IOException, InterruptedException {
-                    Map<String,String> r = new HashMap<>();
-                    // leave Hudson for backward comp
-                    r.put("Hudson-Build-Number",String.valueOf(build.getNumber()));
-                    r.put("Hudson-Project",build.getParent().getParent().getName());
-                    r.put("Hudson-Version", Jenkins.VERSION);
-                    r.put("Jenkins-Build-Number",String.valueOf(build.getNumber()));
-                    r.put("Jenkins-Project",build.getParent().getParent().getName());
-                    r.put("Jenkins-Version", Jenkins.VERSION);
-                    return r;
-                }
-            });
+            Map<String,String> props = build.execute(new BuildInfoRecorderBuildCallable());
 
             PlexusConfiguration archive = mojo.configuration.getChild("archive");
             PlexusConfiguration manifestEntries = archive.getChild("manifestEntries",true);
@@ -90,6 +76,22 @@ public class BuildInfoRecorder extends MavenReporter {
         }
 
         return super.preExecute(build, pom, mojo, listener);
+    }
+
+    static class BuildInfoRecorderBuildCallable implements BuildCallable<Map<String,String>,IOException> {
+        private static final long serialVersionUID = 7810179928341972415L;
+
+        public Map<String,String> call(MavenBuild build) throws IOException, InterruptedException {
+            Map<String,String> r = new HashMap<>();
+            // leave Hudson for backward comp
+            r.put("Hudson-Build-Number",String.valueOf(build.getNumber()));
+            r.put("Hudson-Project",build.getParent().getParent().getName());
+            r.put("Hudson-Version", Jenkins.VERSION);
+            r.put("Jenkins-Build-Number",String.valueOf(build.getNumber()));
+            r.put("Jenkins-Project",build.getParent().getParent().getName());
+            r.put("Jenkins-Version", Jenkins.VERSION);
+            return r;
+        }
     }
 
     @Extension
