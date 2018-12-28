@@ -155,7 +155,20 @@ public class SurefireArchiver extends TestFailureDetector {
                 // final reference in order to serialize it:
                 final TestResult r = result;
                 
-                int failCount = build.execute( new SurefireArchiverBuildCallable(r,listener));
+                int failCount = build.execute( new BuildCallable<Integer, IOException>() {
+                    private static final long serialVersionUID = 1L;
+                    public Integer call(MavenBuild build) throws IOException, InterruptedException {
+                        SurefireReport sr = build.getAction(SurefireReport.class);
+                        if(sr==null)
+                            build.addAction(new SurefireReport(build, r, listener));
+                        else
+                            sr.setResult(r,listener);
+                        if(r.getFailCount()>0)
+                            build.setResult(Result.UNSTABLE);
+                        build.registerAsProjectAction(new FactoryImpl());
+                        return r.getFailCount();
+                    }
+                });
                 
                 // if surefire plugin is going to kill maven because of a test failure,
                 // intercept that (or otherwise build will be marked as failure)
@@ -168,7 +181,7 @@ public class SurefireArchiver extends TestFailureDetector {
 
         return true;
     }
-    
+
     private static class SurefireArchiverBuildCallable implements BuildCallable<Integer, IOException> {
         private TestResult r;
         private BuildListener listener;
