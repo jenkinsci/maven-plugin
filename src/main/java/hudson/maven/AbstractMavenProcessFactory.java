@@ -211,6 +211,8 @@ public abstract class AbstractMavenProcessFactory
 
             public Connection accept() throws IOException {
                 socket = serverSocket.accept();
+                socket.setKeepAlive(true);
+
                 // we'd only accept one connection
                 serverSocket.close();
 
