@@ -45,19 +45,19 @@ THE SOFTWARE.
   <properties>
     <jenkins.version>2.60.3</jenkins.version>
     <java.level>8</java.level>
-    <mavenInterceptorsVersion>1.12</mavenInterceptorsVersion>
+    <mavenInterceptorsVersion>1.13-SNAPSHOT</mavenInterceptorsVersion>
     <!-- Version of Maven Components -->
-    <mavenVersion>3.5.0</mavenVersion>
+    <mavenVersion>3.5.2</mavenVersion>
     <!--
       Minimal supported version of Maven.
       It declares version of the core, which should be included into the the server-side.
       Note that the plugin still bundles agent support for Maven 3.0.5, probably it's not really operational
     -->
-    <mavenMinimalVersion>3.1.0</mavenMinimalVersion>
+    <mavenMinimalVersion>3.5.4</mavenMinimalVersion>
     <maven.version>${mavenVersion}</maven.version>
-    <aetherVersion>1.1.0</aetherVersion>
+    <resolverVersion>1.1.1</resolverVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
-    <wagonVersion>3.0.0</wagonVersion>
+    <wagonVersion>3.3.2</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <findbugs.failOnError>false</findbugs.failOnError>
     <!-- well the parent pom could defined an empty one instead of causing failure!! -->
@@ -370,11 +370,15 @@ THE SOFTWARE.
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-compat</artifactId>
       <version>${mavenMinimalVersion}</version>
-    </dependency>     
-    
+    </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-aether-provider</artifactId>
+      <artifactId>maven-repository-metadata</artifactId>
+      <version>${mavenMinimalVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-resolver-provider</artifactId>
       <version>${mavenMinimalVersion}</version>
     </dependency>      
     <dependency>
@@ -389,29 +393,29 @@ THE SOFTWARE.
     
     
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-api</artifactId>
-      <version>${aetherVersion}</version>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-api</artifactId>
+      <version>${resolverVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-impl</artifactId>
-      <version>${aetherVersion}</version>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-impl</artifactId>
+      <version>${resolverVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-spi</artifactId>
-      <version>${aetherVersion}</version>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-spi</artifactId>
+      <version>${resolverVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-util</artifactId>
-      <version>${aetherVersion}</version>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-util</artifactId>
+      <version>${resolverVersion}</version>
     </dependency>                                   
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-transport-wagon</artifactId>
-      <version>${aetherVersion}</version>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-transport-wagon</artifactId>
+      <version>${resolverVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>org.codehaus.plexus</groupId>
@@ -420,9 +424,9 @@ THE SOFTWARE.
       </exclusions>      
     </dependency>
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-connector-basic</artifactId>
-      <version>${aetherVersion}</version>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-connector-basic</artifactId>
+      <version>${resolverVersion}</version>
     </dependency>
 
     <dependency>
@@ -478,7 +482,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>apache-httpcomponents-client-4-api</artifactId>
-      <version>4.5.3-2.1</version>
+      <version>4.5.5-2.1</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -536,18 +540,24 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-classworlds</artifactId>
-      <version>2.5.2</version>
+      <version>2.6.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.0.24</version>
+      <version>3.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-component-annotations</artifactId>
       <version>1.7.1</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
+      <scope>compile</scope>
+      <version>3.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.lib</groupId>
@@ -558,7 +568,7 @@ THE SOFTWARE.
       <!-- TODO: fix exclusion once updated to the 3.5.0 baseline -->
       <groupId>org.jenkins-ci.lib</groupId>
       <artifactId>lib-jenkins-maven-embedder</artifactId>
-      <version>3.13</version>
+      <version>3.14-SNAPSHOT</version>
       <exclusions>
         <exclusion><!-- we'll add our own patched version. see https://issues.jenkins-ci.org/browse/JENKINS-1680 -->
           <groupId>jtidy</groupId>
@@ -621,6 +631,11 @@ THE SOFTWARE.
           <!-- Offered by HttpComponents Client 4.x API plugin and by Maven on the remote side -->
           <groupId>org.apache.httpcomponents</groupId>
           <artifactId>httpcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Offered by HttpComponents Client 4.x API plugin and by Maven on the remote side -->
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
