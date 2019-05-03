@@ -46,12 +46,6 @@ import java.util.Collection;
  */
 public abstract class AbstractMavenJavadocArchiver extends MavenReporter {
 
-
-    private boolean aggregated = false;
-
-    private FilePath target;
-
-
     /**
      * return true if this mojo is a javadoc one sources or test sources
      * @param mojo
@@ -65,6 +59,7 @@ public abstract class AbstractMavenJavadocArchiver extends MavenReporter {
         if (!checkIsJavadocMojo(mojo)) return true;
 
         File destDir;
+        boolean aggregated;
         try {
             aggregated = mojo.getConfigurationValue("aggregate",Boolean.class, Boolean.FALSE) || mojo.getGoal().equals("aggregate")
                             || mojo.getGoal().equals("test-aggregate");
@@ -82,8 +77,10 @@ public abstract class AbstractMavenJavadocArchiver extends MavenReporter {
 
         if(destDir != null && destDir.exists()) {
             // javadoc:javadoc just skips itself when the current project is not a java project
+
+            FilePath target;
             if(aggregated) {
-                // store at MavenModuleSet level. 
+                // store at MavenModuleSet level.
                 listener.getLogger().println("[JENKINS] Archiving aggregated javadoc");
                 target = build.getModuleSetRootDir();
             } else {
@@ -126,8 +123,8 @@ public abstract class AbstractMavenJavadocArchiver extends MavenReporter {
 
     public abstract Action getAggregatedProjectAction(MavenModuleSet project);
 
-    public FilePath getTarget() {
-        return target;
+    protected final FilePath getTarget(AbstractMavenProject<?, ?> project) {
+        return new FilePath(project.getRootDir()).child(getArchiveTargetPath());
     }
 
     protected static class MavenJavadocAction extends JavadocAction {
