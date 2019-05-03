@@ -44,7 +44,7 @@ public class MavenTestJavadocArchiver extends AbstractMavenJavadocArchiver {
 
     public Collection<? extends Action> getProjectActions(MavenModule project) {
         return Collections.singletonList(new MavenJavadocAction(project,getTarget(),"Test Javadoc","test-javadoc"
-        ,hudson.tasks.Messages.TestJavadocArchiver_DisplayName_Javadoc()));
+        ,"Test Javadoc"));
     }
 
     @Override
@@ -54,7 +54,7 @@ public class MavenTestJavadocArchiver extends AbstractMavenJavadocArchiver {
 
     public Action getAggregatedProjectAction(MavenModuleSet project) {
         return new MavenJavadocAction(project,getTarget(),"Test Javadoc","test-javadoc"
-            ,hudson.tasks.Messages.TestJavadocArchiver_DisplayName_Javadoc());
+            ,"Test Javadoc");
     }
 
     @Override

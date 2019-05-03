@@ -151,7 +151,7 @@ public abstract class AbstractMavenJavadocArchiver extends MavenReporter {
             if (dir != null && new File(dir, "help-doc.html").exists())
                 return this.displayName;
             else
-                return hudson.tasks.Messages.JavadocArchiver_DisplayName_Generic();
+                return "Document";
         }
 
 
