@@ -1,1 +1,1 @@
-buildPlugin platforms: ['linux'], jenkinsVersions: [null, '2.107.1']
+buildPlugin platforms: ['linux'], jenkinsVersions: [null, '2.164.2']
