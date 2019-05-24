@@ -13,7 +13,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 public class AbortedMavenBuildTest extends AbstractMavenTestCase {
     @Bug(8054)
     public void testBuildWrapperSeesAbortedStatus() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven3();
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
         TestBuildWrapper wrapper = new TestBuildWrapper();
         project.getBuildWrappersList().add(wrapper);
