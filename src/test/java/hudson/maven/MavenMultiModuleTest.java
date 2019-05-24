@@ -54,7 +54,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4192)
     @Test public void multiModMavenWsExists() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
@@ -65,7 +65,7 @@ public class MavenMultiModuleTest {
     @Bug(18846)
     @Test public void symlinksUpdated() throws Exception {
         Assume.assumeFalse(Functions.isWindows());
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven3();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setScm(new ExtractResourceSCM(MavenMultiModuleTest.class.getResource("maven-multimod.zip")));
         j.buildAndAssertSuccess(mms);
@@ -95,7 +95,7 @@ public class MavenMultiModuleTest {
     }
 
     @Test public void incrementalMultiModMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.getReporters().add(new MavenFingerprinter());
@@ -170,7 +170,7 @@ public class MavenMultiModuleTest {
 
     @Bug(5357)
     @Test public void incrRelMultiModMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
@@ -214,7 +214,7 @@ public class MavenMultiModuleTest {
     @Ignore("kutzi 10/10/11 ignore test until I can figure out why it fails sometimes")
     @Test public void estimatedDurationForIncrementalMultiModMaven()
             throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource(
@@ -247,7 +247,7 @@ public class MavenMultiModuleTest {
      * enabled and a new module is added.
      */
     @Test public void newModMultiModMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod.zip"),
@@ -262,7 +262,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4491)
     @Test public void multiModMavenNonRecursiveParsing() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install -N");
         m.getReporters().add(new TestReporter());
@@ -297,7 +297,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4152)
     @Test public void incrementalMultiModWithErrorsMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
@@ -360,7 +360,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(5121)
     @Test public void incrementalRedeployAfterAggregatorError() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
@@ -423,7 +423,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4378)
     @Test public void multiModWithTestFailuresMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod-incr.zip")));
@@ -453,7 +453,7 @@ public class MavenMultiModuleTest {
     
     @Bug(8484)
     @Test public void multiModMavenNonRecursive() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
@@ -480,7 +480,7 @@ public class MavenMultiModuleTest {
     @Bug(17236)
     @Test public void artifactArchiving() throws Exception {
         ArtifactManagerConfiguration.get().getArtifactManagerFactories().add(new TestAMF());
-        ToolInstallations.configureDefaultMaven(); // using Maven 2 so we can test single-module builds
+        ToolInstallations.configureMaven3();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
         mms.setAssignedNode(j.createOnlineSlave());

@@ -1,5 +1,6 @@
 package hudson.maven;
 
+import com.google.common.base.Preconditions;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Result;
