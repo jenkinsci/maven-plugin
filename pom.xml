@@ -365,6 +365,15 @@ THE SOFTWARE.
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
       <version>${mavenMinimalVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!--Jenkins bundles Guava 11.0.1, this library requires 20.0 and makes the plugin to bundle it.
+              The interceptor should not be actually used inside Jenkins, what could possibly go wrong?
+          -->
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>  
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -389,9 +398,17 @@ THE SOFTWARE.
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-embedder</artifactId>
       <version>${mavenMinimalVersion}</version>
+      <exclusions>
+        <exclusion>
+          <!--Jenkins bundles Guava 11.0.1, this library requires 20.0 and makes the plugin to bundle it.
+              The interceptor should not be actually used inside Jenkins, what could possibly go wrong?
+          -->
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>   
-    
-    
+
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-api</artifactId>
@@ -526,7 +543,6 @@ THE SOFTWARE.
       <artifactId>wagon-ssh-external</artifactId>
       <version>${wagonVersion}</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-provider-api</artifactId>
@@ -638,6 +654,11 @@ THE SOFTWARE.
           <artifactId>httpclient</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.7</version>
     </dependency>
 
     <dependency>
