@@ -29,6 +29,7 @@ import hudson.plugins.promoted_builds.PromotedBuildAction;
 import hudson.plugins.promoted_builds.PromotionProcess;
 import hudson.plugins.promoted_builds.conditions.SelfPromotionCondition;
 import hudson.plugins.promoted_builds.tasks.RedeployBatchTaskPublisher;
+import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -262,7 +263,7 @@ public class RedeployPublisherTest {
     @Bug(7010)
     @Test
     public void testSettingsInsidePromotion() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven35();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
         URL resource = RedeployPublisherTest.class.getResource("settings.xml");
