@@ -81,7 +81,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
 
     private MavenModuleSet createProject(final String scmResource) throws Exception {
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
-        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
+        MavenInstallation mi = ToolInstallations.configureMaven35();
         project.setScm(new ExtractResourceSCM(getClass().getResource(
                 scmResource)));
         project.setMaven(mi.getName());
