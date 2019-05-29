@@ -902,15 +902,15 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                             setResult(r);
                         }
 
-//                        // tear down in reverse order
-//                        boolean failed=false;
-//                        for( int i=buildEnvironments.size()-1; i>=0; i-- ) {
-//                            if (!buildEnvironments.get(i).tearDown(MavenModuleSetBuild.this,listener)) {
-//                                failed=true;
-//                            }
-//                        }
-//                        // WARNING The return in the finally clause will trump any return before
-//                        if (failed) return Result.FAILURE;
+                        // tear down in reverse order
+                        boolean failed=false;
+                        for( int i=buildEnvironments.size()-1; i>=0; i-- ) {
+                            if (!buildEnvironments.get(i).tearDown(MavenModuleSetBuild.this,listener)) {
+                                failed=true;
+                            }
+                        }
+                        // WARNING The return in the finally clause will trump any return before
+                        if (failed) return Result.FAILURE;
                     }
                 }
                 
@@ -919,11 +919,9 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             } catch (AbortException e) {
                 if(e.getMessage()!=null)
                     listener.error(e.getMessage());
-                MavenModuleSetBuild.this.setResult(Result.ABORTED);
-                return Result.ABORTED;
+                return FAILURE;
             } catch (InterruptedIOException e) {
                 e.printStackTrace(listener.error("Aborted Maven execution for InterruptedIOException"));
-                MavenModuleSetBuild.this.setResult(Result.ABORTED);
                 return Executor.currentExecutor().abortResult();
             } catch (IOException e) {
                 e.printStackTrace(listener.error(Messages.MavenModuleSetBuild_FailedToParsePom()));
@@ -939,16 +937,6 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 logger.println("project.getModules()="+project.getModules());
                 logger.println("project.getRootModule()="+project.getRootModule());
                 throw e;
-            } finally {
-                // tear down in reverse order
-                boolean failed=false;
-                for( int i=buildEnvironments.size()-1; i>=0; i-- ) {
-                    if (!buildEnvironments.get(i).tearDown(MavenModuleSetBuild.this,listener)) {
-                        failed=true;
-                    }
-                }
-                // WARNING The return in the finally clause will trump any return before
-                if (failed) return Result.FAILURE;
             }
         }
 
