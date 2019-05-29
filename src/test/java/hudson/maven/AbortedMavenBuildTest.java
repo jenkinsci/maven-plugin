@@ -14,13 +14,13 @@ import org.jvnet.hudson.test.ToolInstallations;
 public class AbortedMavenBuildTest extends AbstractMavenTestCase {
     @Bug(8054)
     public void testBuildWrapperSeesAbortedStatus() throws Exception {
-        ToolInstallations.configureMaven3();
+        ToolInstallations.configureMaven35();
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
         TestBuildWrapper wrapper = new TestBuildWrapper();
         project.getBuildWrappersList().add(wrapper);
         project.getReporters().add(new AbortingReporter());
-        project.setGoals("clean");
-        project.setScm(new ExtractResourceSCM(getClass().getResource("maven-empty-mod.zip")));
+        project.setGoals("clean verify");
+        project.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
         MavenModuleSetBuild build = project.scheduleBuild2(0).get();
         assertEquals(Result.ABORTED, build.getResult());
         assertEquals(Result.ABORTED, wrapper.buildResultInTearDown);
