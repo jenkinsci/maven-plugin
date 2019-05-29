@@ -85,21 +85,6 @@ public class RedeployPublisherTest {
         j.assertEqualBeans(rp,p.getPublishersList().get(RedeployPublisher.class),"id,url,uniqueVersion,evenIfUnstable");
     }
 
-//    /**
-//     * Makes sure that the webdav wagon component we bundle is compatible.
-//     */
-//    public void testWebDavDeployment() throws Exception {
-//        ToolInstallations.configureDefaultMaven();
-//        MavenModuleSet m2 = jenkins.createProject(MavenModuleSet.class, "p");
-//
-//        // a fake build
-//        m2.setScm(new SingleFileSCM("pom.xml",getClass().getResource("big-artifact.pom")));
-//        m2.getPublishersList().add(new RedeployPublisher("","dav:http://localhost/dav/",true));
-//
-//        MavenModuleSetBuild b = m2.scheduleBuild2(0).get();
-//        assertBuildStatus(Result.SUCCESS, b);
-//    }
-
     /**
      * Are we having a problem in handling file names with multiple extensions, like ".tar.gz"?
      */
@@ -107,7 +92,7 @@ public class RedeployPublisherTest {
     @Bug(3814)
     @Test
     public void testTarGz() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven35();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
 
@@ -118,7 +103,10 @@ public class RedeployPublisherTest {
         MavenModuleSetBuild b = m2.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.SUCCESS, b);
 
-        assertTrue("tar.gz doesn't exist",new File(repo,"test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-bin.tar.gz").exists());
+        String[] files =
+            new File(repo,"test/test/0.1-SNAPSHOT").list( ( dir, name ) -> name.startsWith( "test-0.1-" ) && name.endsWith( "-1-bin.tar.gz" ) );
+
+        assertTrue("tar.gz doesn't exist",files.length==1);
     }
     
     @Test
