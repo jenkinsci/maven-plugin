@@ -34,6 +34,7 @@ import hudson.tasks.Maven.MavenInstallation;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import jenkins.mvn.FilePathSettingsProvider;
 import org.apache.commons.lang.StringUtils;
@@ -300,9 +301,11 @@ public class RedeployPublisherTest {
         // The promotion should succeed
         assertEquals("promotion succeeded", Result.SUCCESS, promotedBuildAction.getPromotion("deploy").getLast().getResult());
 
+        // no more unique version but only timestamped
+        String[] poms = new File(repo,"test/maven/simple-pom/1.0-SNAPSHOT/").list( ( dir, name ) ->
+            name.startsWith( "simple-pom-1.0-" ) && name.endsWith( "-1.pom" ) );
         // It should have deployed the artifact
-        assertTrue("Artifact should have been published",
-                new File(repo,"test/maven/simple-pom/1.0-SNAPSHOT/simple-pom-1.0-SNAPSHOT.pom").exists());
+        assertTrue("Artifact should have been published", poms.length==1);
         // The RedeployPublisher should display the information that it used the custom settings.xml file
         // There is no easy solution to test that the custom settings are used excepted the log
         j.assertLogContains(customUserSettings.getAbsolutePath(),promotedBuildAction.getPromotion("deploy").getLast());
