@@ -60,6 +60,7 @@ THE SOFTWARE.
     <wagonVersion>3.3.2</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <findbugs.failOnError>false</findbugs.failOnError>
+    <spotbugs.threshold>ignore</spotbugs.threshold>
     <!-- well the parent pom could defined an empty one instead of causing failure!! -->
     <argLine />
   </properties>
