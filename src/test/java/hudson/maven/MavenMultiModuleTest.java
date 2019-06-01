@@ -480,22 +480,26 @@ public class MavenMultiModuleTest {
     @Bug(17236)
     @Test public void artifactArchiving() throws Exception {
         ArtifactManagerConfiguration.get().getArtifactManagerFactories().add(new TestAMF());
-        ToolInstallations.configureMaven3();
+        ToolInstallations.configureMaven35();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
         mms.setAssignedNode(j.createOnlineSlave());
         j.buildAndAssertSuccess(mms);
         // We want all the artifacts in a given module to be archived in one operation. But modules are archived separately.
-        Map<String,Map<String,FilePath>> expected = new TreeMap<String,Map<String,FilePath>>();
+        Map<String,Map<String,FilePath>> expected = new TreeMap<>();
         FilePath ws = mms.getModule("org.jvnet.hudson.main.test.multimod$multimod-top").getBuildByNumber(1).getWorkspace();
-        expected.put("org.jvnet.hudson.main.test.multimod:multimod-top", Collections.singletonMap("org.jvnet.hudson.main.test.multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom", new FilePath(ws.getChannel(), "…/org/jvnet/hudson/main/test/multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom")));
+        expected.put("org.jvnet.hudson.main.test.multimod:multimod-top",
+                     Collections.singletonMap("org.jvnet.hudson.main.test.multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom",
+                                              new FilePath(ws.getChannel(), "…/org/jvnet/hudson/main/test/multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom")));
         for (String module : new String[] {"moduleA", "moduleB", "moduleC"}) {
-            Map<String,FilePath> m = new TreeMap<String,FilePath>();
+            Map<String,FilePath> m = new TreeMap<>();
             ws = mms.getModule("org.jvnet.hudson.main.test.multimod$" + module).getBuildByNumber(1).getWorkspace();
             m.put("org.jvnet.hudson.main.test.multimod/" + module + "/1.0-SNAPSHOT/" + module + "-1.0-SNAPSHOT.pom", ws.child("pom.xml"));
             m.put("org.jvnet.hudson.main.test.multimod/" + module + "/1.0-SNAPSHOT/" + module + "-1.0-SNAPSHOT.jar", ws.child("target/" + module + "-1.0-SNAPSHOT.jar"));
             expected.put("org.jvnet.hudson.main.test.multimod:" + module, m);
         }
+        System.out.println( "TestAM.archivings: " + TestAM.archivings );
+        System.out.println( "expected: " + expected );
         assertEquals(expected.toString(), TestAM.archivings.toString()); // easy to read
         assertEquals(expected, TestAM.archivings); // compares also FileChannel
         // Also check single-module build.
@@ -503,7 +507,7 @@ public class MavenMultiModuleTest {
         TestAM.archivings.clear();
         MavenBuild isolated = j.buildAndAssertSuccess(mms.getModule("org.jvnet.hudson.main.test.multimod$moduleA"));
         assertEquals(2, isolated.number);
-        Map<String,FilePath> m = new TreeMap<String,FilePath>();
+        Map<String,FilePath> m = new TreeMap<>();
         ws = isolated.getWorkspace();
         m.put("org.jvnet.hudson.main.test.multimod/moduleA/1.0-SNAPSHOT/moduleA-1.0-SNAPSHOT.pom", ws.child("pom.xml"));
         m.put("org.jvnet.hudson.main.test.multimod/moduleA/1.0-SNAPSHOT/moduleA-1.0-SNAPSHOT.jar", ws.child("target/moduleA-1.0-SNAPSHOT.jar"));
@@ -532,7 +536,7 @@ public class MavenMultiModuleTest {
         }
     }
     public static final class TestAM extends ArtifactManager {
-        static final Map</* module name */String,Map</* archive path */String,/* file in workspace */FilePath>> archivings = new TreeMap<String,Map<String,FilePath>>();
+        static final Map</* module name */String,Map</* archive path */String,/* file in workspace */FilePath>> archivings = new TreeMap<>();
         transient Run<?,?> build;
         TestAM(Run<?,?> build) {
             onLoad(build);
@@ -546,7 +550,7 @@ public class MavenMultiModuleTest {
                 // Would be legitimate only if some archived files for a given module were outside workspace, such as repository parent POM, *and* others were inside, which is not the case in this test.
                 throw new IOException("repeated archiving to " + name);
             }
-            Map<String,FilePath> m = new TreeMap<String,FilePath>();
+            Map<String,FilePath> m = new TreeMap<>();
             for (Map.Entry<String,String> e : artifacts.entrySet()) {
                 FilePath f = workspace.child(e.getValue());
                 if (f.exists()) {
