@@ -490,7 +490,7 @@ public class MavenMultiModuleTest {
         FilePath ws = mms.getModule("org.jvnet.hudson.main.test.multimod$multimod-top").getBuildByNumber(1).getWorkspace();
         expected.put("org.jvnet.hudson.main.test.multimod:multimod-top",
                      Collections.singletonMap("org.jvnet.hudson.main.test.multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom",
-                                              new FilePath(ws.getChannel(), "…/org/jvnet/hudson/main/test/multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom")));
+                                              ws.child( "pom.xml" )));
         for (String module : new String[] {"moduleA", "moduleB", "moduleC"}) {
             Map<String,FilePath> m = new TreeMap<>();
             ws = mms.getModule("org.jvnet.hudson.main.test.multimod$" + module).getBuildByNumber(1).getWorkspace();
@@ -558,6 +558,7 @@ public class MavenMultiModuleTest {
                         // Inside the local repository. Hard to know exactly what that path might be, so just mask it out.
                         f = new FilePath(f.getChannel(), f.getRemote().replaceFirst("^.+(?=[/\\\\]org[/\\\\]jvnet[/\\\\]hudson[/\\\\]main[/\\\\]test[/\\\\])", "…").replace('\\', '/'));
                     }
+                    System.out.println( "f:" +f );
                     m.put(e.getKey(), f);
                 } else {
                     throw new IOException("no such file " + f);
