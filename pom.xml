@@ -45,7 +45,7 @@ THE SOFTWARE.
   <properties>
     <jenkins.version>2.60.3</jenkins.version>
     <java.level>8</java.level>
-    <mavenInterceptorsVersion>1.13-SNAPSHOT</mavenInterceptorsVersion>
+    <mavenInterceptorsVersion>1.13</mavenInterceptorsVersion>
     <!-- Version of Maven Components -->
     <mavenVersion>3.5.2</mavenVersion>
     <!--
@@ -598,7 +598,7 @@ THE SOFTWARE.
       <!-- TODO: fix exclusion once updated to the 3.5.0 baseline -->
       <groupId>org.jenkins-ci.lib</groupId>
       <artifactId>lib-jenkins-maven-embedder</artifactId>
-      <version>3.14-SNAPSHOT</version>
+      <version>3.14</version>
       <exclusions>
         <exclusion><!-- we'll add our own patched version. see https://issues.jenkins-ci.org/browse/JENKINS-1680 -->
           <groupId>jtidy</groupId>
