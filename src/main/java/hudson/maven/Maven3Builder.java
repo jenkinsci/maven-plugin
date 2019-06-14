@@ -86,7 +86,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
     protected Maven3Builder(Maven3BuilderRequest maven3BuilderRequest) throws IOException {
         super( maven3BuilderRequest.listener, maven3BuilderRequest.modules, maven3BuilderRequest.goals, maven3BuilderRequest.systemProps );
         this.sourceProxies.putAll(maven3BuilderRequest.proxies);
-        this.proxies = new HashMap<ModuleName, FilterImpl>();
+        this.proxies = new HashMap<>();
         for (Entry<ModuleName,ProxyImpl2> e : this.sourceProxies.entrySet()) {
             this.proxies.put(e.getKey(), new FilterImpl(e.getValue(), maven3BuilderRequest.mavenBuildInformation));
         }
@@ -189,7 +189,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 	    Handler[] handlers = rootLogger.getHandlers();
 	    for (Handler h : handlers) {
 	        if (h instanceof ConsoleHandler) {
-	            ((ConsoleHandler)h).setFormatter(new Maven3ConsoleFormatter());
+	            h.setFormatter(new Maven3ConsoleFormatter());
 	        }
 	    }
     }
@@ -356,11 +356,11 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
         private final Map<ModuleName,FilterImpl> proxies;
 
-        private final Map<ModuleName,List<ExecutedMojo>> executedMojosPerModule = new ConcurrentHashMap<ModuleName, List<ExecutedMojo>>();
+        private final Map<ModuleName,List<ExecutedMojo>> executedMojosPerModule = new ConcurrentHashMap<>();
 
         private final Map<ModuleName,List<MavenReporter>> reporters;
 
-        private final Map<ModuleName, Long> currentMojoStartPerModuleName = new ConcurrentHashMap<ModuleName, Long>();
+        private final Map<ModuleName, Long> currentMojoStartPerModuleName = new ConcurrentHashMap<>();
 
         protected ExecutionEventLogger eventLogger;
 
@@ -368,7 +368,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             this.maven3Builder = maven3Builder;
             this.proxies = new ConcurrentHashMap<>(maven3Builder.proxies);
             for (ModuleName name : this.proxies.keySet()) {
-                executedMojosPerModule.put( name, new CopyOnWriteArrayList<ExecutedMojo>() );
+                executedMojosPerModule.put( name, new CopyOnWriteArrayList<>() );
             }
             this.reporters = new ConcurrentHashMap<>(maven3Builder.reporters);
 
@@ -464,9 +464,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
                     for (MavenReporter mavenReporter : reporters.get(e.getKey())) {
                         try {
                             mavenReporter.postBuild( e.getValue() ,project, maven3Builder.listener);
-                        } catch ( InterruptedException x ) {
-                            x.printStackTrace();
-                        } catch ( IOException x ) {
+                        } catch ( InterruptedException|IOException x ) {
                             x.printStackTrace();
                         }
                     }
@@ -517,9 +515,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             for (MavenReporter mavenReporter : fixNull(mavenReporters)) {
                 try {
                     mavenReporter.enterModule( mavenBuildProxy2 ,mavenProject, maven3Builder.listener);
-                } catch ( InterruptedException e ) {
-                    e.printStackTrace();
-                } catch ( IOException e ) {
+                } catch ( InterruptedException|IOException e ) {
                     e.printStackTrace();
                 }
             }
@@ -553,9 +549,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             for ( MavenReporter mavenReporter : fixNull(mavenReporters)) {
                 try {
                     mavenReporter.postBuild( mavenBuildProxy2, event.getProject(), maven3Builder.listener);
-                } catch ( InterruptedException e ) {
-                    e.printStackTrace();
-                } catch ( IOException e ) {
+                } catch ( InterruptedException|IOException e ) {
                     e.printStackTrace();
                 }
             }
@@ -594,9 +588,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
             for (MavenReporter mavenReporter : fixNull(mavenReporters)) {
                 try {
                     mavenReporter.preExecute( mavenBuildProxy2, mavenProject, mojoInfo, maven3Builder.listener);
-                } catch ( InterruptedException e ) {
-                    e.printStackTrace();
-                } catch ( IOException e ) {
+                } catch ( InterruptedException|IOException e ) {
                     e.printStackTrace();
                 }
             }

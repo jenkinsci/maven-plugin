@@ -23,16 +23,17 @@
  */
 package hudson.maven.reporters;
 
-import hudson.maven.*;
+import hudson.maven.AggregatableAction;
+import hudson.maven.MavenBuild;
+import hudson.maven.MavenEmbedder;
+import hudson.maven.MavenEmbedderException;
+import hudson.maven.MavenModule;
+import hudson.maven.MavenModuleSetBuild;
+import hudson.maven.MavenUtil;
 import hudson.maven.RedeployPublisher.WrappedArtifactRepository;
 import hudson.model.AbstractItem;
 import hudson.model.Action;
 import hudson.model.TaskListener;
-
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.List;
-import java.util.Map;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.deployer.ArtifactDeployer;
 import org.apache.maven.artifact.deployer.ArtifactDeploymentException;
@@ -45,6 +46,11 @@ import org.apache.maven.project.artifact.ProjectArtifactMetadata;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link Action} that remembers {@link MavenArtifact artifact}s that are built.
@@ -168,8 +174,7 @@ public class MavenArtifactRecord extends MavenAbstractArtifactRecord<MavenBuild>
             ((WrappedArtifactRepository) deploymentRepository).setUniqueVersion(true);
         }
         ArtifactDeployer deployer;
-        MavenArtifact.CloseableArtifact mainC = mainArtifact.toCloseableArtifact(handlerManager, artifactFactory, parent);
-        try {
+        try (MavenArtifact.CloseableArtifact mainC = mainArtifact.toCloseableArtifact(handlerManager, artifactFactory, parent)) {
             Artifact main = mainC.get();
             MavenArtifact.TemporaryFile pomFile = null;
             if (!isPOM()) {
@@ -196,18 +201,13 @@ public class MavenArtifactRecord extends MavenAbstractArtifactRecord<MavenBuild>
                     pomFile.close();
                 }
             }
-        } finally {
-            mainC.close();
         }
 
         for (MavenArtifact aa : attachedArtifacts) {
-            MavenArtifact.CloseableArtifact aC = aa.toCloseableArtifact(handlerManager, artifactFactory, parent);
-            try {
+            try (MavenArtifact.CloseableArtifact aC = aa.toCloseableArtifact(handlerManager, artifactFactory, parent)) {
                 Artifact a = aC.get();
                 logger.println(Messages.MavenArtifact_DeployingMainArtifact(a.getFile().getName()));
                 deployer.deploy(a.getFile(), a, deploymentRepository, embedder.getLocalRepository());
-            } finally {
-                aC.close();
             }
         }
     }

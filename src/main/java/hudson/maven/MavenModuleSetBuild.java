@@ -691,7 +691,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         parsePoms(listener, logger, envVars, mvn, mavenVersion, mavenBuildInformation); // #5428 : do pre-build *before* parsing pom
                         SplittableBuildListener slistener = new SplittableBuildListener(listener);
                         proxies = new HashMap<>();
-                        List<ModuleName> changedModules = new ArrayList<ModuleName>();
+                        List<ModuleName> changedModules = new ArrayList<>();
                         boolean incrementalBuild;
                         if (project.isIncrementalBuild()) {
                             if (getChangeSet().isEmptySet()) {
@@ -907,7 +907,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                         for( int i=buildEnvironments.size()-1; i>=0; i-- ) {
                             if (!buildEnvironments.get(i).tearDown(MavenModuleSetBuild.this,listener)) {
                                 failed=true;
-                            }                    
+                            }
                         }
                         // WARNING The return in the finally clause will trump any return before
                         if (failed) return Result.FAILURE;
@@ -919,14 +919,16 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             } catch (AbortException e) {
                 if(e.getMessage()!=null)
                     listener.error(e.getMessage());
-                return Result.FAILURE;
+                return FAILURE;
             } catch (InterruptedIOException e) {
                 e.printStackTrace(listener.error("Aborted Maven execution for InterruptedIOException"));
                 return Executor.currentExecutor().abortResult();
             } catch (IOException e) {
                 e.printStackTrace(listener.error(Messages.MavenModuleSetBuild_FailedToParsePom()));
+                MavenModuleSetBuild.this.setResult( FAILURE);
                 return Result.FAILURE;
             } catch (RunnerAbortedException e) {
+                MavenModuleSetBuild.this.setResult( FAILURE);
                 return Result.FAILURE;
             } catch (RuntimeException e) {
                 // bug in the code.
@@ -935,7 +937,6 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 logger.println("project.getModules()="+project.getModules());
                 logger.println("project.getRootModule()="+project.getRootModule());
                 throw e;
-            } finally {
             }
         }
 
@@ -1385,9 +1386,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                     pi.cutCycle();
 
                 return new Result(new ArrayList<>(infos), modelParents);
-            } catch (MavenEmbedderException e) {
-                throw new MavenExecutionException(e);
-            } catch (ProjectBuildingException e) {
+            } catch (MavenEmbedderException | ProjectBuildingException e) {
                 throw new MavenExecutionException(e);
             }
         }
@@ -1498,7 +1497,6 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
     /**
      * will log in the {@link TaskListener} when transferFailed and transferSucceeded
      * @author Olivier Lamy
-     * @since 
      */
     public static class SimpleTransferListener implements TransferListener
     {

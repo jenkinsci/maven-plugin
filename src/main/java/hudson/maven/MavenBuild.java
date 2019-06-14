@@ -58,6 +58,7 @@ import jenkins.maven3.agent.Maven31Main;
 import jenkins.maven3.agent.Maven32Main;
 import jenkins.maven3.agent.Maven33Main;
 
+import jenkins.maven3.agent.Maven35Main;
 import org.apache.maven.BuildFailureException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.execution.ReactorManager;
@@ -68,6 +69,7 @@ import org.jvnet.hudson.maven3.agent.Maven3Main;
 import org.jvnet.hudson.maven3.launcher.Maven31Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven32Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven33Launcher;
+import org.jvnet.hudson.maven3.launcher.Maven35Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
@@ -974,9 +976,12 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 	                request.maven3MainClass = Maven32Main.class;
 	                request.maven3LauncherClass = Maven32Launcher.class;
 	                break;
-                default:
+                case MAVEN_3_3:
                     request.maven3MainClass = Maven33Main.class;
                     request.maven3LauncherClass = Maven33Launcher.class;
+                default:
+                    request.maven3MainClass = Maven35Main.class;
+                    request.maven3LauncherClass = Maven35Launcher.class;
             }
 
             return request;

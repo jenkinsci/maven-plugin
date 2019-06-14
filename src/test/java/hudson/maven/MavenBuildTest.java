@@ -95,7 +95,7 @@ public class MavenBuildTest {
     @Bug(4226)
     @Test
     public void testParallelModuleBuild() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
         

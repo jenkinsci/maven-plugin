@@ -5,21 +5,20 @@ import hudson.model.BuildListener;
 import hudson.model.Result;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.ToolInstallations;
 
 import java.io.IOException;
-import org.jvnet.hudson.test.ToolInstallations;
 
 public class AbortedMavenBuildTest extends AbstractMavenTestCase {
     @Bug(8054)
     public void testBuildWrapperSeesAbortedStatus() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven35();
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
         TestBuildWrapper wrapper = new TestBuildWrapper();
         project.getBuildWrappersList().add(wrapper);
         project.getReporters().add(new AbortingReporter());
-        project.setGoals("clean");
-        project.setScm(new ExtractResourceSCM(getClass().getResource("maven-empty-mod.zip")));
+        project.setGoals("clean verify");
+        project.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
         MavenModuleSetBuild build = project.scheduleBuild2(0).get();
         assertEquals(Result.ABORTED, build.getResult());
         assertEquals(Result.ABORTED, wrapper.buildResultInTearDown);

@@ -54,7 +54,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4192)
     @Test public void multiModMavenWsExists() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
@@ -65,7 +65,7 @@ public class MavenMultiModuleTest {
     @Bug(18846)
     @Test public void symlinksUpdated() throws Exception {
         Assume.assumeFalse(Functions.isWindows());
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven3();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setScm(new ExtractResourceSCM(MavenMultiModuleTest.class.getResource("maven-multimod.zip")));
         j.buildAndAssertSuccess(mms);
@@ -95,7 +95,7 @@ public class MavenMultiModuleTest {
     }
 
     @Test public void incrementalMultiModMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.getReporters().add(new MavenFingerprinter());
@@ -170,7 +170,7 @@ public class MavenMultiModuleTest {
 
     @Bug(5357)
     @Test public void incrRelMultiModMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
@@ -214,7 +214,7 @@ public class MavenMultiModuleTest {
     @Ignore("kutzi 10/10/11 ignore test until I can figure out why it fails sometimes")
     @Test public void estimatedDurationForIncrementalMultiModMaven()
             throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource(
@@ -247,7 +247,7 @@ public class MavenMultiModuleTest {
      * enabled and a new module is added.
      */
     @Test public void newModMultiModMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod.zip"),
@@ -262,7 +262,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4491)
     @Test public void multiModMavenNonRecursiveParsing() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install -N");
         m.getReporters().add(new TestReporter());
@@ -297,7 +297,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4152)
     @Test public void incrementalMultiModWithErrorsMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
@@ -360,7 +360,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(5121)
     @Test public void incrementalRedeployAfterAggregatorError() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
@@ -423,7 +423,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4378)
     @Test public void multiModWithTestFailuresMaven() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod-incr.zip")));
@@ -453,7 +453,7 @@ public class MavenMultiModuleTest {
     
     @Bug(8484)
     @Test public void multiModMavenNonRecursive() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven3();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
@@ -480,22 +480,26 @@ public class MavenMultiModuleTest {
     @Bug(17236)
     @Test public void artifactArchiving() throws Exception {
         ArtifactManagerConfiguration.get().getArtifactManagerFactories().add(new TestAMF());
-        ToolInstallations.configureDefaultMaven(); // using Maven 2 so we can test single-module builds
+        ToolInstallations.configureMaven35();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
         mms.setAssignedNode(j.createOnlineSlave());
         j.buildAndAssertSuccess(mms);
         // We want all the artifacts in a given module to be archived in one operation. But modules are archived separately.
-        Map<String,Map<String,FilePath>> expected = new TreeMap<String,Map<String,FilePath>>();
+        Map<String,Map<String,FilePath>> expected = new TreeMap<>();
         FilePath ws = mms.getModule("org.jvnet.hudson.main.test.multimod$multimod-top").getBuildByNumber(1).getWorkspace();
-        expected.put("org.jvnet.hudson.main.test.multimod:multimod-top", Collections.singletonMap("org.jvnet.hudson.main.test.multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom", new FilePath(ws.getChannel(), "…/org/jvnet/hudson/main/test/multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom")));
+        expected.put("org.jvnet.hudson.main.test.multimod:multimod-top",
+                     Collections.singletonMap("org.jvnet.hudson.main.test.multimod/multimod-top/1.0-SNAPSHOT/multimod-top-1.0-SNAPSHOT.pom",
+                                              ws.child( "pom.xml" )));
         for (String module : new String[] {"moduleA", "moduleB", "moduleC"}) {
-            Map<String,FilePath> m = new TreeMap<String,FilePath>();
+            Map<String,FilePath> m = new TreeMap<>();
             ws = mms.getModule("org.jvnet.hudson.main.test.multimod$" + module).getBuildByNumber(1).getWorkspace();
             m.put("org.jvnet.hudson.main.test.multimod/" + module + "/1.0-SNAPSHOT/" + module + "-1.0-SNAPSHOT.pom", ws.child("pom.xml"));
             m.put("org.jvnet.hudson.main.test.multimod/" + module + "/1.0-SNAPSHOT/" + module + "-1.0-SNAPSHOT.jar", ws.child("target/" + module + "-1.0-SNAPSHOT.jar"));
             expected.put("org.jvnet.hudson.main.test.multimod:" + module, m);
         }
+        System.out.println( "TestAM.archivings: " + TestAM.archivings );
+        System.out.println( "expected: " + expected );
         assertEquals(expected.toString(), TestAM.archivings.toString()); // easy to read
         assertEquals(expected, TestAM.archivings); // compares also FileChannel
         // Also check single-module build.
@@ -503,7 +507,7 @@ public class MavenMultiModuleTest {
         TestAM.archivings.clear();
         MavenBuild isolated = j.buildAndAssertSuccess(mms.getModule("org.jvnet.hudson.main.test.multimod$moduleA"));
         assertEquals(2, isolated.number);
-        Map<String,FilePath> m = new TreeMap<String,FilePath>();
+        Map<String,FilePath> m = new TreeMap<>();
         ws = isolated.getWorkspace();
         m.put("org.jvnet.hudson.main.test.multimod/moduleA/1.0-SNAPSHOT/moduleA-1.0-SNAPSHOT.pom", ws.child("pom.xml"));
         m.put("org.jvnet.hudson.main.test.multimod/moduleA/1.0-SNAPSHOT/moduleA-1.0-SNAPSHOT.jar", ws.child("target/moduleA-1.0-SNAPSHOT.jar"));
@@ -532,7 +536,7 @@ public class MavenMultiModuleTest {
         }
     }
     public static final class TestAM extends ArtifactManager {
-        static final Map</* module name */String,Map</* archive path */String,/* file in workspace */FilePath>> archivings = new TreeMap<String,Map<String,FilePath>>();
+        static final Map</* module name */String,Map</* archive path */String,/* file in workspace */FilePath>> archivings = new TreeMap<>();
         transient Run<?,?> build;
         TestAM(Run<?,?> build) {
             onLoad(build);
@@ -546,7 +550,7 @@ public class MavenMultiModuleTest {
                 // Would be legitimate only if some archived files for a given module were outside workspace, such as repository parent POM, *and* others were inside, which is not the case in this test.
                 throw new IOException("repeated archiving to " + name);
             }
-            Map<String,FilePath> m = new TreeMap<String,FilePath>();
+            Map<String,FilePath> m = new TreeMap<>();
             for (Map.Entry<String,String> e : artifacts.entrySet()) {
                 FilePath f = workspace.child(e.getValue());
                 if (f.exists()) {
@@ -554,6 +558,7 @@ public class MavenMultiModuleTest {
                         // Inside the local repository. Hard to know exactly what that path might be, so just mask it out.
                         f = new FilePath(f.getChannel(), f.getRemote().replaceFirst("^.+(?=[/\\\\]org[/\\\\]jvnet[/\\\\]hudson[/\\\\]main[/\\\\]test[/\\\\])", "…").replace('\\', '/'));
                     }
+                    System.out.println( "f:" +f );
                     m.put(e.getKey(), f);
                 } else {
                     throw new IOException("no such file " + f);

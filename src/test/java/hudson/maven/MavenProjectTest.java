@@ -24,6 +24,7 @@
 package hudson.maven;
 
 import hudson.maven.local_repo.DefaultLocalRepositoryLocator;
+import hudson.maven.local_repo.PerExecutorLocalRepositoryLocator;
 import hudson.maven.local_repo.PerJobLocalRepositoryLocator;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
@@ -40,6 +41,7 @@ import jenkins.mvn.FilePathGlobalSettingsProvider;
 import jenkins.mvn.FilePathSettingsProvider;
 import jenkins.mvn.GlobalMavenConfig;
 
+import jenkins.mvn.SettingsProvider;
 import org.junit.Assert;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
@@ -81,11 +83,14 @@ public class MavenProjectTest extends AbstractMavenTestCase {
 
     private MavenModuleSet createProject(final String scmResource) throws Exception {
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
-        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
+        MavenInstallation mi = ToolInstallations.configureMaven35();
         project.setScm(new ExtractResourceSCM(getClass().getResource(
                 scmResource)));
         project.setMaven(mi.getName());
-        project.setLocalRepository(new PerJobLocalRepositoryLocator());
+        // we don't want to download internet again for unit tests
+        // so local repo from user settings
+        project.setSettings( new DefaultSettingsProvider() );
+        //project.setLocalRepository(new PerExecutorLocalRepositoryLocator());
         return project;
     }
 

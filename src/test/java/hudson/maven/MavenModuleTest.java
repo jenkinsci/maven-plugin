@@ -79,8 +79,7 @@ public class MavenModuleTest {
         
         when(this.module.getAllMavenModules()).thenReturn(Lists.newArrayList(this.module, pluginModule));
         
-        DependencyGraph graph = mockDependencyGraph(
-                Lists.<AbstractProject<?,?>>newArrayList(this.module, pluginModule));
+        DependencyGraph graph = mockDependencyGraph(Lists.newArrayList(this.module, pluginModule));
         graph.build();
         
         @SuppressWarnings("rawtypes")
@@ -219,7 +218,7 @@ public class MavenModuleTest {
         MavenModule mavenModuleY = mockMavenModule(dependY);
         MavenModule mavenModuleZ = mockMavenModule(dependZ);
 
-        Collection<AbstractProject<?,?>> allModules = Lists.<AbstractProject<?,?>>newArrayList(mavenModuleA,
+        Collection<AbstractProject<?,?>> allModules = Lists.newArrayList(mavenModuleA,
                 mavenModuleB, mavenModuleX, mavenModuleY, mavenModuleZ);
 
         for (AbstractProject<?, ?> module : allModules) {
@@ -230,7 +229,7 @@ public class MavenModuleTest {
         DependencyGraph graph = mockDependencyGraph(allModules);
         doCallRealMethod().when(graph).getDownstream(Matchers.any(AbstractProject.class));
         doCallRealMethod().when(graph).getUpstream(Matchers.any(AbstractProject.class));
-        doCallRealMethod().when(graph).compare(Matchers.<AbstractProject>any(), Matchers.<AbstractProject>any());
+        doCallRealMethod().when(graph).compare(Matchers.any(), Matchers.any());
         graph.build();
 
         List<AbstractProject> downstreamA = graph.getDownstream(mavenModuleA);
@@ -268,7 +267,7 @@ public class MavenModuleTest {
         MavenModule mavenModuleA = mockMavenModule(projectA);
         MavenModule mavenModuleX = mockMavenModule(dependX);
 
-        Collection<AbstractProject<?,?>> allModules = Lists.<AbstractProject<?,?>>newArrayList(mavenModuleA,
+        Collection<AbstractProject<?,?>> allModules = Lists.newArrayList(mavenModuleA,
                 mavenModuleX);
 
         for (AbstractProject<?, ?> module : allModules) {
@@ -279,7 +278,7 @@ public class MavenModuleTest {
         DependencyGraph graph = mockDependencyGraph(allModules);
         doCallRealMethod().when(graph).getDownstream(Matchers.any(AbstractProject.class));
         doCallRealMethod().when(graph).getUpstream(Matchers.any(AbstractProject.class));
-        doCallRealMethod().when(graph).compare(Matchers.<AbstractProject>any(), Matchers.<AbstractProject>any());
+        doCallRealMethod().when(graph).compare(Matchers.any(), Matchers.any());
         graph.build();
 
         List<AbstractProject> downstreamA = graph.getDownstream(mavenModuleA);
@@ -315,7 +314,7 @@ public class MavenModuleTest {
         when(appMavenModule.getAllMavenModules()).thenReturn(projects);
         when(libMavenModule.getAllMavenModules()).thenReturn(projects);
 
-        DependencyGraph graph = mockDependencyGraph(Lists.<AbstractProject<?,?>>newArrayList(appMavenModule, libMavenModule));
+        DependencyGraph graph = mockDependencyGraph(Lists.newArrayList(appMavenModule, libMavenModule));
         doCallRealMethod().when(graph).getDownstream(Matchers.any(AbstractProject.class));
         doCallRealMethod().when(graph).getUpstream(Matchers.any(AbstractProject.class));
 
