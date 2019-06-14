@@ -282,16 +282,14 @@ public class SurefireArchiver extends TestFailureDetector {
         @Override
         public Iterator<File> iterator() {
             
-            Predicate<File> fileWithinFromAndTo = new Predicate<File>() {
-                @Override
-                public boolean apply(File file) {
+            Predicate<File> fileWithinFromAndTo = file ->  {
                     long lastModified = file.lastModified();
                     if (lastModified>=from && lastModified<=to) {
                         return true;
                     }
                     return false;
-                }
-            };
+                };
+
             
             return Iterators.filter(
                     Iterators.transform(

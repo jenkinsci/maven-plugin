@@ -32,7 +32,7 @@ import org.jvnet.hudson.maven3.listeners.MavenProjectInfo;
         {
         	ExceptionHandler handler = new DefaultExceptionHandler();
 
-            Map<String, String> references = new LinkedHashMap<String, String>();
+            Map<String, String> references = new LinkedHashMap<>();
 
             MavenProject project = null;
 

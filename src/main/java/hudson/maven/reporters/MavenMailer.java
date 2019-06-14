@@ -23,8 +23,8 @@
  */
 package hudson.maven.reporters;
 
-import hudson.Launcher;
 import hudson.Extension;
+import hudson.Launcher;
 import hudson.maven.MavenBuild;
 import hudson.maven.MavenModule;
 import hudson.maven.MavenReporter;
@@ -32,10 +32,11 @@ import hudson.maven.MavenReporterDescriptor;
 import hudson.maven.util.VariableExpander;
 import hudson.model.BuildListener;
 import hudson.tasks.MailSender;
+import org.kohsuke.stapler.DataBoundConstructor;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Sends out an e-mail notification for Maven build result.

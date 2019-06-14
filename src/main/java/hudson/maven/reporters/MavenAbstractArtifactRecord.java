@@ -107,7 +107,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
          * Returns the log of this deployment record.
          */
         public AnnotatedLargeText<Record> getLog() {
-            return new AnnotatedLargeText<Record>(new File(getBuild().getRootDir(),fileName), Charset.defaultCharset(), true, this);
+            return new AnnotatedLargeText<>(new File(getBuild().getRootDir(),fileName), Charset.defaultCharset(), true, this);
         }
 
         /**

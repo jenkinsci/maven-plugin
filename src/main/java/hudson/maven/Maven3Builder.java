@@ -431,9 +431,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
                     for (MavenReporter mavenReporter : fixNull(reporters.get(e.getKey()))) {
                         try {
                             mavenReporter.preBuild( e.getValue() ,project, maven3Builder.listener);
-                        } catch ( InterruptedException x ) {
-                            x.printStackTrace();
-                        } catch ( IOException x ) {
+                        } catch ( InterruptedException|IOException x ) {
                             x.printStackTrace();
                         }
                     }

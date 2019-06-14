@@ -50,7 +50,7 @@ import java.util.Map.Entry;
  */
 public class BuildInfoRecorder extends MavenReporter {
 
-    private static final Set<String> keys = new HashSet<String>(Arrays.asList(
+    private static final Set<String> keys = new HashSet<>(Arrays.asList(
         "maven-jar-plugin:jar",
         "maven-jar-plugin:test-jar",
         "maven-war-plugin:war",

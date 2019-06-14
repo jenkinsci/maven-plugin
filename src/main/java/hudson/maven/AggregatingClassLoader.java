@@ -20,7 +20,7 @@ class AggregatingClassLoader extends ClassLoader {
 
     public AggregatingClassLoader(ClassLoader parent, List<ClassLoader> sides) {
         super(parent);
-        this.sides = new ArrayList<ClassLoader>(sides);
+        this.sides = new ArrayList<>(sides);
     }
 
     @Override
@@ -48,7 +48,7 @@ class AggregatingClassLoader extends ClassLoader {
 
     @Override
     protected Enumeration<URL> findResources(String name) throws IOException {
-        List<URL> resources = new ArrayList<URL>();
+        List<URL> resources = new ArrayList<>();
         for (ClassLoader cl : sides) {
             resources.addAll(Collections.list(cl.getResources(name)));
         }

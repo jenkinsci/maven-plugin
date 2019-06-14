@@ -153,7 +153,7 @@ public abstract class AbstractMavenBuilder extends MasterToSlaveCallable<Result,
      * The method must be called in the Maven jail process i.e. inside the call method!
      */
     protected void initializeAsynchronousExecutions() {
-        futures = new CopyOnWriteArrayList<Future<?>>();
+        futures = new CopyOnWriteArrayList<>();
         if (this.proxies != null) {
             for(FilterImpl proxy : this.proxies.values()) {
                 proxy.setFutures(futures);

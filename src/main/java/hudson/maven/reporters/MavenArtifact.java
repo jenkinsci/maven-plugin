@@ -42,6 +42,7 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import jenkins.model.StandardArtifactManager;
 import jenkins.util.VirtualFile;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -276,11 +277,9 @@ public final class MavenArtifact implements Serializable {
                 } catch (FileNotFoundException x) {
                     File f = File.createTempFile("jenkins-", canonicalName);
                     f.deleteOnExit();
-                    OutputStream os = new FileOutputStream(f);
-                    try {
-                        Util.copyStreamAndClose(getVirtualFile().open(), os);
-                    } finally {
-                        os.close();
+
+                    try(OutputStream os = new FileOutputStream(f);) {
+                        IOUtils.copy(getVirtualFile().open(), os);
                     }
                     copy = f;
                 }
@@ -308,12 +307,8 @@ public final class MavenArtifact implements Serializable {
      * TODO: figure out how to make this URL more discoverable to the remote API.
      */
     public HttpResponse doFile(final @AncestorInPath MavenArtifactRecord parent) throws IOException {
-        return new HttpResponse() {
-            @Override public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                rsp.setContentType("application/octet-stream");
-                Util.copyStreamAndClose(parent.parent.getArtifactManager().root().child(artifactPath()).open(), rsp.getCompressedOutputStream(req));
-            }
-        };
+        return ( req, rsp, node ) ->
+                IOUtils.copy(parent.parent.getArtifactManager().root().child(artifactPath()).open(), rsp.getCompressedOutputStream(req));
     }
 
     private String artifactPath() {
