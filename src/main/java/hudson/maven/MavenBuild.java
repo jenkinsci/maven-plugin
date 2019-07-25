@@ -588,14 +588,17 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         
         private final SplittableBuildListener listener;
         long startTime;
-        private final OutputStream log;
+        private OutputStream log;
         private final MavenModuleSetBuild parentBuild;
         private boolean blockBuildEvents;
 
-        ProxyImpl2(MavenModuleSetBuild parentBuild,SplittableBuildListener listener) throws FileNotFoundException {
+        ProxyImpl2(MavenModuleSetBuild parentBuild,SplittableBuildListener listener) throws FileNotFoundException, IOException, InterruptedException {
             this.parentBuild = parentBuild;
             this.listener = listener;
             log = new FileOutputStream(getLogFile()); // no buffering so that AJAX clients can see the log live
+            for(BuildWrapper wrapper : project.getParent().getBuildWrappersList()){
+                log = wrapper.decorateLogger( parentBuild, log );
+            }
         }
 
         public void start() {
