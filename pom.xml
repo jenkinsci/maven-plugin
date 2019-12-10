@@ -40,7 +40,7 @@ THE SOFTWARE.
 
   <name>Maven Integration plugin</name>
   <description>This plug-in provides, for better and for worse, a deep integration of Jenkins and Maven: Automatic triggers between projects depending on SNAPSHOTs, automated configuration of various Jenkins publishers (Junit, ...).</description>
-  <url>http://github.com/jenkinsci/maven-plugin</url>
+  <url>https://github.com/jenkinsci/maven-plugin</url>
 
   <properties>
     <jenkins.version>2.60.3</jenkins.version>
