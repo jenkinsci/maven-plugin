@@ -72,7 +72,7 @@ July 31st, 2019
     Plugin](https://wiki.jenkins.io/display/JENKINS/Apache+HttpComponents+Client+4.x+API+Plugin) ([JENKINS-46053](https://issues.jenkins-ci.org/browse/JENKINS-46053),
     [JENKINS-46210](https://issues.jenkins-ci.org/browse/JENKINS-46210)
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Internal: Use the JSch library from the [JSch
+    Internal: Use the JSch library from the [JSch
     Plugin](https://wiki.jenkins.io/display/JENKINS/JSch+Plugin)
 -   ![(info)](docs/images/information.svg)
     .emoticon-information} Internal: Fix Parent
