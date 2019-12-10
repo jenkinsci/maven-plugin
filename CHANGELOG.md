@@ -1,6 +1,7 @@
 ## Release Notes
 
-#### Version 3.4 (July 31st, 2019)
+### Version 3.4
+July 31st, 2019
 
 -   [Fix security
     issue](https://jenkins.io/security/advisory/2019-07-31/#SECURITY-713)
