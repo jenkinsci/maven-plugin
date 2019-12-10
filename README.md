@@ -17,8 +17,9 @@ following warnings before using an older version:
 
 See [the changelog](CHANGELOG.md)
 
-**![](docs/images/hn.png)Maven jobs and Java
-versions compatibility** : Because java serialized classes are exchanged
+**![](docs/images/hn.png)
+
+Maven jobs and Java versions compatibility** : Because java serialized classes are exchanged
 between Jenkins master and Maven Jobs it is required that the JVM used
 to launch Maven is superior or equal to the version of Java for which
 Jenkins Master is built for.
@@ -54,8 +55,7 @@ doesn't work anymore if your agent or maven job is using Java \< 7 -
 [JENKINS-40990](https://issues.jenkins-ci.org/browse/JENKINS-40990)
 (Because remoting is compiled for Java 7)**
 
-Known issues are listed [in
-Jira](https://issues.jenkins-ci.org/issues/?jql=project%20%3D%20JENKINS%20AND%20status%20in%20(Open%2C%20%22In%20Progress%22%2C%20Reopened)%20AND%20component%20%3D%20%27maven-plugin%27)wfEditor
+Known issues are listed [in Jira](https://issues.jenkins-ci.org/issues/?jql=project%20%3D%20JENKINS%20AND%20status%20in%20(Open%2C%20%22In%20Progress%22%2C%20Reopened)%20AND%20component%20%3D%20%27maven-plugin%27)
 
 Historically this plugin was released alongside Jenkins core releases.
 Since version 2.0 this plugin is released separately, but still bundled
