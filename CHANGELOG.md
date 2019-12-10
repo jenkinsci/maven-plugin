@@ -3,8 +3,7 @@
 ### Version 3.4
 July 31st, 2019
 
--   [Fix security
-    issue](https://jenkins.io/security/advisory/2019-07-31/#SECURITY-713)
+-   [Fix security issue](https://jenkins.io/security/advisory/2019-07-31/#SECURITY-713)
 
 #### Version 3.3 (June 14th, 2019)
 
@@ -25,31 +24,25 @@ July 31st, 2019
 #### Version 3.1.2 (March 27th, 2018)
 
 -   ![(tick)](docs/images/check.svg) Fixed: JEP-200 failure to serialize Notifier, used
-    when \<ciManagement\> specifies email configuration. (  [
-    JENKINS-50251](https://issues.jenkins-ci.org/browse/JENKINS-50251) -
+    when \<ciManagement\> specifies email configuration. ([JENKINS-50251](https://issues.jenkins-ci.org/browse/JENKINS-50251) -
     Getting issue details... STATUS  ) - Take 2 - fix a potential NPE
 
 #### Version 3.1.1 (March 25th, 2018)
 
 -   ![(tick)](docs/images/check.svg) Fixed: JEP-200 failure to serialize Notifier, used
-    when \<ciManagement\> specifies email configuration. (  [
-    JENKINS-50251](https://issues.jenkins-ci.org/browse/JENKINS-50251) -
+    when \<ciManagement\> specifies email configuration. ([JENKINS-50251](https://issues.jenkins-ci.org/browse/JENKINS-50251) -
     Getting issue details... STATUS  )
 
 #### Version 3.1 (January 24th, 2018)
 
 -   ![(tick)](docs/images/check.svg) Fixed: the perform method should be passing the
-    loop-variable 'moduleBuild' to tdp.getTestData (
-    [PR\#12](https://github.com/jenkinsci/maven-plugin/pull/12)
-    )
+    loop-variable 'moduleBuild' to tdp.getTestData ([PR\#12](https://github.com/jenkinsci/maven-plugin/pull/12))
 -   ![(tick)](docs/images/check.svg) Fixed: UnsupportedOperationException: Refusing to
     marshal org.apache.maven.artifact.versioning.DefaultArtifactVersion
-    for security reasons ( [
-    JENKINS-49089](https://issues.jenkins-ci.org/browse/JENKINS-49089) -
+    for security reasons ( [JENKINS-49089](https://issues.jenkins-ci.org/browse/JENKINS-49089) -
     Getting issue details... STATUS  )
 -   ![(tick)](docs/images/check.svg) Fixed: Forbid nested references to model objects ( 
-    [
-    JENKINS-45892](https://issues.jenkins-ci.org/browse/JENKINS-45892) -
+    [JENKINS-45892](https://issues.jenkins-ci.org/browse/JENKINS-45892) -
     Getting issue details... STATUS  )
 -   ![(info)](docs/images/information.svg) Internal: Update to Apache HttpComponents
     Client API 4.5.3-2.1
@@ -67,18 +60,16 @@ July 31st, 2019
     project import the dependencyManagement of another
     ([JENKINS-15883](https://issues.jenkins-ci.org/browse/JENKINS-15883)
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Internal: Update HttpClient and use the
-    client from [Apache HttpComponents Client 4.x API
-    Plugin](https://wiki.jenkins.io/display/JENKINS/Apache+HttpComponents+Client+4.x+API+Plugin) ([JENKINS-46053](https://issues.jenkins-ci.org/browse/JENKINS-46053),
+     Internal: Update HttpClient and use the
+    client from [Apache HttpComponents Client 4.x API Plugin](https://wiki.jenkins.io/display/JENKINS/Apache+HttpComponents+Client+4.x+API+Plugin) ([JENKINS-46053](https://issues.jenkins-ci.org/browse/JENKINS-46053),
     [JENKINS-46210](https://issues.jenkins-ci.org/browse/JENKINS-46210)
 -   ![(info)](docs/images/information.svg)
-    Internal: Use the JSch library from the [JSch
-    Plugin](https://wiki.jenkins.io/display/JENKINS/JSch+Plugin)
+    Internal: Use the JSch library from the [JSch Plugin](https://wiki.jenkins.io/display/JENKINS/JSch+Plugin)
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Internal: Fix Parent
+     Internal: Fix Parent
     POM ([JENKINS-45271](https://issues.jenkins-ci.org/browse/JENKINS-45271)
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Internal: Maven Plugin uses obsolete maven
+     Internal: Maven Plugin uses obsolete maven
     methods
     ([JENKINS-46148](https://issues.jenkins-ci.org/browse/JENKINS-46148)  
 -   ![(tick)](docs/images/check.svg)
@@ -99,15 +90,14 @@ July 31st, 2019
         in `MavenEmbedderUtils#getMavenVersion()` (regression in 3.12)
     -   [JENKINS-40621](https://issues.jenkins-ci.org/browse/JENKINS-40621) -
         Prevent leaked file descriptors when
-        invoking `MavenEmbedderUtils#getMavenVersion()`([PR
-        \#5](https://github.com/jenkinsci/lib-jenkins-maven-embedder/pull/5)
+        invoking `MavenEmbedderUtils#getMavenVersion()`([PR\#5](https://github.com/jenkinsci/lib-jenkins-maven-embedder/pull/5)
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Update: Update plugin description in the
+     Update: Update plugin description in the
     plugin manager ( Maven plugin is not being installed by default
     starting from Jenkins 2 )
-    ( [PR\#99](https://github.com/jenkinsci/maven-plugin/pull/99) )
+    ([PR\#99](https://github.com/jenkinsci/maven-plugin/pull/99) )
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Update: Remove the message about
+     Update: Remove the message about
     jenkinsci-users ML (
     [PR\#97](https://github.com/jenkinsci/maven-plugin/pull/97) )
 
@@ -146,17 +136,17 @@ July 31st, 2019
     probably users of weekly releases \>= 2.28 where guice was upgraded
     to version 4.0 final)
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Update: Use Apache Maven Owl logo instead of
+     Update: Use Apache Maven Owl logo instead of
     the Apache Feather ( We don't have the rights ) (
     [JENKINS-38960](https://issues.jenkins-ci.org/browse/JENKINS-38960)
     )
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Internal: Fix tests for Jenkins 2, use a
+     Internal: Fix tests for Jenkins 2, use a
     minimum set of permalinks instead of a fixed set (
     [JENKINS-40949](https://issues.jenkins-ci.org/browse/JENKINS-40949)
     )
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Internal: Update dependencies
+     Internal: Update dependencies
     -   Do not bundle Guice (we pick it up from core).
     -   Update Sonatype Aether `0.9.0.M2` to Eclipse Aether `1.1.0`
     -   Update Apache Wagon `2.4` to `2.12` which solves various issues
@@ -177,9 +167,7 @@ Requires now Jenkins \>= 1.625.3 and Java \>= 7
 
 -   ![(tick)](docs/images/check.svg)
      Fixed: Failed maven builds using -T are showing up
-    as Aborted (
-    [JENKINS-24832](https://issues.jenkins-ci.org/browse/JENKINS-24832)
-    )
+    as Aborted ([JENKINS-24832](https://issues.jenkins-ci.org/browse/JENKINS-24832))
 -   ![(tick)](docs/images/check.svg)
      Fixed: Apache Maven 3.3 support and toolchains
     integration (
@@ -201,9 +189,7 @@ Requires now Jenkins \>= 1.625.3 and Java \>= 7
     )
 -   ![(tick)](docs/images/check.svg)
      Fixed: Release builds should not trigger downstream
-    projects (
-    [JENKINS-34789](https://issues.jenkins-ci.org/browse/JENKINS-34789)
-    )
+    projects ([JENKINS-34789](https://issues.jenkins-ci.org/browse/JENKINS-34789))
 -   ![(tick)](docs/images/check.svg)
      Fixed: Redeploy publisher must reuse global maven
     settings from the slave (
@@ -214,16 +200,15 @@ Requires now Jenkins \>= 1.625.3 and Java \>= 7
     error with Jenkins \>= 1.612 and JDK 6 (
     [JENKINS-28294](https://issues.jenkins-ci.org/browse/JENKINS-28294)
     )
--   ![(plus)](docs/images/add.svg)
-    .emoticon-plus} New: Automatically detect tests from
+-   ![(plus)](docs/images/add.svg)  New: Automatically detect tests from
     com.simpligility.maven.plugins:android-maven-plugin:internal-integration-test
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Update: NL translation for
+     Update: NL translation for
     MavenProbeAction.DisplayName
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Internal: Remove usage of IOException2
+     Internal: Remove usage of IOException2
 -   ![(info)](docs/images/information.svg)
-    .emoticon-information} Internal: Upgrade Sisu to 0.3.3 (
+     Internal: Upgrade Sisu to 0.3.3 (
     [JENKINS-38736](https://issues.jenkins-ci.org/browse/JENKINS-38736)
     )
 
@@ -238,8 +223,7 @@ Requires now Jenkins \>= 1.625.3 and Java \>= 7
     Maven plug-ins
 -   [JENKINS-31524](https://issues.jenkins-ci.org/browse/JENKINS-31524)
     SurefireArchiver ignores updated results when multiple testing
-    plug-ins use the same reports directory (See [Building a maven2
-    project](https://wiki.jenkins.io/display/JENKINS/Building+a+maven2+project) -
+    plug-ins use the same reports directory (See [Building a maven2 project](https://wiki.jenkins.io/display/JENKINS/Building+a+maven2+project) -
     Maven Surefire Test Results)
 -   [JENKINS-28147](https://issues.jenkins-ci.org/browse/JENKINS-28147)
     Perform Environment tearDown if BuildWrapper fails
