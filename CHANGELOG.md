@@ -13,7 +13,7 @@ July 31st, 2019
     ([JENKINS-57119](https://issues.jenkins-ci.org/browse/JENKINS-57119))
 -   ![(tick)](docs/images/check.svg) Fixed: [java.io](http://java.io).NotSerializableException:
     The calling thread Thread has no associated
-    channel ([JENKINS-57244](https://issues.jenkins-ci.org/browse/JENKINS-57244)
+    channel ([JENKINS-57244](https://issues.jenkins-ci.org/browse/JENKINS-57244))
 -   ![(tick)](docs/images/check.svg) Fixed: Upgrade maven embedder from 3.1.0 to at least
     3.5.4 ([JENKINS-54530](https://issues.jenkins-ci.org/browse/JENKINS-54530)
 
