@@ -7,7 +7,7 @@
 
 #### Version 3.3 (June 14th, 2019)
 
--   ![(tick)](docs/images/check.svg){ Fixed: maven-plugin random socket leak, leading to
+-   ![(tick)](docs/images/check.svg) Fixed: maven-plugin random socket leak, leading to
     threads leak on slave and master
     ([JENKINS-57119](https://issues.jenkins-ci.org/browse/JENKINS-57119)
 -   ![(tick)](docs/images/check.svg) Fixed: [java.io](http://java.io).NotSerializableException:
