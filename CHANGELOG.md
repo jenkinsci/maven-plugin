@@ -1,11 +1,10 @@
 ## Release Notes
 
-### Version 3.4
-July 31st, 2019
+### Version 3.4 (July 31, 2019)
 
 -   [Fix security issue](https://jenkins.io/security/advisory/2019-07-31/#SECURITY-713)
 
-#### Version 3.3 (June 14th, 2019)
+### Version 3.3 (June 14, 2019)
 
 -   ![(tick)](docs/images/check.svg) Fixed: maven-plugin random socket leak, leading to
     threads leak on slave and master
@@ -16,24 +15,24 @@ July 31st, 2019
 -   ![(tick)](docs/images/check.svg) Fixed: Upgrade maven embedder from 3.1.0 to at least
     3.5.4 ([JENKINS-54530](https://issues.jenkins-ci.org/browse/JENKINS-54530)
 
-#### Version 3.2 (November 30th, 2018)
+### Version 3.2 (November 30, 2018)
 
 -   ![(tick)](docs/images/check.svg) Fixed: remove anonymous classes
     ([JENKINS-53481](https://issues.jenkins-ci.org/browse/JENKINS-53481)
 
-#### Version 3.1.2 (March 27th, 2018)
+### Version 3.1.2 (March 27, 2018)
 
 -   ![(tick)](docs/images/check.svg) Fixed: JEP-200 failure to serialize Notifier, used
     when \<ciManagement\> specifies email configuration. ([JENKINS-50251](https://issues.jenkins-ci.org/browse/JENKINS-50251) -
     Getting issue details... STATUS  ) - Take 2 - fix a potential NPE
 
-#### Version 3.1.1 (March 25th, 2018)
+### Version 3.1.1 (March 25, 2018)
 
 -   ![(tick)](docs/images/check.svg) Fixed: JEP-200 failure to serialize Notifier, used
     when \<ciManagement\> specifies email configuration. ([JENKINS-50251](https://issues.jenkins-ci.org/browse/JENKINS-50251) -
     Getting issue details... STATUS  )
 
-#### Version 3.1 (January 24th, 2018)
+### Version 3.1.1 (January 24, 2018)
 
 -   ![(tick)](docs/images/check.svg) Fixed: the perform method should be passing the
     loop-variable 'moduleBuild' to tdp.getTestData ([PR\#12](https://github.com/jenkinsci/maven-plugin/pull/12))
@@ -49,7 +48,7 @@ July 31st, 2019
 -   ![(info)](docs/images/information.svg) Internal: Update Lib Maven Embedder to 3.13
 -   Includes: [PR\#12](https://github.com/jenkinsci/maven-plugin/pull/12), [PR\#105](https://github.com/jenkinsci/maven-plugin/pull/105), [PR\#106](https://github.com/jenkinsci/maven-plugin/pull/106), [PR\#108](https://github.com/jenkinsci/maven-plugin/pull/108), [PR\#109](https://github.com/jenkinsci/maven-plugin/pull/109), [PR\#111](https://github.com/jenkinsci/maven-plugin/pull/111), [PR\#112](https://github.com/jenkinsci/maven-plugin/pull/112)
 
-#### Version 3.0 (October 6th, 2017)
+### Version 3.0 (October 6, 2017)
 
 -   ![(tick)](docs/images/check.svg)
      Fixed: Global environment variables are not being
@@ -78,7 +77,7 @@ July 31st, 2019
     -   Note that some of the changes may lead to compatibility issues
         in the plugin dependencies
 
-#### Version 2.17 (July 10, 2017)
+### Version 2.17 (July 10, 2017)
 
 -   ![(tick)](docs/images/check.svg)
      Fixed: Maven version detection fails on same agent
@@ -101,7 +100,7 @@ July 31st, 2019
     jenkinsci-users ML (
     [PR\#97](https://github.com/jenkinsci/maven-plugin/pull/97) )
 
-#### Version 2.16 (June 08, 2017)
+### Version 2.16 (June 08, 2017)
 
 -   ![(tick)](docs/images/check.svg)
      Fixed: Support of Maven 3.5 (due to non backward
@@ -111,7 +110,7 @@ July 31st, 2019
      Fixed: fix typo in image sources
     ([JENKINS-42833](https://issues.jenkins-ci.org/browse/JENKINS-42833))
 
-#### Version 2.15.1 (Feb 16, 2017)
+### Version 2.15.1 (Feb 12, 2017)
 
 -   ![(tick)](docs/images/check.svg)
      Fixed: Maven projects using Maven 3.0.x don't show
@@ -157,11 +156,11 @@ July 31st, 2019
         from the post build deployment task.
     -   Internal: Upgrade lib-jenkins-maven-embedder `3.11` to `3.12`
 
-#### Version 2.15 (Feb 16, 2017)
+### Version 2.15 (Feb 16, 2017)
 
 Release failed .... thx repo.jenkins-ci.org
 
-#### Version 2.14 (Oct 18, 2016)
+### Version 2.14 (Oct 18, 2016)
 
 Requires now Jenkins \>= 1.625.3 and Java \>= 7
 
@@ -212,7 +211,7 @@ Requires now Jenkins \>= 1.625.3 and Java \>= 7
     [JENKINS-38736](https://issues.jenkins-ci.org/browse/JENKINS-38736)
     )
 
-#### Version 2.13 (May 19, 2016)
+### Version 2.13 (May 19, 2016)
 
 -   [JENKINS-31162](https://issues.jenkins-ci.org/browse/JENKINS-31162)
     New item categorization and dynamic choice offering
@@ -239,7 +238,7 @@ Requires now Jenkins \>= 1.625.3 and Java \>= 7
     SNAPSHOT if any other upstream project has no successful builds on
     this Jenkins.
 
-#### Version 2.12.1 (Oct 01, 2015)
+### Version 2.12.1 (Oct 01, 2015)
 
 -   [JENKINS-22252](https://issues.jenkins-ci.org/browse/JENKINS-22252)
     Reverting fix for
@@ -247,7 +246,7 @@ Requires now Jenkins \>= 1.625.3 and Java \>= 7
     due to serious regression (`IllegalAccessError` on
     `AbstractMapBasedMultimap`).
 
-#### Version 2.12 (Aug 27, 2015)
+### Version 2.12 (Aug 27, 2015)
 
 -   [JENKINS-26947](https://issues.jenkins-ci.org/browse/JENKINS-26947)
     Forcibly terminate Maven remoting channel when upstream channel is
@@ -256,7 +255,7 @@ Requires now Jenkins \>= 1.625.3 and Java \>= 7
     Introduced `TcpSocketHostLocator` extension point. Using newer
     interceptors library.
 
-#### Version 2.11 (Aug 07, 2015)
+### Version 2.11 (Aug 07, 2015)
 
 This version requires Jenkins 1.580.1 or later.
 
@@ -268,47 +267,40 @@ This version requires Jenkins 1.580.1 or later.
 -   [JENKINS-25625](https://issues.jenkins-ci.org/browse/JENKINS-25625)
     Simplified dependencies for development from other plugins.
 
-#### Version 2.10 (Jun 08, 2015)
+### Version 2.10 (Jun 08, 2015)
 
 -   [JENKINS-25406](https://issues.jenkins-ci.org/browse/JENKINS-25406)
     Error running Maven builds including static analysis on new core
     under some conditions.
 -   Improved logging of incremental build behavior.
 
-#### Version 2.9 (March 18, 2015)
+### Version 2.9 (March 18, 2015)
 
 -   nothing special :-) see commits logs
 
-#### Version 2.8 (Nov 21, 2014)
+### Version 2.8 (Nov 21, 2014)
 
--   [issue
-    \#25691](https://issues.jenkins-ci.org/browse/JENKINS-25691) Redeploy
+-   [issue#25691](https://issues.jenkins-ci.org/browse/JENKINS-25691) Redeploy
     link is displayed to Anonymous users with read only permissions for
     a job
 
 #### Version 2.7 (Oct 10, 2014)
 
--   [issue
-    \#11964](https://issues.jenkins-ci.org/browse/JENKINS-11964) Cannot
+-   [issue#11964](https://issues.jenkins-ci.org/browse/JENKINS-11964) Cannot
     build a single module in a Maven multi-module job with Maven 3
--   [issue
-    \#11078](https://issues.jenkins-ci.org/browse/JENKINS-11078) NullPointerException
+-   [issue#11078](https://issues.jenkins-ci.org/browse/JENKINS-11078) NullPointerException
     in
     hudson.maven.Maven3Builder$MavenExecutionListener.recordProjectStarted
--   [issue
-    \#20884](https://issues.jenkins-ci.org/browse/JENKINS-20884) Variable
+-   [issue#20884](https://issues.jenkins-ci.org/browse/JENKINS-20884) Variable
     expansion in maven goals
--   [issue
-    \#21903](https://issues.jenkins-ci.org/browse/JENKINS-21903) Unless
+-   [issue#21903](https://issues.jenkins-ci.org/browse/JENKINS-21903) Unless
     the user has requested to block when upstream is building, do not
     skip triggering a downstream build just because an upstream is
     building.
--   [issue
-    \#4861](https://issues.jenkins-ci.org/browse/JENKINS-4861) Use
+-   [issue#4861](https://issues.jenkins-ci.org/browse/JENKINS-4861) Use
     newer version of transitive plexus-utils dependency that allows to
     correctly deploy artifacts using scpexe.
--   [issue
-    \#24282](https://issues.jenkins-ci.org/browse/JENKINS-24282) Use
+-   [issue#24282](https://issues.jenkins-ci.org/browse/JENKINS-24282) Use
     noun phrases for new items
 -   run a full build if build was triggered by upstream (snapshot
     dependency)
@@ -346,10 +338,8 @@ This version requires Jenkins 1.580.1 or later.
 #### Version 2.3 (Apr 30 2014)
 
 -   Fixed: Sites for nested Maven multi-modules projects deeper than one
-    level are archived flat [issue
-    \#22673](https://issues.jenkins-ci.org/browse/JENKINS-22673)
--   Fixed: NPE while loading jobs [issue
-    \#22647](https://issues.jenkins-ci.org/browse/JENKINS-22647)
+    level are archived flat [issue#22673](https://issues.jenkins-ci.org/browse/JENKINS-22673)
+-   Fixed: NPE while loading jobs [issue#22647](https://issues.jenkins-ci.org/browse/JENKINS-22647)
 
 #### Version 2.2 (Apr 3 2014)
 
@@ -362,8 +352,7 @@ This version requires Jenkins 1.580.1 or later.
 -   New: Expose project actions of pre- and post- builders
     [JENKINS-20506](https://issues.jenkins-ci.org/browse/JENKINS-20506)
 -   New: Use a pop-up dialog instead of extra page for confirmation if
-    user wants to delete all disabled maven modules. ([pull request \#
-    17](https://github.com/jenkinsci/maven-plugin/pull/17)
+    user wants to delete all disabled maven modules. ([pull request #17](https://github.com/jenkinsci/maven-plugin/pull/17)
 
 #### Version 2.1 (Dec 17 2013); requires 1.538+
 
@@ -400,8 +389,7 @@ This version requires Jenkins 1.580.1 or later.
 
 #### Version 2.0.2 (Jan 23, 2014)
 
--   Temporary file leak when using [Cloudbees Deployer
-    Plugin](https://wiki.jenkins.io/display/JENKINS/Cloudbees+Deployer+Plugin)
+-   Temporary file leak when using [Cloudbees Deployer Plugin](https://wiki.jenkins.io/display/JENKINS/Cloudbees+Deployer+Plugin)
 
 #### Version 2.0.1 (Jan 04, 2014)
 
