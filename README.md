@@ -6,15 +6,6 @@ maven-plugin
 Jenkins plugin for building Maven 2/3 jobs.
 See [Maven Project Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Maven+Project+Plugin) on Jenkins' Wiki for more information.
 
-Older versions of this plugin may not be safe to use. Please review the
-following warnings before using an older version:
-
--   [Sensitive values in module build logs not
-    masked](https://jenkins.io/security/advisory/2019-07-31/#SECURITY-713)
--   [Maven plugin bundles commons-httpclient library vulnerable to
-    man-in-the-middle
-    attacks](https://jenkins.io/security/advisory/2017-10-11/)
-
 ## Version history
 
 See [the changelog](CHANGELOG.md)
