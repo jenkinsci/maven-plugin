@@ -881,6 +881,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                 process = MavenBuild.mavenProcessCache.get( launcher.getChannel(), slistener, factory);
 
                 ArgumentListBuilder margs = new ArgumentListBuilder("-N","-B");
+                margs.add("-Dmaven.multiModuleProjectDirectory="+getModuleRoot().getRemote());
                 FilePath localRepo = mms.getLocalRepository().locate(MavenBuild.this);
                 if(localRepo!=null)
                     // the workspace must be on this node, so getRemote() is safe.
