@@ -47,7 +47,7 @@ public class AbstractMavenJavadocArchiverTest {
     @Issue("JENKINS-57244")
     @Test
     public void simple() throws Exception {
-        ToolInstallations.configureMaven3();
+        ToolInstallations.configureMaven36();
         MavenModuleSet mms = r.createProject(MavenModuleSet.class, "p");
         mms.setAssignedNode(r.createSlave());
         mms.setScm(new ExtractResourceSCM(getClass().getResource("../maven-multimod.zip")));

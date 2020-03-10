@@ -45,7 +45,7 @@ public class CaseResultTest {
      */
     @Bug(4257)
     @Test public void mavenErrorMsgAndStacktraceRender() throws Exception {
-        ToolInstallations.configureMaven3();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "maven-render-test");
         m.setScm(new ExtractResourceSCM(m.getClass().getResource("maven-test-failure-findbugs.zip")));
         m.setGoals("clean test");

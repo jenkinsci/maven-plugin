@@ -70,7 +70,7 @@ public class MavenBuildTest {
     @Bug(4177)
     @Test
     public void testTestFailureInEarlyTaskSegment() throws Exception {
-        ToolInstallations.configureMaven3();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install findbugs:findbugs");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-test-failure-findbugs.zip")));
@@ -95,7 +95,7 @@ public class MavenBuildTest {
     @Bug(4226)
     @Test
     public void testParallelModuleBuild() throws Exception {
-        ToolInstallations.configureMaven3();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
         

@@ -48,7 +48,7 @@ public class MavenEnvironmentContributingActionTest {
 
         final MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "mvn");
 
-        p.setMaven(ToolInstallations.configureMaven3().getName());
+        p.setMaven(ToolInstallations.configureMaven36().getName());
         p.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
         p.setGoals("initialize -Dval=${KEY}");
 

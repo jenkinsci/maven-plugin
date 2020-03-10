@@ -161,7 +161,7 @@ public class RedeployPublisherTest {
     public void testTarGzMaven3() throws Exception {
         
         MavenModuleSet m3 = j.jenkins.createProject(MavenModuleSet.class, "p");
-        MavenInstallation mvn = ToolInstallations.configureMaven3();
+        MavenInstallation mvn = ToolInstallations.configureMaven36();
         m3.setMaven( mvn.getName() );
         File repo = tmp.getRoot();
         // a fake build
@@ -188,7 +188,7 @@ public class RedeployPublisherTest {
     @Test
     public void testTarGzUniqueVersionTrueMaven3() throws Exception {
         MavenModuleSet m3 = j.jenkins.createProject(MavenModuleSet.class, "p");
-        MavenInstallation mvn = ToolInstallations.configureMaven3();
+        MavenInstallation mvn = ToolInstallations.configureMaven36();
         m3.setMaven( mvn.getName() );        
         File repo = tmp.getRoot();
         // a fake build
@@ -234,7 +234,7 @@ public class RedeployPublisherTest {
     @Bug(3773)
     @Test
     public void testDeployUnstable() throws Exception {
-        ToolInstallations.configureMaven3();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
         // a build with a failing unit tests
