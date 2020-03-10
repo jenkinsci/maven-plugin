@@ -582,7 +582,7 @@ public class MavenMultiModuleTest {
 
     /*
     @Test public void parallelMultiModMavenWsExists() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
 	m.setAggregatorStyleBuild(false);
         m.getReporters().add(new TestReporter());
@@ -606,7 +606,7 @@ public class MavenMultiModuleTest {
     }
     
     @Test public void privateRepoParallelMultiModMavenWsExists() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
 	m.setAggregatorStyleBuild(false);
 	m.setUsePrivateRepository(true);

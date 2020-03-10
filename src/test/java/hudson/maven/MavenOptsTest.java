@@ -23,7 +23,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
     }
 
     public void testEnvMavenOptsNoneInProject() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
@@ -36,7 +36,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
 
     
     public void testEnvMavenOptsOverriddenByProject() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
@@ -49,7 +49,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
     }
 
     public void testEnvAndGlobalMavenOptsOverriddenByProject() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
@@ -64,7 +64,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
 
 
     public void testGlobalMavenOpts() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
@@ -76,7 +76,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
     }
 
     public void testGlobalMavenOptsOverridenByProject() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
         m.setGoals("validate");
@@ -90,7 +90,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
     
     @Bug(5651)
     public void testNewlinesInOptsRemoved() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
 	m.setScm(new ExtractResourceSCM(getClass().getResource("maven-surefire-unstable.zip")));
         m.setMavenOpts(JAVA_HEADLESS_OPT + " -XX:MaxPermSize=512m\r\n-Xms128m\r\n-Xmx512m");
@@ -107,7 +107,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
      * Makes sure that environment variables in MAVEN_OPTS are properly expanded.
      */
     public void testEnvironmentVariableExpansion() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setMavenOpts(JAVA_HEADLESS_OPT + " $FOO");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-opts-echo.zip")));
@@ -125,7 +125,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
         final String secondGlobalMavenOpts = "second maven opts";
         final String jobMavenOpts = "job maven opts";
         
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         
         assertNull(m.getMavenOpts());

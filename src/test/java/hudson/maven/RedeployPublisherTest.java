@@ -58,7 +58,7 @@ public class RedeployPublisherTest {
     @Bug(2593)
     @Test
     public void testBug2593() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
 
@@ -111,7 +111,7 @@ public class RedeployPublisherTest {
     
     @Test
     public void testTarGzUniqueVersionTrue() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
         File repo = tmp.getRoot();
         

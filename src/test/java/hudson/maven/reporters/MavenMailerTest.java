@@ -102,7 +102,7 @@ public class MavenMailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setGoals("test");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/maven-multimodule-unit-failure.zip")));
@@ -138,7 +138,7 @@ public class MavenMailerTest {
         yourInbox.clear();
         jenkinsConfiguredInbox.clear();
 
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setAssignedNode(j.createSlave());
         mms.setGoals("test");
@@ -195,7 +195,7 @@ public class MavenMailerTest {
         someInbox.clear();
         jenkinsConfiguredInbox.clear();
 
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setGoals("test");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-module-defined.zip")));
@@ -257,7 +257,7 @@ public class MavenMailerTest {
         anotherInbox.clear();
         jenkinsConfiguredInbox.clear();
 
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setGoals("test");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-module-defined.zip")));

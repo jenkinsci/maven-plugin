@@ -74,7 +74,7 @@ public class MavenBuildSurefireFailedTest extends AbstractMavenTestCase {
     
     @Bug(14102)
     public void testMaven2SkipPostBuilder() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals( "test" );
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimodule-unit-failure.zip")));

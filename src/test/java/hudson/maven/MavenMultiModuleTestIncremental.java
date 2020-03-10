@@ -19,7 +19,7 @@ public class MavenMultiModuleTestIncremental extends AbstractMavenTestCase {
 
     @Bug(7684)
     public void testRelRootPom() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());

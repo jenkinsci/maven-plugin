@@ -64,7 +64,7 @@ public class VariableExpanderTest {
     @Test
     public void expand() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "test");
-        Maven.MavenInstallation mavenInstallation = ToolInstallations.configureDefaultMaven();
+        Maven.MavenInstallation mavenInstallation = ToolInstallations.configureMaven36();
         m.setMaven( mavenInstallation.getName() );
         m.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/several-modules-in-directory.zip")));
         m.setGoals( "clean validate" );

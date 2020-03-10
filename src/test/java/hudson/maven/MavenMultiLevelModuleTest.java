@@ -43,7 +43,7 @@ public class MavenMultiLevelModuleTest {
     @For(MavenModuleSetBuild.class)
     @Test
     public void testIncrementalBuildWithMultiModuleChangeSet() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multilevelmod.zip"),

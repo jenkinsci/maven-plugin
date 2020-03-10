@@ -29,7 +29,7 @@ public class PlexusModuleContributorTest {
      */
     @Test
     public void testCustomPlexusComponent() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", MavenInstallation.MAVEN_21);
+        ToolInstallations.configureMaven36();
         MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
         p.setScm(new SingleFileSCM("pom.xml",getClass().getResource("custom-plexus-component.pom")));
         p.setGoals("clean");
@@ -38,7 +38,7 @@ public class PlexusModuleContributorTest {
 
     @Test
     public void testCustomPlexusComponent_Maven3() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-3.0.1", MavenInstallation.MAVEN_30);
+        ToolInstallations.configureMaven36();
         MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
         p.setScm(new SingleFileSCM("pom.xml",getClass().getResource("custom-plexus-component.pom")));
         p.setGoals("clean");
@@ -47,7 +47,7 @@ public class PlexusModuleContributorTest {
 
     @Test
     public void testCustomPlexusComponent_Maven3_slave() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-3.0.1", MavenInstallation.MAVEN_30);
+        ToolInstallations.configureMaven36();
         DumbSlave s = j.createSlave();
         s.toComputer().connect(false).get();
 

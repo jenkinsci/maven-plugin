@@ -39,7 +39,7 @@ import org.jvnet.hudson.test.ToolInstallations;
  */
 public class SurefireArchiverTest extends AbstractMavenTestCase {
     public void testSerialization() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("../maven-surefire-unstable.zip")));
         m.setGoals("install");

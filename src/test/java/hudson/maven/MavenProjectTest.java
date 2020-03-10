@@ -209,7 +209,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     public void testAbsolutePathPom() throws Exception {
         File pom = new File(this.getClass().getResource("test-pom-7162.xml").toURI());
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
-        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
+        MavenInstallation mi = ToolInstallations.configureMaven36();
         project.setMaven(mi.getName());
         project.setRootPOM(pom.getAbsolutePath());
         project.setGoals("install");
@@ -219,7 +219,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     @Bug(17177)
     public void testCorrectResultInPostStepAfterFailedPreBuildStep() throws Exception {
         MavenModuleSet p = createSimpleProject();
-        MavenInstallation mi = ToolInstallations.configureDefaultMaven();
+        MavenInstallation mi = ToolInstallations.configureMaven36();
         p.setMaven(mi.getName());
         p.setGoals("initialize");
         
