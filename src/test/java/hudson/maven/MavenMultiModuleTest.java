@@ -19,7 +19,6 @@ import hudson.model.PermalinkProjectAction;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.Fingerprinter.FingerprintAction;
-import hudson.tasks.Maven.MavenInstallation;
 import java.io.File;
 
 import java.io.IOException;
@@ -62,7 +61,14 @@ public class MavenMultiModuleTest {
         j.buildAndAssertSuccess(m);
     }
 
+    /**
+     * With newer versions of Jenkins symlinks are created by default.
+     * A new pluginb is needed
+     * https://github.com/jenkinsci/build-symlink-plugin
+     * because of https://issues.jenkins-ci.org/browse/JENKINS-37862
+     */
     @Bug(18846)
+    @Ignore
     @Test public void symlinksUpdated() throws Exception {
         Assume.assumeFalse(Functions.isWindows());
         ToolInstallations.configureMaven3();
