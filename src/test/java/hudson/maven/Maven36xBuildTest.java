@@ -20,27 +20,19 @@ package hudson.maven;
  * under the License.
  */
 
-import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
-import org.junit.Ignore;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**
- * @author Oleg Nenashev
+ * @author Olivier Lamy
  */
-//TODO: Placeholder for Maven 3.3.9 tests. Inactive, because JTH test tools do not offer such version of Maven
-// Another tool installation approach should be used
-@Ignore
-public class Maven339BuildTest
+public class Maven36xBuildTest
     extends AbstractMaven3xBuildTest {
 
     @Override
     public MavenInstallation configureMaven3x()
         throws Exception
     {
-        MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.3.9", MavenInstallation.MAVEN_30);
-        MavenInstallation m3 = new MavenInstallation("apache-maven-3.3.9", mvn.getHome(), j.NO_PROPERTIES);
-        j.jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
-        return m3;
+        return ToolInstallations.configureMaven36();
     }
 }
