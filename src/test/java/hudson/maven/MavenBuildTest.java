@@ -34,6 +34,7 @@ import javax.servlet.ServletException;
 
 
 import org.apache.maven.project.MavenProject;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
@@ -72,7 +73,7 @@ public class MavenBuildTest {
     public void testTestFailureInEarlyTaskSegment() throws Exception {
         ToolInstallations.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setGoals("clean install findbugs:findbugs");
+        m.setGoals("clean install org.codehaus.mojo:findbugs-maven-plugin:3.0.5:findbugs");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-test-failure-findbugs.zip")));
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
     }
@@ -110,6 +111,7 @@ public class MavenBuildTest {
     
     @Bug(value=8395)
     @Test
+    @Ignore("we do not test anymore maven2 specific")
     public void testMaven2BuildWrongScope() throws Exception {
         
         File pom = new File(this.getClass().getResource("test-pom-8395.xml").toURI());
@@ -125,6 +127,7 @@ public class MavenBuildTest {
     
     @Bug(value=8390)
     @Test
+    @Ignore("we do not test anymore maven2 specific")
     public void testMaven2BuildWrongInheritence() throws Exception {
         
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
