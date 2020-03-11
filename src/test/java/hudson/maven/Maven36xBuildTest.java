@@ -35,4 +35,9 @@ public class Maven36xBuildTest
     {
         return ToolInstallations.configureMaven36();
     }
+
+    
+    int getTychoEclipseTestResultsCount() {
+        return 2;
+    }
 }
