@@ -889,13 +889,9 @@ THE SOFTWARE.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.1</version>
         <executions>
           <execution>
-            <!--
-            Note: apache-ant-1.8.1-bin.zip, gradle-2.13-bin.zip and maven-2.0.7-bin.zip are not available in
-            Maven Central and thus are not downloaded with the maven-dependency-plugin
-            -->
             <id>copy-binary-files</id>
             <phase>process-resources</phase>
             <goals>
