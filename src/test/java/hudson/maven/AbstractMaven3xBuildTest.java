@@ -21,11 +21,13 @@ package hudson.maven;
  */
 
 import hudson.Launcher;
+import hudson.maven.reporters.SurefireReport;
 import hudson.model.BuildListener;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Result;
 import hudson.model.StringParameterDefinition;
 import hudson.tasks.Maven.MavenInstallation;
+import hudson.tasks.junit.TestResult;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TestResultProjectAction;
 import org.apache.commons.io.FileUtils;
@@ -259,19 +261,21 @@ public abstract class AbstractMaven3xBuildTest {
         m.setGoals("verify");
         j.buildAndAssertSuccess(m);
 
-        System.out.println("modules size " + m.getModules());
-
+        System.out.println("modules size " + m.getModules().size());
 
         MavenModule testModule = null;
         for (MavenModule mavenModule : m.getModules()) {
-            System.out.println("module " + mavenModule.getName() + "/" + mavenModule.getDisplayName());
+            System.out.println("module '" + mavenModule.getName() + "/" + mavenModule.getDisplayName() + "'");
             if ("org.foobar:org.foobar.test".equals( mavenModule.getName() )) testModule = mavenModule;
         }
 
         AbstractTestResultAction trpa = testModule.getLastBuild().getAction(AbstractTestResultAction.class);
-
         int totalCount = trpa.getTotalCount();
-        assertEquals(1, totalCount);
+        assertEquals(getTychoEclipseTestResultsCount(), totalCount);
+    }
+
+    int getTychoEclipseTestResultsCount() {
+        return 1;
     }
 
     @Test

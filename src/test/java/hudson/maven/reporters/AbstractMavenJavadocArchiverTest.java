@@ -23,6 +23,7 @@
  */
 package hudson.maven.reporters;
 
+import hudson.maven.Maven36xBuildTest;
 import hudson.maven.MavenJenkinsRule;
 import hudson.maven.MavenModule;
 import hudson.maven.MavenModuleSet;
@@ -47,7 +48,7 @@ public class AbstractMavenJavadocArchiverTest {
     @Issue("JENKINS-57244")
     @Test
     public void simple() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet mms = r.createProject(MavenModuleSet.class, "p");
         mms.setAssignedNode(r.createSlave());
         mms.setScm(new ExtractResourceSCM(getClass().getResource("../maven-multimod.zip")));

@@ -22,25 +22,32 @@ package hudson.maven;
 
 import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
-import org.junit.Ignore;
+import jenkins.model.Jenkins;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**
- * @author Oleg Nenashev
+ * @author Olivier Lamy
  */
-//TODO: Placeholder for Maven 3.3.9 tests. Inactive, because JTH test tools do not offer such version of Maven
-// Another tool installation approach should be used
-@Ignore
-public class Maven339BuildTest
+public class Maven36xBuildTest
     extends AbstractMaven3xBuildTest {
 
     @Override
     public MavenInstallation configureMaven3x()
         throws Exception
     {
-        MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.3.9", MavenInstallation.MAVEN_30);
-        MavenInstallation m3 = new MavenInstallation("apache-maven-3.3.9", mvn.getHome(), j.NO_PROPERTIES);
-        j.jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
+        return configureMaven36();
+    }
+
+    public static Maven.MavenInstallation configureMaven36() throws Exception {
+        Maven.MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.6.3", MavenInstallation.MAVEN_30);
+
+        Maven.MavenInstallation m3 = new Maven.MavenInstallation( "apache-maven-3.6.3", mvn.getHome(), JenkinsRule.NO_PROPERTIES);
+        Jenkins.getInstance().getDescriptorByType( Maven.DescriptorImpl.class).setInstallations( m3);
         return m3;
+    }
+
+    int getTychoEclipseTestResultsCount() {
+        return 2;
     }
 }

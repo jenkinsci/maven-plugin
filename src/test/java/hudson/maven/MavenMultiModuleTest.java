@@ -53,8 +53,9 @@ public class MavenMultiModuleTest {
      */
     @Bug(4192)
     @Test public void multiModMavenWsExists() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
+        m.setMaven( Maven36xBuildTest.configureMaven36().getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
 	    assertFalse("MavenModuleSet.isNonRecursive() should be false", m.isNonRecursive());
@@ -71,7 +72,7 @@ public class MavenMultiModuleTest {
     @Ignore
     @Test public void symlinksUpdated() throws Exception {
         Assume.assumeFalse(Functions.isWindows());
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setScm(new ExtractResourceSCM(MavenMultiModuleTest.class.getResource("maven-multimod.zip")));
         j.buildAndAssertSuccess(mms);
@@ -101,7 +102,7 @@ public class MavenMultiModuleTest {
     }
 
     @Test public void incrementalMultiModMaven() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.getReporters().add(new MavenFingerprinter());
@@ -176,7 +177,7 @@ public class MavenMultiModuleTest {
 
     @Bug(5357)
     @Test public void incrRelMultiModMaven() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
@@ -220,7 +221,7 @@ public class MavenMultiModuleTest {
     @Ignore("kutzi 10/10/11 ignore test until I can figure out why it fails sometimes")
     @Test public void estimatedDurationForIncrementalMultiModMaven()
             throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource(
@@ -253,7 +254,7 @@ public class MavenMultiModuleTest {
      * enabled and a new module is added.
      */
     @Test public void newModMultiModMaven() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod.zip"),
@@ -268,7 +269,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4491)
     @Test public void multiModMavenNonRecursiveParsing() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install -N");
         m.getReporters().add(new TestReporter());
@@ -303,7 +304,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4152)
     @Test public void incrementalMultiModWithErrorsMaven() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
@@ -366,7 +367,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(5121)
     @Test public void incrementalRedeployAfterAggregatorError() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
@@ -429,7 +430,7 @@ public class MavenMultiModuleTest {
      */
     @Bug(4378)
     @Test public void multiModWithTestFailuresMaven() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod-incr.zip")));
@@ -459,7 +460,7 @@ public class MavenMultiModuleTest {
     
     @Bug(8484)
     @Test public void multiModMavenNonRecursive() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
@@ -471,7 +472,7 @@ public class MavenMultiModuleTest {
 
     @Bug(17713)
     @Test public void modulesPageLinks() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet ms = j.jenkins.createProject(MavenModuleSet.class, "p");
         ms.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
         j.buildAndAssertSuccess(ms);
@@ -524,7 +525,7 @@ public class MavenMultiModuleTest {
     @Issue("JENKINS-24832")
     @Test
     public void testMultiModulesFailureWithParallelThreads() throws Exception {
-        ToolInstallations.configureMaven3();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet project = j.createProject(MavenModuleSet.class, "mp");
         project.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod-failure.zip")));
         // Without the parallel option it is correctly failing
@@ -582,7 +583,7 @@ public class MavenMultiModuleTest {
 
     /*
     @Test public void parallelMultiModMavenWsExists() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
 	m.setAggregatorStyleBuild(false);
         m.getReporters().add(new TestReporter());
@@ -606,7 +607,7 @@ public class MavenMultiModuleTest {
     }
     
     @Test public void privateRepoParallelMultiModMavenWsExists() throws Exception {
-        ToolInstallations.configureDefaultMaven();
+        ToolInstallations.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
 	m.setAggregatorStyleBuild(false);
 	m.setUsePrivateRepository(true);
