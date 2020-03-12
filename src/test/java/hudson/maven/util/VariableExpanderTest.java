@@ -1,5 +1,6 @@
 package hudson.maven.util;
 
+import hudson.maven.Maven36xBuildTest;
 import hudson.maven.MavenJenkinsRule;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
@@ -64,7 +65,7 @@ public class VariableExpanderTest {
     @Test
     public void expand() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "test");
-        Maven.MavenInstallation mavenInstallation = ToolInstallations.configureMaven36();
+        Maven.MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
         m.setMaven( mavenInstallation.getName() );
         m.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/several-modules-in-directory.zip")));
         m.setGoals( "clean validate" );

@@ -20,7 +20,10 @@ package hudson.maven;
  * under the License.
  */
 
+import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
+import jenkins.model.Jenkins;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**
@@ -33,10 +36,17 @@ public class Maven36xBuildTest
     public MavenInstallation configureMaven3x()
         throws Exception
     {
-        return ToolInstallations.configureMaven36();
+        return configureMaven36();
     }
 
-    
+    public static Maven.MavenInstallation configureMaven36() throws Exception {
+        Maven.MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.6.3", MavenInstallation.MAVEN_30);
+
+        Maven.MavenInstallation m3 = new Maven.MavenInstallation( "apache-maven-3.6.3", mvn.getHome(), JenkinsRule.NO_PROPERTIES);
+        Jenkins.getInstance().getDescriptorByType( Maven.DescriptorImpl.class).setInstallations( m3);
+        return m3;
+    }
+
     int getTychoEclipseTestResultsCount() {
         return 2;
     }

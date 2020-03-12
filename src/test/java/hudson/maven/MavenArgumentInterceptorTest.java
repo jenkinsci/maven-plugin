@@ -53,7 +53,7 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 	public void testSimpleMaven3BuildWithArgInterceptor_Goals() throws Exception {
 
 		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
-		MavenInstallation mavenInstallation = ToolInstallations.configureMaven36();
+		MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
 		m.setMaven(mavenInstallation.getName());
 		m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
 		m.setGoals("dummygoal"); // build would fail with this goal
@@ -69,7 +69,7 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 	public void testSimpleMaven3BuildWithArgInterceptor_ArgBuilder() throws Exception {
 
 		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
-		MavenInstallation mavenInstallation = ToolInstallations.configureMaven36();
+		MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
 		m.setMaven(mavenInstallation.getName());
 		m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimodule-unit-failure.zip")));
 		m.setGoals("clean install"); // build would fail because of failing unit

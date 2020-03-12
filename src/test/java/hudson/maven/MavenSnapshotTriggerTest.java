@@ -23,7 +23,7 @@ public class MavenSnapshotTriggerTest extends AbstractMavenTestCase {
      */
     public void testSnapshotDependencyBuildTrigger() throws Exception {
 
-        ToolInstallations.configureMaven36();
+        Maven36xBuildTest.configureMaven36();
         MavenModuleSet projA = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-up");
         projA.setGoals("clean install");
         projA.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
@@ -50,7 +50,7 @@ public class MavenSnapshotTriggerTest extends AbstractMavenTestCase {
      * B depends on A, C depends on A and B. Build order should be A->B->C.
      */
     public void testMixedTransitiveSnapshotTrigger() throws Exception {
-        ToolInstallations.configureMaven36();
+        Maven36xBuildTest.configureMaven36();
 
         MavenModuleSet projA = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-up");
         projA.setGoals("clean install");
@@ -89,7 +89,7 @@ public class MavenSnapshotTriggerTest extends AbstractMavenTestCase {
      * For artifact B there exists two projects. Projects B1 has compile and B2 has verify in its maven goal. B2 is preferred as upstream dependency for artifact B as the verify goal takes precedence over the name tiebreaker which would prefer project B1.
      */
     public void testMultipleDependencySnapshotTrigger() throws Exception {
-        ToolInstallations.configureMaven36();
+        Maven36xBuildTest.configureMaven36();
 
         // This is only executed to make sure that dependency A is available in repository
         MavenModuleSet prepareProject = jenkins.createProject(MavenModuleSet.class, "prepareProject");
@@ -161,7 +161,7 @@ public class MavenSnapshotTriggerTest extends AbstractMavenTestCase {
      *
      */
     public void testMultipleDependencySnapshotTriggerIgnoreUnsuccessfullUpstreams() throws Exception {
-        ToolInstallations.configureMaven36();
+        Maven36xBuildTest.configureMaven36();
 
         // This is only executed to make sure that dependency A is available in repository
         MavenModuleSet prepareProject = jenkins.createProject(MavenModuleSet.class, "prepareProject");

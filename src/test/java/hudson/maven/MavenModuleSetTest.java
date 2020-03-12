@@ -35,7 +35,7 @@ public class MavenModuleSetTest extends AbstractMavenTestCase {
     }
 
     public void testExplicitFingerprints() throws Exception {
-        Maven.MavenInstallation mvn = ToolInstallations.configureMaven36();
+        Maven.MavenInstallation mvn = Maven36xBuildTest.configureMaven36();
         Maven.MavenInstallation m3 = new Maven.MavenInstallation("apache-maven-3.1.0", mvn.getHome(), NO_PROPERTIES);
         jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");

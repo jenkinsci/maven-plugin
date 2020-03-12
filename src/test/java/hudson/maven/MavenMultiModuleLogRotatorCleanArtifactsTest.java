@@ -65,7 +65,7 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest
     public void setUp()
         throws Exception
     {
-        ToolInstallations.configureMaven36();
+        Maven36xBuildTest.configureMaven36();
         m = j.jenkins.createProject( MavenModuleSet.class, "p" );
         m.setBuildDiscarder( new LogRotator( "-1", "2", "-1", "1" ) );
         m.getReporters().add( new TestReporter() );
