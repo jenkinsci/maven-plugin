@@ -1,5 +1,9 @@
 ## Release Notes
 
+### Version 3.5 (March 19, 2020)
+
+- upgrade some librairies to fix PCT testing
+
 ### Version 3.4 (July 31, 2019)
 
 -   [Fix security issue](https://jenkins.io/security/advisory/2019-07-31/#SECURITY-713)
