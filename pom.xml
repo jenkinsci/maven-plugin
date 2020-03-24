@@ -609,6 +609,11 @@ THE SOFTWARE.
           <artifactId>commons-cli</artifactId>
         </exclusion>
         <exclusion>
+          <!-- Excluded to pull in the version from Jenkins core -->
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>xml-apis</groupId>
           <artifactId>xml-apis</artifactId>
         </exclusion>
