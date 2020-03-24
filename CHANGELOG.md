@@ -1,5 +1,9 @@
 ## Release Notes
 
+### Version 3.6 ()
+
+- Do not bundle commons-io in this plugin's HPI file [#135](https://github.com/jenkinsci/maven-plugin/pull/135)
+
 ### Version 3.5 (March 19, 2020)
 
 - upgrade some librairies to fix PCT testing
