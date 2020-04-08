@@ -420,8 +420,12 @@ THE SOFTWARE.
           <groupId>com.google.inject</groupId>
           <artifactId>guice</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.sonatype.plexus</groupId>
+          <artifactId>plexus-cipher</artifactId>
+        </exclusion>
       </exclusions>
-    </dependency>   
+    </dependency>
 
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>
@@ -598,7 +602,7 @@ THE SOFTWARE.
       <!-- TODO: fix exclusion once updated to the 3.5.0 baseline -->
       <groupId>org.jenkins-ci.lib</groupId>
       <artifactId>lib-jenkins-maven-embedder</artifactId>
-      <version>3.14</version>
+      <version>3.15-SNAPSHOT</version>
       <exclusions>
         <exclusion><!-- we'll add our own patched version. see https://issues.jenkins-ci.org/browse/JENKINS-1680 -->
           <groupId>jtidy</groupId>
@@ -870,6 +874,7 @@ THE SOFTWARE.
                     <exclude>org.codehaus.plexus:plexus-container-default</exclude>
                     <exclude>org.codehaus.plexus:plexus-component-api</exclude>
                     <!-- In conflict with org.eclipse.sisu:org.eclipse.sisu.plexus -->
+                    <exclude>org.sonatype.plexus:plexus-cipher</exclude>
                   </excludes>
                   <message>
                     doesn't work anymore with maven 3 librairies. you have to add some exclusions.
