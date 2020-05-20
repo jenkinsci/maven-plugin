@@ -3,8 +3,6 @@ package hudson.maven;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.support.membermodification.MemberMatcher.constructor;
-import static org.powermock.api.support.membermodification.MemberModifier.suppress;
 import hudson.maven.MavenModuleSet.DescriptorImpl;
 import hudson.model.DependencyGraph;
 import hudson.model.AbstractProject;
@@ -21,19 +19,14 @@ import org.apache.maven.project.MavenProject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.Bug;
 import org.mockito.Matchers;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.common.collect.Lists;
 import org.junit.Ignore;
 import org.mockito.Mockito;
 
 @Ignore("TODO see comment in mockDependencyGraph")
-@RunWith(PowerMockRunner.class)
-@PrepareForTest( { MavenModuleSet.class, DescriptorImpl.class, AbstractProject.class})
 public class MavenModuleTest {
     
     private MavenModule module;
@@ -42,8 +35,6 @@ public class MavenModuleTest {
     
     @Before
     public void before() throws IOException {
-        suppress(constructor(AbstractProject.class));
-        suppress(constructor(DescriptorImpl.class));
         
         this.module = mock(MavenModule.class);
         basicMocking(this.module);
