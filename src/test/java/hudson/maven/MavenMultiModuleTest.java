@@ -92,7 +92,7 @@ public class MavenMultiModuleTest {
         assertTrue(permalinks(mm).containsAll(Arrays.asList("lastBuild", "lastStableBuild", "lastSuccessfulBuild")));
     }
     private static Set<String> permalinks(Job<?,?> j) {
-        Set<String> r = new TreeSet<String>();
+        Set<String> r = new TreeSet<>();
         for (PermalinkProjectAction.Permalink l : j.getPermalinks()) {
             if (l.resolve(j) != null) {
                 r.add(l.getId());
@@ -271,7 +271,7 @@ public class MavenMultiModuleTest {
     @Test public void multiModMavenNonRecursiveParsing() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setGoals("clean install -N");
+        m.setGoals("clean install -N -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
 
@@ -464,7 +464,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
-        m.setGoals( "-N validate" );
+        m.setGoals( "-N validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         assertTrue("MavenModuleSet.isNonRecursive() should be true", m.isNonRecursive());
         j.buildAndAssertSuccess(m);
         assertEquals("not only one module", 1, m.getModules().size());

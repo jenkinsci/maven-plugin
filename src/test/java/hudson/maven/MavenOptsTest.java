@@ -92,14 +92,14 @@ public class MavenOptsTest extends AbstractMavenTestCase {
     public void testNewlinesInOptsRemoved() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
-	m.setScm(new ExtractResourceSCM(getClass().getResource("maven-surefire-unstable.zip")));
+	    m.setScm(new ExtractResourceSCM(getClass().getResource("maven-surefire-unstable.zip")));
         m.setMavenOpts(JAVA_HEADLESS_OPT + " -XX:MaxPermSize=512m\r\n-Xms128m\r\n-Xmx512m");
-        m.setGoals("install");
+        m.setGoals("install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         
-	assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
-	MavenModuleSetBuild pBuild = m.getLastBuild();
+	    assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
+	    MavenModuleSetBuild pBuild = m.getLastBuild();
 
-	assertEquals("Parent build should have Result.UNSTABLE", Result.UNSTABLE, pBuild.getResult());
+	    assertEquals("Parent build should have Result.UNSTABLE", Result.UNSTABLE, pBuild.getResult());
 	
     }
 

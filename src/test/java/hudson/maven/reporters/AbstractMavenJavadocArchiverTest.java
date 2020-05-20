@@ -52,7 +52,7 @@ public class AbstractMavenJavadocArchiverTest {
         MavenModuleSet mms = r.createProject(MavenModuleSet.class, "p");
         mms.setAssignedNode(r.createSlave());
         mms.setScm(new ExtractResourceSCM(getClass().getResource("../maven-multimod.zip")));
-        mms.setGoals("install javadoc:javadoc");
+        mms.setGoals("install javadoc:javadoc -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild b = r.buildAndAssertSuccess(mms);
         MavenModule mm = mms.getModule("org.jvnet.hudson.main.test.multimod$moduleA");
         assertNotNull(mm);

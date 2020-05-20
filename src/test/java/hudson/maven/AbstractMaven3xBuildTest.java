@@ -64,7 +64,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
-        m.setGoals( "clean install" );
+        m.setGoals( "clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
         assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
     }
@@ -80,7 +80,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.getReporters().add(new TestReporter());
         m.getPublishersList().add(new RedeployPublisher("",repo.toURI().toString(),true, false));
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
-        m.setGoals( "clean install" );
+        m.setGoals( "clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
         assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
         File artifactDir = new File(repo,"com/mycompany/app/my-app/1.7-SNAPSHOT/");
@@ -105,7 +105,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );        
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
-        m.setGoals("-e clean site");
+        m.setGoals("-e clean site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
         assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
     }
@@ -120,7 +120,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setRootPOM(pom.getAbsolutePath());
-        m.setGoals( "clean validate" );
+        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild mmsb =  m.scheduleBuild2( 0 ).get();
         j.assertBuildStatus( Result.FAILURE, mmsb );
         System.out.println("mmsb.getProject().getModules " + mmsb.getProject().getModules() );
@@ -136,7 +136,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("incorrect-inheritence-testcase.zip")));
-        m.setGoals( "clean validate" );
+        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild mmsb =  m.scheduleBuild2( 0 ).get();
         j.assertBuildStatus( Result.FAILURE, mmsb );
         System.out.println("mmsb.getProject().getModules " + mmsb.getProject().getModules() );
@@ -152,7 +152,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("several-modules-in-directory.zip")));
-        m.setGoals( "clean validate" );
+        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());
     }
@@ -170,7 +170,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("envars-maven-project.zip")));
-        m.setGoals( "clean test-compile" );
+        m.setGoals( "clean test-compile -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());
     }
@@ -183,7 +183,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
-        m.setGoals( "-N validate" );
+        m.setGoals( "-N validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         assertTrue("MavenModuleSet.isNonRecursive() should be true", m.isNonRecursive());
         j.buildAndAssertSuccess(m);
         assertEquals("not only one module", 1, m.getModules().size());
@@ -197,7 +197,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-8573.zip")));
-        m.setGoals( "process-resources" );
+        m.setGoals( "process-resources -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         j.buildAndAssertSuccess(m);
         String content = m.getLastBuild().getWorkspace().child( "target/classes/test.txt" ).readToString();
         assertFalse( content.contains( "${maven.build.timestamp}") );
@@ -212,7 +212,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-1557.zip")));
-        m.setGoals("verify");
+        m.setGoals("verify -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         j.buildAndAssertSuccess(m);
 
         int totalCount = m.getModules().iterator().next()
@@ -231,7 +231,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-9326.zip"),"foobar"));
-        m.setGoals("verify");
+        m.setGoals("verify -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         j.buildAndAssertSuccess(m);
 
         System.out.println("modules size " + m.getModules());
@@ -287,7 +287,7 @@ public abstract class AbstractMaven3xBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
-        m.setGoals("verify");
+        m.setGoals("verify -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         j.buildAndAssertSuccess(m);
 
         // When building a single module within the given build.

@@ -73,7 +73,7 @@ public class MavenBuildTest {
     public void testTestFailureInEarlyTaskSegment() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setGoals("clean install org.codehaus.mojo:findbugs-maven-plugin:3.0.5:findbugs");
+        m.setGoals("clean install org.codehaus.mojo:findbugs-maven-plugin:3.0.5:findbugs -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-test-failure-findbugs.zip")));
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
     }
@@ -85,7 +85,7 @@ public class MavenBuildTest {
     public void testCompilationFailure() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setGoals("clean install");
+        m.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-compilation-failure.zip")));
         j.assertBuildStatus(Result.FAILURE, m.scheduleBuild2(0).get());
     }
@@ -120,7 +120,7 @@ public class MavenBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setRootPOM(pom.getAbsolutePath());
-        m.setGoals( "clean validate" );
+        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());
     }    
@@ -135,7 +135,7 @@ public class MavenBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("incorrect-inheritence-testcase.zip")));
-        m.setGoals( "clean validate" );
+        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());
     }   
@@ -149,7 +149,7 @@ public class MavenBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("several-modules-in-directory.zip")));
-        m.setGoals( "clean validate" );
+        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());
     }    
@@ -167,7 +167,7 @@ public class MavenBuildTest {
         m.setMaven( mavenInstallation.getName() );
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("envars-maven-project.zip")));
-        m.setGoals( "clean test-compile" );
+        m.setGoals( "clean test-compile -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
         assertFalse( mmsb.getProject().getModules().isEmpty());
     }     
@@ -199,7 +199,7 @@ public class MavenBuildTest {
         mavenProject.setMaven(mavenInstallation.getName());
         mavenProject.getReporters().add(new TestReporter());
         mavenProject.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-15865.zip")));
-        mavenProject.setGoals( "clean install" );
+        mavenProject.setGoals( "clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         
         // WHEN project is build
         MavenModuleSetBuild mmsb = j.buildAndAssertSuccess(mavenProject);
@@ -236,7 +236,7 @@ public class MavenBuildTest {
     public void stopBuildAndAllSubmoduleBuilds() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet project = j.jenkins.createProject(MavenModuleSet.class, "p");
-        project.setGoals("clean package");
+        project.setGoals("clean package -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         project.setScm(new ExtractResourceSCM(
                 getClass().getResource("/hudson/maven/maven-multimod.zip")
         ));
@@ -310,7 +310,7 @@ public class MavenBuildTest {
         MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
         mavenProject.setMaven(mavenInstallation.getName());
         mavenProject.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-16522.zip")));
-        mavenProject.setGoals( "clean install" );
+        mavenProject.setGoals( "clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
         MavenModuleSetBuild build = mavenProject.scheduleBuild2(0).get();
         
         j.assertBuildStatus(Result.FAILURE, build);

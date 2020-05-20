@@ -48,7 +48,7 @@ public class CaseResultTest {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "maven-render-test");
         m.setScm(new ExtractResourceSCM(m.getClass().getResource("maven-test-failure-findbugs.zip")));
-        m.setGoals("clean test");
+        m.setGoals("clean test -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild b = j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
         MavenBuild modBuild = b.getModuleLastBuilds().get(m.getModule("test:test"));
         TestResult tr = modBuild.getAction(SurefireReport.class).getResult();

@@ -25,7 +25,7 @@ public class MavenSnapshotTriggerTest extends AbstractMavenTestCase {
 
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet projA = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-up");
-        projA.setGoals("clean install");
+        projA.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         projA.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
         MavenModuleSet projB = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-down");
         projB.setGoals("clean install");
@@ -53,17 +53,17 @@ public class MavenSnapshotTriggerTest extends AbstractMavenTestCase {
         Maven36xBuildTest.configureMaven36();
 
         MavenModuleSet projA = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-up");
-        projA.setGoals("clean install");
+        projA.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         projA.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
 
         MavenModuleSet projB = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-mid");
-        projB.setGoals("clean install");
+        projB.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         projB.setIgnoreUpstremChanges(false);
         projB.setQuietPeriod(0);
         projB.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
 
         MavenModuleSet projC = jenkins.createProject(MavenModuleSet.class, "snap-dep-test-down");
-        projC.setGoals("clean install");
+        projC.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         projC.setIgnoreUpstremChanges(false);
         projC.setQuietPeriod(0);
         projC.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-C.zip")));
@@ -93,14 +93,14 @@ public class MavenSnapshotTriggerTest extends AbstractMavenTestCase {
 
         // This is only executed to make sure that dependency A is available in repository
         MavenModuleSet prepareProject = jenkins.createProject(MavenModuleSet.class, "prepareProject");
-        prepareProject.setGoals("clean install");
+        prepareProject.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-A.zip")));
         buildAndAssertSuccess(prepareProject);
         prepareProject.delete();
 
         // This is only executed to make sure that dependency B is available in repository
         prepareProject = jenkins.createProject(MavenModuleSet.class, "prepareProject");
-        prepareProject.setGoals("clean install");
+        prepareProject.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         prepareProject.setScm(new ExtractResourceSCM(getClass().getResource("maven-dep-test-B.zip")));
         buildAndAssertSuccess(prepareProject);
         prepareProject.delete();
