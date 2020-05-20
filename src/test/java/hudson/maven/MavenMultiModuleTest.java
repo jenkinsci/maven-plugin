@@ -529,10 +529,10 @@ public class MavenMultiModuleTest {
         MavenModuleSet project = j.createProject(MavenModuleSet.class, "mp");
         project.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod-failure.zip")));
         // Without the parallel option it is correctly failing
-        project.setGoals("test");
+        project.setGoals("test -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         j.assertBuildStatus(Result.FAILURE, project.scheduleBuild2(0).get());
         // With the parallel option it was previously reported as aborted
-        project.setGoals("test -T 2");
+        project.setGoals("test -T 2 -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         j.assertBuildStatus(Result.FAILURE, project.scheduleBuild2(0).get());
     }
 

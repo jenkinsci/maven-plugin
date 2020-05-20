@@ -108,7 +108,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     @Bug(3497)
     public void testSiteBuild() throws Exception {
         MavenModuleSet project = createSimpleProject();
-        project.setGoals("site");
+        project.setGoals("site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
 
         buildAndAssertSuccess(project);
 
@@ -123,7 +123,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
      */
     public void testMultiModuleSiteBuild() throws Exception {
         MavenModuleSet project = createProject("maven-multimodule-site.zip");
-        project.setGoals("site");
+        project.setGoals("site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
 
         try {
             buildAndAssertSuccess(project);
@@ -151,7 +151,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     
     public void testNestedMultiModuleSiteBuild() throws Exception {
         MavenModuleSet project = createProject("maven-nested-multimodule-site.zip");
-        project.setGoals("site");
+        project.setGoals("site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
 
         try {
             buildAndAssertSuccess(project);
@@ -175,7 +175,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     @Bug(5943)
     public void testMultiModuleSiteBuildOnSlave() throws Exception {
         MavenModuleSet project = createProject("maven-multimodule-site.zip");
-        project.setGoals("site");
+        project.setGoals("site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         project.setAssignedLabel(createSlave().getSelfLabel());
 
         try {
@@ -195,7 +195,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     public void testDeleteSetBuildDeletesModuleBuilds() throws Exception {
         MavenModuleSet project = createProject("maven-multimod.zip");
         project.setLocalRepository(new DefaultLocalRepositoryLocator());
-        project.setGoals("install");
+        project.setGoals("install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         buildAndAssertSuccess(project);
         buildAndAssertSuccess(project.getModule("org.jvnet.hudson.main.test.multimod:moduleB"));
         buildAndAssertSuccess(project);
