@@ -31,6 +31,7 @@ import hudson.tasks.junit.TestResult;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TestResultProjectAction;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
@@ -233,9 +234,6 @@ public abstract class AbstractMaven3xBuildTest {
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-9326.zip"),"foobar"));
         m.setGoals("verify -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         j.buildAndAssertSuccess(m);
-
-        System.out.println("modules size " + m.getModules());
-
 
         MavenModule testModule = null;
         for (MavenModule mavenModule : m.getModules()) {
