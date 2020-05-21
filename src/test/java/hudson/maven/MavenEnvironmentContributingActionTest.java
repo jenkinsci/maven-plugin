@@ -50,7 +50,7 @@ public class MavenEnvironmentContributingActionTest {
 
         p.setMaven(Maven36xBuildTest.configureMaven36().getName());
         p.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
-        p.setGoals("initialize -Dval=${KEY}");
+        p.setGoals("initialize -Dval=${KEY} -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
 
         p.getBuildWrappersList().add(new TestMvnBuildWrapper("-Dval=MY_VALUE"));
 

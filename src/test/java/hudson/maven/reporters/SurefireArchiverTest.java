@@ -43,7 +43,7 @@ public class SurefireArchiverTest extends AbstractMavenTestCase {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("../maven-surefire-unstable.zip")));
-        m.setGoals("install");
+        m.setGoals("install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
 
         MavenModuleSetBuild b = m.scheduleBuild2(0).get();
         assertBuildStatus(Result.UNSTABLE, b);

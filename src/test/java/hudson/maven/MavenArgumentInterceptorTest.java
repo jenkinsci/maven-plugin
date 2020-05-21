@@ -72,7 +72,7 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 		MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
 		m.setMaven(mavenInstallation.getName());
 		m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimodule-unit-failure.zip")));
-		m.setGoals("clean install"); // build would fail because of failing unit
+		m.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8"); // build would fail because of failing unit
 										// tests
 
 		// add an action to build, adding argument to skip the test execution

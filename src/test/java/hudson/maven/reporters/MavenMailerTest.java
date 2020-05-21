@@ -105,7 +105,7 @@ public class MavenMailerTest {
 
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
-        mms.setGoals("test");
+        mms.setGoals("-V test -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/maven-multimodule-unit-failure.zip")));
         j.assertBuildStatus(Result.UNSTABLE, mms.scheduleBuild2(0).get());
 
@@ -142,7 +142,7 @@ public class MavenMailerTest {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
         mms.setAssignedNode(j.createSlave());
-        mms.setGoals("test");
+        mms.setGoals("-V test -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-parent-defined.zip")));
         
         MavenMailer m = new MavenMailer();
@@ -198,7 +198,7 @@ public class MavenMailerTest {
 
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
-        mms.setGoals("test");
+        mms.setGoals("-V test -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-module-defined.zip")));
         MavenMailer m = new MavenMailer();
         m.recipients = EMAIL_JENKINS_CONFIGURED;
@@ -260,7 +260,7 @@ public class MavenMailerTest {
 
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
-        mms.setGoals("test");
+        mms.setGoals("-V test -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         mms.setScm(new ExtractResourceSCM(getClass().getResource("/hudson/maven/JENKINS-1201-module-defined.zip")));
 
         MavenMailer mailer1 = new MavenMailer();
