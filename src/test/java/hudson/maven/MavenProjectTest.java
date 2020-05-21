@@ -140,7 +140,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
 
         //@Bug(7577): check that site generation succeeds also if only a single module is build
         MavenModule coreModule = project.getModule("mmtest:core");
-        Assert.assertEquals("site", coreModule.getGoals());
+        Assert.assertEquals("site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8", coreModule.getGoals());
         try {
             buildAndAssertSuccess(coreModule);
         } catch (InterruptedException x) {
