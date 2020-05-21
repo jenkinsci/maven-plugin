@@ -108,37 +108,7 @@ public class MavenBuildTest {
         j.buildAndAssertSuccess(m.getModule("test$module1"));
         j.buildAndAssertSuccess(m.getModule("test$module1"));
     }
-    
-    @Bug(value=8395)
-    @Test
-    @Ignore("we do not test anymore maven2 specific")
-    public void testMaven2BuildWrongScope() throws Exception {
-        
-        File pom = new File(this.getClass().getResource("test-pom-8395.xml").toURI());
-        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
-        m.setMaven( mavenInstallation.getName() );
-        m.getReporters().add(new TestReporter());
-        m.setRootPOM(pom.getAbsolutePath());
-        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
-        MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
-        assertFalse( mmsb.getProject().getModules().isEmpty());
-    }    
-    
-    @Bug(value=8390)
-    @Test
-    @Ignore("we do not test anymore maven2 specific")
-    public void testMaven2BuildWrongInheritence() throws Exception {
-        
-        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
-        m.setMaven( mavenInstallation.getName() );
-        m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceSCM(getClass().getResource("incorrect-inheritence-testcase.zip")));
-        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
-        MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
-        assertFalse( mmsb.getProject().getModules().isEmpty());
-    }   
+
 
     @Bug(value=8445)
     @Test
