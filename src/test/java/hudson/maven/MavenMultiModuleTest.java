@@ -62,45 +62,6 @@ public class MavenMultiModuleTest {
         j.buildAndAssertSuccess(m);
     }
 
-    /**
-     * With newer versions of Jenkins symlinks are created by default.
-     * A new pluginb is needed
-     * https://github.com/jenkinsci/build-symlink-plugin
-     * because of https://issues.jenkins-ci.org/browse/JENKINS-37862
-     */
-    @Bug(18846)
-    @Ignore
-    @Test public void symlinksUpdated() throws Exception {
-        Assume.assumeFalse(Functions.isWindows());
-        Maven36xBuildTest.configureMaven36();
-        MavenModuleSet mms = j.jenkins.createProject(MavenModuleSet.class, "p");
-        mms.setScm(new ExtractResourceSCM(MavenMultiModuleTest.class.getResource("maven-multimod.zip")));
-        j.buildAndAssertSuccess(mms);
-        MavenModule mm = mms.getModule("org.jvnet.hudson.main.test.multimod:moduleA");
-        j.buildAndAssertSuccess(mms);
-        assertEquals(2, mms.getLastStableBuild().number);
-        assertEquals("2", Util.resolveSymlink(new File(mms.getBuildDir(), "lastStableBuild")));
-        assertEquals("builds/lastStableBuild", Util.resolveSymlink(new File(mms.getRootDir(), "lastStable")));
-        // The number of builtin permalinks changed in jenkins 2.x so we can not use a strict comparision if we want
-        // cross version passing tests
-        assertTrue(permalinks(mms).containsAll(Arrays.asList("lastBuild", "lastStableBuild", "lastSuccessfulBuild")));
-        assertEquals(2, mm.getLastStableBuild().number);
-        assertEquals("2", Util.resolveSymlink(new File(mm.getBuildDir(), "lastStableBuild")));
-        assertEquals("builds/lastStableBuild", Util.resolveSymlink(new File(mm.getRootDir(), "lastStable")));
-        // The number of builtin permalinks changed in jenkins 2.x so we can not use a strict comparision if we want
-        // cross version passing tests   
-        assertTrue(permalinks(mm).containsAll(Arrays.asList("lastBuild", "lastStableBuild", "lastSuccessfulBuild")));
-    }
-    private static Set<String> permalinks(Job<?,?> j) {
-        Set<String> r = new TreeSet<>();
-        for (PermalinkProjectAction.Permalink l : j.getPermalinks()) {
-            if (l.resolve(j) != null) {
-                r.add(l.getId());
-            }
-        }
-        return r;
-    }
-
     @Test public void incrementalMultiModMaven() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -216,39 +177,7 @@ public class MavenMultiModuleTest {
         pBuild.getDuration() >= summedModuleDuration);
     }
 
-        
-    @Bug(6544)
-    @Ignore("kutzi 10/10/11 ignore test until I can figure out why it fails sometimes")
-    @Test public void estimatedDurationForIncrementalMultiModMaven()
-            throws Exception {
-        Maven36xBuildTest.configureMaven36();
-        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource(
-                "maven-multimod.zip"), getClass().getResource(
-                "maven-multimod-changes.zip")));
 
-        j.buildAndAssertSuccess(m);
-
-        // Now run a second, incremental build with the changes.
-        m.setIncrementalBuild(true);
-        j.buildAndAssertSuccess(m);
-
-        MavenModuleSetBuild lastBuild = m.getLastBuild();
-        MavenModuleSetBuild previousBuild = lastBuild.getPreviousBuild();
-        assertNull("There should be only one previous build", previousBuild.getPreviousBuild());
-        
-        // Since the estimated duration is calculated based on the previous builds
-        // and there was only one previous build (which built all modules) and this build
-        // did only build one module, the estimated duration of this build must be
-        // smaller than the duration of the previous build.
-        // (It's highly unlikely that the durations are equal, but I've already seen it fail.
-        // Therefore <= instead of <)
-        assertTrue("Estimated duration should be <= " + previousBuild.getDuration()
-                + ", but is " + lastBuild.getEstimatedDuration(),
-                lastBuild.getEstimatedDuration() <= previousBuild.getDuration());
-    }
-    
     /**
      * NPE in {@code getChangeSetFor(m)} in {@link MavenModuleSetBuild} when incremental build is
      * enabled and a new module is added.
