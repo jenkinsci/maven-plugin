@@ -5,11 +5,9 @@ import static org.hamcrest.Matchers.hasItems;
 
 import hudson.model.AbstractProject;
 import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * Tests that Maven jobs are triggered, when snapshot dependencies of them were build.
