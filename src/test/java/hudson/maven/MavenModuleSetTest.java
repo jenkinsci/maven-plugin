@@ -93,4 +93,5 @@ public class MavenModuleSetTest extends AbstractMavenTestCase {
         assertFalse(m.getBlockTriggerWhenBuilding());
     }
 
+
 }

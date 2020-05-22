@@ -791,6 +791,11 @@ THE SOFTWARE.
       <artifactId>annotation-indexer</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>io.jenkins.configuration-as-code</groupId>
+      <artifactId>test-harness</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

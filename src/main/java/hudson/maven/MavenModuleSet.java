@@ -1338,15 +1338,15 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
             if (fieldName == null) {
                 return null;
             }
-            return Jenkins.getInstance().getDescriptor(Maven.class).getHelpFile(fieldName);
+            return Jenkins.get().getDescriptor(Maven.class).getHelpFile(fieldName);
         }
 
         public List<SettingsProviderDescriptor> getSettingsProviders() {
-            return Jenkins.getInstance().getDescriptorList(SettingsProvider.class);
+            return Jenkins.get().getDescriptorList(SettingsProvider.class);
         }
         
         public List<GlobalSettingsProviderDescriptor> getGlobalSettingsProviders() {
-            return Jenkins.getInstance().getDescriptorList(GlobalSettingsProvider.class);
+            return Jenkins.get().getDescriptorList(GlobalSettingsProvider.class);
         }
 
         public String getGlobalMavenOpts() {
@@ -1424,7 +1424,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         }
 
         public Maven.DescriptorImpl getMavenDescriptor() {
-            return Jenkins.getInstance().getDescriptorByType(Maven.DescriptorImpl.class);
+            return Jenkins.get().getDescriptorByType(Maven.DescriptorImpl.class);
         }
         
         /**
@@ -1450,7 +1450,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         }
 
         @SuppressWarnings("unchecked")
-        private static final Set<Class> NOT_APPLICABLE_TYPES = new HashSet<Class>(Arrays.asList(
+        private static final Set<Class> NOT_APPLICABLE_TYPES = new HashSet<>(Arrays.asList(
             JavadocArchiver.class,  // this kicks in automatically
             Mailer.class,           // for historical reasons, Maven uses MavenMailer
             JUnitResultArchiver.class // done by SurefireArchiver
