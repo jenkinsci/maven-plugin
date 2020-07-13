@@ -1,3 +1,5 @@
+## New release available here  [https://github.com/jenkinsci/maven-plugin/releases](https://github.com/jenkinsci/maven-plugin/releases)
+
 ## Release Notes
 
 ### Version 3.6 ()
