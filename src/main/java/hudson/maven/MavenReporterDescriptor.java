@@ -85,7 +85,7 @@ public abstract class MavenReporterDescriptor extends Descriptor<MavenReporter> 
     }
 
     /**
-     * Returns true if this descriptor has <tt>config.jelly</tt>.
+     * Returns true if this descriptor has <code>config.jelly</code>.
      */
     public final boolean hasConfigScreen() {
         MetaClass c = WebApp.getCurrent().getMetaClass(getClass());

@@ -220,7 +220,7 @@ public abstract class MavenReporter implements Describable<MavenReporter>, Exten
      *
      * <p>
      * {@link MavenReport} is an execution unit inside the Maven site plugin mojos,
-     * such as <tt>site:generate</tt>. These are what's configured through
+     * such as <code>site:generate</code>. These are what's configured through
      * {@code <reporting>} tag inside POM, although there's normally more
      * {@link MavenReport}s than what's specified explicitly, due to defaulting
      * and inheritance and all the other Maven processing.

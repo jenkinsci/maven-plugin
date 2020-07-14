@@ -6,7 +6,7 @@ import hudson.maven.AbstractMavenBuild;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Uses Maven's default local repository, which is actually <tt>~/.m2/repository</tt>
+ * Uses Maven's default local repository, which is actually <code>~/.m2/repository</code>
  *
  * @author Kohsuke Kawaguchi
  */

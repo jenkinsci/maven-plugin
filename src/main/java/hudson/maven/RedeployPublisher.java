@@ -83,7 +83,7 @@ import org.kohsuke.stapler.StaplerRequest;
  */
 public class RedeployPublisher extends Recorder {
     /**
-     * Repository ID. This is matched up with <tt>~/.m2/settings.xml</tt> for authentication related information.
+     * Repository ID. This is matched up with <code>~/.m2/settings.xml</code> for authentication related information.
      */
     public final String id;
     /**

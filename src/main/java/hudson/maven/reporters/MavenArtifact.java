@@ -85,8 +85,8 @@ public final class MavenArtifact implements Serializable {
      *
      * <p>
      * This name is taken directly from the name of the file as used during the build
-     * (thus POM would be most likely just <tt>pom.xml</tt> and artifacts would
-     * use their <tt>finalName</tt> if one is configured.) This is often
+     * (thus POM would be most likely just <code>pom.xml</code> and artifacts would
+     * use their <code>finalName</code> if one is configured.) This is often
      * different from {@link #canonicalName}.
      */
     @Exported
@@ -94,7 +94,7 @@ public final class MavenArtifact implements Serializable {
 
     /**
      * The canonical artifact file name, used by Maven in the repository.
-     * This is <tt>artifactId-version[-classifier].extension</tt>.
+     * This is <code>artifactId-version[-classifier].extension</code>.
      *
      * <p>
      * The reason we persist this is that the extension is only available

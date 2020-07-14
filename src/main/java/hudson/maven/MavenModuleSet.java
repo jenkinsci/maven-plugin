@@ -167,7 +167,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     private String mavenName;
 
     /**
-     * Equivalent of CLI <tt>MAVEN_OPTS</tt>. Can be null.
+     * Equivalent of CLI <code>MAVEN_OPTS</code>. Can be null.
      */
     private String mavenOpts;
 
@@ -978,7 +978,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 
     /**
-     * Gets the location of top-level <tt>pom.xml</tt> relative to the workspace root.
+     * Gets the location of top-level <code>pom.xml</code> relative to the workspace root.
      * @since 1.467
      */
     public String getRootPOM(EnvVars env) {

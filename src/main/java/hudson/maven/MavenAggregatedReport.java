@@ -56,7 +56,7 @@ public interface MavenAggregatedReport extends Action {
      * needs not be concurrency-safe.
      *
      * @param moduleBuilds
-     *      Same as <tt>MavenModuleSet.getModuleBuilds()</tt> but provided for convenience and efficiency.
+     *      Same as {@link MavenModuleSetBuild#getModuleBuilds()} but provided for convenience and efficiency.
      * @param newBuild
      *      Newly completed build.
      */
