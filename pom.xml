@@ -29,13 +29,13 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.1</version>
+    <version>4.7</version>
     <relativePath />
   </parent>
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
   <artifactId>maven-plugin</artifactId><!-- for the same reason, artifactId is against the convention -->
-  <version>3.8-SNAPSHOT</version>
+  <version>${revision}${changelist}</version>
   <packaging>hpi</packaging>
 
   <name>Maven Integration plugin</name>
@@ -43,6 +43,9 @@ THE SOFTWARE.
   <url>https://github.com/jenkinsci/maven-plugin</url>
 
   <properties>
+    <revision>3.8</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/maven-plugin</gitHubRepo>
     <jenkins.version>2.176.4</jenkins.version>
     <java.level>8</java.level>
     <mavenInterceptorsVersion>1.13</mavenInterceptorsVersion>
@@ -943,10 +946,10 @@ THE SOFTWARE.
   </pluginRepositories>
 
   <scm>
-    <connection>scm:git:git://github.com/jenkinsci/maven-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/maven-plugin.git</developerConnection>
-    <url>http://github.com/jenkinsci/maven-plugin</url>
-    <tag>HEAD</tag>
+    <connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
+    <url>http://github.com/${gitHubRepo}</url>
+    <tag>${scmTag}</tag>
   </scm>
 
 </project>
