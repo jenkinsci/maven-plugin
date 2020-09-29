@@ -1131,7 +1131,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
          * takes an effect even when {@link PomParser} runs in a slave.
          */
         private final boolean verbose = debug;
-        private final MavenInstallation mavenHome;
+        private final String mavenHome;
         private final String profiles;
         private final Properties properties;
         private final String privateRepository;
@@ -1160,7 +1160,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             // project cannot be shipped to the remote JVM, so all the relevant properties need to be captured now.
             MavenModuleSet project = build.getProject();
             this.listener = listener;
-            this.mavenHome = mavenHome;
+            this.mavenHome = mavenHome.getHome();
             this.rootPOM = project.getRootPOM(envVars); // JENKINS-13822
             this.profiles = project.getProfiles();
             this.properties = project.getMavenProperties();
@@ -1282,7 +1282,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             }
 
             try {
-                MavenEmbedderRequest mer = new MavenEmbedderRequest( listener, mavenHome.getHomeDir(),
+                MavenEmbedderRequest mer = new MavenEmbedderRequest( listener, new File(mavenHome),
                                                                                       profiles, properties,
                                                                                       privateRepository, settingsLoc );
                 mer.setTransferListener(new SimpleTransferListener(listener));
