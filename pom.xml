@@ -29,7 +29,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.7</version>
+    <version>4.9</version>
     <relativePath />
   </parent>
 
@@ -46,7 +46,7 @@ THE SOFTWARE.
     <revision>3.8</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/maven-plugin</gitHubRepo>
-    <jenkins.version>2.176.4</jenkins.version>
+    <jenkins.version>2.204.6</jenkins.version>
     <java.level>8</java.level>
     <mavenInterceptorsVersion>1.13</mavenInterceptorsVersion>
     <!-- Version of Maven Components -->
@@ -82,21 +82,15 @@ THE SOFTWARE.
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.176.x</artifactId>
-        <version>9</version>
+        <artifactId>bom-2.204.x</artifactId>
+        <version>12</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
-      <dependency>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs-annotations</artifactId>
-        <version>3.1.12</version>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.13</version>
-        <scope>test</scope>
+      <dependency> <!-- TODO pending https://github.com/jenkinsci/bom/pull/294 -->
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>jackson2-api</artifactId>
+        <version>2.11.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -114,6 +108,21 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
+      <version>1.37</version> <!-- TODO pending https://github.com/jenkinsci/bom/pull/311 -->
+      <exclusions>
+        <exclusion> <!-- TODO smells like a mistake upstream; should be provided by core -->
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-annotations</artifactId>
+        </exclusion>
+        <exclusion> <!-- TODO ditto -->
+          <groupId>com.google.errorprone</groupId>
+          <artifactId>error_prone_annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+          <artifactId>jackson-dataformat-yaml</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     
     <dependency>
@@ -615,12 +624,6 @@ THE SOFTWARE.
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>annotations</artifactId>
-      <scope>compile</scope>
-      <version>3.0.1</version>
-    </dependency>
-    <dependency>
       <groupId>org.jenkins-ci.lib</groupId>
       <artifactId>lib-jenkins-maven-artifact-manager</artifactId>
       <version>1.2</version>
@@ -712,7 +715,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.9</version>
+      <version>3.10</version>
     </dependency>
 
     <dependency>
@@ -729,7 +732,8 @@ THE SOFTWARE.
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
+      <artifactId>mockito-inline</artifactId>
+      <version>3.5.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -802,6 +806,16 @@ THE SOFTWARE.
       <groupId>io.jenkins.configuration-as-code</groupId>
       <artifactId>test-harness</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+          <artifactId>jackson-dataformat-yaml</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 

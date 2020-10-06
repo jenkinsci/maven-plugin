@@ -20,6 +20,8 @@ import hudson.model.BuildListener;
 import hudson.model.Cause;
 import hudson.model.Result;
 import hudson.tasks.junit.TestResult;
+import io.jenkins.plugins.junit.storage.FileJunitTestResultStorage;
+import io.jenkins.plugins.junit.storage.JunitTestResultStorage;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,13 +35,15 @@ import java.util.List;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.RandomlyFails;
 import org.mockito.Matchers;
-import org.mockito.invocation.InvocationOnMock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
 /**
@@ -53,6 +57,7 @@ public class SurefireArchiverUnitTest {
     private MavenBuild build;
     private TestBuildProxy buildProxy;
     private MojoInfo mojoInfo;
+    private MockedStatic<JunitTestResultStorage> mockJunitTestResultStorage;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -77,6 +82,14 @@ public class SurefireArchiverUnitTest {
         MojoInfo spy = createMojoInfo();
         
         this.mojoInfo = spy;
+
+        mockJunitTestResultStorage = Mockito.mockStatic(JunitTestResultStorage.class);
+        mockJunitTestResultStorage.when(JunitTestResultStorage::find).thenReturn(new FileJunitTestResultStorage());
+    }
+
+    @After
+    public void after() {
+        mockJunitTestResultStorage.close();
     }
 
     private MojoInfo createMojoInfo() throws ComponentConfigurationException {
@@ -226,7 +239,8 @@ public class SurefireArchiverUnitTest {
         }
         
         public void run() {
-            try {
+            try (MockedStatic<JunitTestResultStorage> mockJunitTestResultStorage = Mockito.mockStatic(JunitTestResultStorage.class)) {
+                mockJunitTestResultStorage.when(JunitTestResultStorage::find).thenReturn(new FileJunitTestResultStorage());
                 for (int i=0; i < count; i++) {
                     archiver.postExecute(buildProxy, null, this.info, new NullBuildListener(), null);
                 }
