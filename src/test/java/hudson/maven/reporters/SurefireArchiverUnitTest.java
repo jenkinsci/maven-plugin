@@ -83,8 +83,13 @@ public class SurefireArchiverUnitTest {
         
         this.mojoInfo = spy;
 
-        mockJunitTestResultStorage = Mockito.mockStatic(JunitTestResultStorage.class);
-        mockJunitTestResultStorage.when(JunitTestResultStorage::find).thenReturn(new FileJunitTestResultStorage());
+        mockJunitTestResultStorage = mockJunitTestResultStorage();
+    }
+
+    private static MockedStatic<JunitTestResultStorage> mockJunitTestResultStorage() {
+        MockedStatic<JunitTestResultStorage> mock = Mockito.mockStatic(JunitTestResultStorage.class);
+        mock.when(JunitTestResultStorage::find).thenReturn(new FileJunitTestResultStorage());
+        return mock;
     }
 
     @After
@@ -239,8 +244,7 @@ public class SurefireArchiverUnitTest {
         }
         
         public void run() {
-            try (MockedStatic<JunitTestResultStorage> mockJunitTestResultStorage = Mockito.mockStatic(JunitTestResultStorage.class)) {
-                mockJunitTestResultStorage.when(JunitTestResultStorage::find).thenReturn(new FileJunitTestResultStorage());
+            try (MockedStatic<JunitTestResultStorage> mockJunitTestResultStorage = mockJunitTestResultStorage()) {
                 for (int i=0; i < count; i++) {
                     archiver.postExecute(buildProxy, null, this.info, new NullBuildListener(), null);
                 }
