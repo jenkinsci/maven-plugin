@@ -1,2 +1,1 @@
-//buildPlugin platforms: ['linux'], jenkinsVersions: [null, '2.164.2', /* verifying JENKINS-57244 */ '2.175']
-buildPlugin(useAci: false, configurations: buildPlugin.recommendedConfigurations())
+buildPlugin(useAci: false)
