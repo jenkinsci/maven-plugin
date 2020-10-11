@@ -77,7 +77,7 @@ public class MavenAggregatedArtifactRecord extends MavenAbstractArtifactRecord<M
      */
     @Exported(inline=true)
     public List<MavenArtifactRecord> getModuleRecords() {
-        List<MavenArtifactRecord> r = new ArrayList<MavenArtifactRecord>();
+        List<MavenArtifactRecord> r = new ArrayList<>();
         for (MavenBuild build : parent.getModuleLastBuilds().values()) {
             MavenArtifactRecord mar = build.getAction(MavenArtifactRecord.class);
             if(mar!=null)   r.add(mar);

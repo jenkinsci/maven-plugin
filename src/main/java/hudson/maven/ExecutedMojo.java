@@ -141,8 +141,7 @@ public final class ExecutedMojo implements Serializable {
         {
             return null;
         }
-        Class<?> clazz = cl.loadClass( md.getImplementation() );
-        return clazz;
+        return cl.loadClass( md.getImplementation() );
        
     }
     
@@ -212,10 +211,10 @@ public final class ExecutedMojo implements Serializable {
         /**
          * All maven modules in this Hudson by their names.
          */
-        public final Map<ModuleName,MavenModule> modules = new HashMap<ModuleName,MavenModule>();
+        public final Map<ModuleName,MavenModule> modules = new HashMap<>();
 
         public Cache() {
-            for( MavenModule m : Jenkins.getInstance().getAllItems(MavenModule.class))
+            for( MavenModule m : Jenkins.get().getAllItems(MavenModule.class))
                 modules.put(m.getModuleName(),m);
         }
 

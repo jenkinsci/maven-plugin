@@ -63,7 +63,7 @@ public abstract class PlexusModuleContributor implements Serializable {
     
     private static class PlexusModuleContributorOfPaths extends PlexusModuleContributor {
         private static final long serialVersionUID = 8528727996575052850L;
-        private List<String> files;
+        private final List<String> files;
 
         public PlexusModuleContributorOfPaths(List<String> files) {
             this.files = files;

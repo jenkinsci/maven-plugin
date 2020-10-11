@@ -48,8 +48,8 @@ public abstract class AbstractMavenJavadocArchiver extends MavenReporter {
 
     /**
      * return true if this mojo is a javadoc one sources or test sources
-     * @param mojo
-     * @return
+     * @param mojo the Mojo to check
+     * @return <code>true</code> if the Mojo runs javadoc
      */
     public abstract boolean checkIsJavadocMojo(MojoInfo mojo);
 

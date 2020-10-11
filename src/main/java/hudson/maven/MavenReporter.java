@@ -314,6 +314,6 @@ public abstract class MavenReporter implements Describable<MavenReporter>, Exten
     }
 
     public MavenReporterDescriptor getDescriptor() {
-        return (MavenReporterDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return (MavenReporterDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
     }
 }

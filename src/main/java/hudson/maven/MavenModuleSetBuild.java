@@ -506,7 +506,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 
     public void registerAsProjectAction(MavenReporter reporter) {
         if(projectActionReporters==null)
-            projectActionReporters = new ArrayList<MavenReporter>();
+            projectActionReporters = new ArrayList<>();
         projectActionReporters.add(reporter);
     }
 
@@ -517,7 +517,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
      */
     public <T extends Action> List<T> findModuleBuildActions(Class<T> action) {
         Collection<MavenModule> mods = getParent().getModules();
-        List<T> r = new ArrayList<T>(mods.size());
+        List<T> r = new ArrayList<>(mods.size());
 
         // identify the build number range. [start,end)
         MavenModuleSetBuild nb = getNextBuild();
@@ -606,9 +606,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             Util.createSymlink(getRootDir(),
                     "../../modules/"+ moduleFsName +"/builds/"+newBuild.getId() /*ugly!*/,
                     moduleFsName, StreamTaskListener.NULL);
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING,"Failed to update "+this,e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             LOGGER.log(Level.WARNING,"Failed to update "+this,e);
         }
     }
@@ -836,7 +834,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 						// find the correct maven goals and options, there might by an action overruling the defaults
                         String goals = project.getGoals(); // default
                         for (MavenArgumentInterceptorAction mavenArgInterceptor : argInterceptors) {
-                        	final String goalsAndOptions = mavenArgInterceptor.getGoalsAndOptions((MavenModuleSetBuild)this.getBuild());
+                        	final String goalsAndOptions = mavenArgInterceptor.getGoalsAndOptions(this.getBuild());
 							if(StringUtils.isNotBlank(goalsAndOptions)){
                         		goals = goalsAndOptions;
                                 // only one interceptor is allowed to overwrite the whole "goals and options" string
@@ -848,7 +846,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
 						// enable the interceptors to change the whole command argument list
 						// all available interceptors are allowed to modify the argument list
 						for (MavenArgumentInterceptorAction mavenArgInterceptor : argInterceptors) {
-							final ArgumentListBuilder newMargs = mavenArgInterceptor.intercept(margs, (MavenModuleSetBuild)this.getBuild());
+							final ArgumentListBuilder newMargs = mavenArgInterceptor.intercept(margs, this.getBuild());
 							if (newMargs != null) {
 								margs = newMargs;
 							}

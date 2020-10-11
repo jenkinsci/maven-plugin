@@ -108,11 +108,7 @@ public final class MavenProbeAction implements Action {
         if (build != null) {
             final Set<String> sensitiveBuildVars = build.getSensitiveBuildVariables();
             vars = new EnvVars(Maps.transformEntries(vars,
-                new Maps.EntryTransformer<String, String, String>() {
-                    public String transformEntry(String key, String value) {
-                        return sensitiveBuildVars.contains(key) ? "********" : value;
-                    }
-                }));
+                                                     ( key, value ) -> sensitiveBuildVars.contains(key) ? "********" : value ));
         }
 
         return vars;

@@ -38,7 +38,7 @@ public abstract class PlexusModuleContributorFactory implements ExtensionPoint {
      * Returns all the registered {@link PlexusModuleContributor}s.
      */
     public static ExtensionList<PlexusModuleContributorFactory> all() {
-        return Jenkins.getInstance().getExtensionList(PlexusModuleContributorFactory.class);
+        return Jenkins.get().getExtensionList(PlexusModuleContributorFactory.class);
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class PlexusModuleContributorFactory implements ExtensionPoint {
     
     private static class AggregatedPlexusModuleContributor extends PlexusModuleContributor {
         private static final long serialVersionUID = -96035620100000276L;
-        private List<PlexusModuleContributor> all;
+        private final List<PlexusModuleContributor> all;
         
         public AggregatedPlexusModuleContributor(List<PlexusModuleContributor> all) {
             this.all = all;

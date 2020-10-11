@@ -36,7 +36,7 @@ import java.io.Serializable;
  */
 public final class ReportAction implements Action, Serializable {
 
-    private final List<Entry> entries = new ArrayList<Entry>();
+    private final List<Entry> entries = new ArrayList<>();
 
     public static final class Entry {
         /**

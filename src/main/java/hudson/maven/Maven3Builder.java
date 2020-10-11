@@ -79,7 +79,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
     Class<?> maven3MainClass;
     Class<?> maven3LauncherClass;
-    boolean supportEventSpy = false;
+    boolean supportEventSpy;
 
     private final String mojoNote;
 
@@ -93,7 +93,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
         this.maven3LauncherClass = maven3BuilderRequest.maven3LauncherClass;
         this.maven3MainClass = maven3BuilderRequest.maven3MainClass;
         this.supportEventSpy = maven3BuilderRequest.supportEventSpy;
-        assert Jenkins.getInstance() != null : "this is supposed to be run on master";
+        assert Jenkins.get() != null : "this is supposed to be run on master";
         mojoNote = new Maven3MojoNote().encode();
     }
 
@@ -136,9 +136,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
             Method launchMethod = maven3MainClass.getMethod( "launch", String[].class );
 
-            Integer res = (Integer) launchMethod.invoke(null, new Object[] {goals.toArray(new String[goals.size()])} );
-
-            int r = res.intValue();
+            Integer r = (Integer) launchMethod.invoke(null, new Object[] {goals.toArray(new String[goals.size()])} );
 
             // now check the completion status of async ops
             long startTime = System.nanoTime();

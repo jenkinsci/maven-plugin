@@ -238,7 +238,7 @@ public class RedeployPublisher extends Recorder {
                 
                 if(buildNode == null) {
                     // assume that build was made on master
-                    buildNode = Jenkins.getInstance();
+                    buildNode = Jenkins.get();
                 }
 
                 if (StringUtils.isBlank( altSettingsPath ) ) {

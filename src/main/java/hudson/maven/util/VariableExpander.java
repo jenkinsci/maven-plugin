@@ -27,9 +27,7 @@ public final class VariableExpander {
     public String expand(final String rawString) {
         try {
             return build.getEnvironment(listener).expand(rawString);
-        } catch (IOException e) {
-            LOGGER.fine("Cannot expand the variables in email recipients.");
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             LOGGER.fine("Cannot expand the variables in email recipients.");
         }
         return rawString;

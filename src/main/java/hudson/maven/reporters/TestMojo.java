@@ -140,13 +140,13 @@ enum TestMojo {
     private Key key;
     private String minimalRequiredVersion;
     
-    private TestMojo(String artifactId, String groupId, String goal,
+    TestMojo(String artifactId, String groupId, String goal,
             String reportDirectoryConfigKey) {
         this.key = new Key(artifactId,groupId,goal);
         this.reportDirectoryConfigKey = reportDirectoryConfigKey;
     }
     
-    private TestMojo(String artifactId, String groupId, String goal,
+    TestMojo(String artifactId, String groupId, String goal,
             String reportDirectoryConfigKey,String minimalRequiredVersion) {
         this.key = new Key(artifactId,groupId,goal);
         this.reportDirectoryConfigKey = reportDirectoryConfigKey;
@@ -204,18 +204,8 @@ enum TestMojo {
     private Iterable<File> getReportFiles(final File baseDir, FileSet set) {
         final String[] includedFiles = set.getDirectoryScanner().getIncludedFiles();
         
-        return new Iterable<File>() {
-            public Iterator<File> iterator() {
-                return Iterators.transform(
-                    Iterators.forArray(includedFiles),
-                    new Function<String, File>() {
-                        @Override
-                        public File apply(String file) {
-                            return new File(baseDir,file);
-                        }
-                    });
-            }
-        };
+        return () -> Iterators.transform(Iterators.forArray(includedFiles),
+                                         file -> new File(baseDir,file) );
     }
     
     /**

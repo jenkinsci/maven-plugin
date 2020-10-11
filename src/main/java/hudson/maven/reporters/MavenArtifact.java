@@ -29,17 +29,6 @@ import hudson.maven.MavenBuild;
 import hudson.maven.MavenBuildProxy;
 import hudson.model.Api;
 import hudson.model.BuildListener;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.Map;
-import java.util.logging.Logger;
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
 import jenkins.model.StandardArtifactManager;
 import jenkins.util.VirtualFile;
 import org.apache.commons.io.IOUtils;
@@ -50,10 +39,19 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
+import javax.annotation.Nonnull;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Captures information about an artifact created by Maven and archived by
@@ -278,7 +276,7 @@ public final class MavenArtifact implements Serializable {
                     File f = File.createTempFile("jenkins-", canonicalName);
                     f.deleteOnExit();
 
-                    try(OutputStream os = new FileOutputStream(f);) {
+                    try(OutputStream os = new FileOutputStream(f)) {
                         IOUtils.copy(getVirtualFile().open(), os);
                     }
                     copy = f;

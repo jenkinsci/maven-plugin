@@ -36,8 +36,15 @@ import hudson.maven.MavenReporterDescriptor;
 import hudson.maven.MojoInfo;
 import hudson.model.BuildListener;
 import hudson.model.FingerprintMap;
-import hudson.tasks.Fingerprinter;
 import hudson.tasks.Fingerprinter.FingerprintAction;
+import jenkins.model.Jenkins;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilderConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,16 +58,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jenkins.model.Jenkins;
-
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilderConfiguration;
 
 /**
  * Records fingerprints of the builds to keep track of dependencies.
@@ -222,7 +219,7 @@ public class MavenFingerprinter extends MavenReporter {
             }
         }
         if(!records.isEmpty()) {
-            FingerprintMap map = Jenkins.getInstance().getFingerprintMap();
+            FingerprintMap map = Jenkins.get().getFingerprintMap();
             for (Entry<String, String> e : records.entrySet())
                 map.getOrCreate(null, e.getKey(), e.getValue()).add(mmsb);
             mmsb.addAction(new FingerprintAction(mmsb,records));
@@ -241,7 +238,7 @@ public class MavenFingerprinter extends MavenReporter {
         private final Map<String,String> p = produced;
 
         public Void call(MavenBuild build) throws IOException, InterruptedException {
-            FingerprintMap map = Jenkins.getInstance().getFingerprintMap();
+            FingerprintMap map = Jenkins.get().getFingerprintMap();
 
             for (Entry<String, String> e : p.entrySet())
                 map.getOrCreate(build, e.getKey(), e.getValue()).add(build);
