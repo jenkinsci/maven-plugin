@@ -25,16 +25,18 @@ package hudson.maven.reporters;
 
 import hudson.Extension;
 import hudson.Util;
-import hudson.maven.*;
+import hudson.maven.MavenBuild;
+import hudson.maven.MavenBuildProxy;
+import hudson.maven.MavenModule;
+import hudson.maven.MavenReporter;
+import hudson.maven.MavenReporterDescriptor;
+import hudson.maven.MojoInfo;
 import hudson.model.BuildListener;
-import hudson.util.InvocationInterceptor;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -67,22 +69,19 @@ public class MavenArtifactArchiver extends MavenReporter {
     @Override
     public boolean preExecute(MavenBuildProxy build, MavenProject pom, MojoInfo mojo, BuildListener listener) throws InterruptedException, IOException {
         if(mojo.is("org.apache.maven.plugins","maven-assembly-plugin","assembly")) {
-            if (assemblies==null)   assemblies = new ArrayList<File>();
+            if (assemblies==null)   assemblies = new ArrayList<>();
 
             try {
                 // watch out for AssemblyArchiver.createArchive that returns a File object, pointing to the archives created by the assembly plugin.
-                mojo.intercept("assemblyArchiver",new InvocationInterceptor() {
-                    public Object invoke(Object proxy, Method method, Object[] args, InvocationHandler delegate) throws Throwable {
-                        Object ret = delegate.invoke(proxy, method, args);
-                        if(method.getName().equals("createArchive") && method.getReturnType()==File.class) {
-//                            System.out.println("Discovered "+ret+" at "+MavenArtifactArchiver.this);
-                            File f = (File) ret;
-                            if(!f.isDirectory())
-                                assemblies.add(f);
-                        }
-                        return ret;
+                mojo.intercept( "assemblyArchiver", ( proxy, method, args, delegate ) -> {
+                    Object ret = delegate.invoke(proxy, method, args);
+                    if(method.getName().equals("createArchive") && method.getReturnType()==File.class) {
+                        File f = (File) ret;
+                        if(!f.isDirectory())
+                            assemblies.add(f);
                     }
-                });
+                    return ret;
+                } );
             } catch (NoSuchFieldException e) {
                 listener.getLogger().println("[JENKINS] Failed to monitor the execution of the assembly plugin: "+e.getMessage());
             }
@@ -92,7 +91,7 @@ public class MavenArtifactArchiver extends MavenReporter {
 
     public boolean postBuild(MavenBuildProxy build, MavenProject pom, final BuildListener listener) throws InterruptedException, IOException {
         // artifacts that are known to Maven.
-        Set<File> mavenArtifacts = new HashSet<File>();
+        Set<File> mavenArtifacts = new HashSet<>();
 
         if (pom.getFile() != null) {// goals like 'clean' runs without loading POM, apparently.
             // record POM
@@ -114,7 +113,7 @@ public class MavenArtifactArchiver extends MavenReporter {
             }
 
             // record attached artifacts
-            final List<MavenArtifact> attachedArtifacts = new ArrayList<MavenArtifact>();
+            final List<MavenArtifact> attachedArtifacts = new ArrayList<>();
             for (Artifact a : pom.getAttachedArtifacts()) {
                 MavenArtifact ma = MavenArtifact.create(a);
                 if (ma != null) {

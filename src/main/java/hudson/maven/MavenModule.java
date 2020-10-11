@@ -287,7 +287,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         else {
             // Until 1.207, we used to have ModuleName in dependencies. So convert.
             Set<ModuleDependency> deps = new HashSet<>(dependencies.size());
-            for (Object d : (Set<?>)dependencies) {
+            for (Object d : dependencies) {
                 if (d instanceof ModuleDependency) {
                     deps.add((ModuleDependency) d);
                 } else {
@@ -440,7 +440,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         List<ModuleName> l = children;    // take a snapshot
         if(l==null) return null;
 
-        List<MavenModule> modules = new ArrayList<MavenModule>(l.size());
+        List<MavenModule> modules = new ArrayList<>(l.size());
         for (ModuleName n : l) {
             MavenModule m = getParent().modules.get(n);
             if(m!=null)
@@ -536,7 +536,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         Map<ModuleDependency,MavenModule> myParentsModules; // = data.modulesPerParent.get(getParent());
         
         //if (myParentsModules == null) {
-            myParentsModules = new HashMap<ModuleDependency, MavenModule>();
+            myParentsModules = new HashMap<>();
             
             for (MavenModule m : getParent().getModules()) {
                 if(m.isDisabled())  continue;
@@ -602,7 +602,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
      * Returns all Maven modules in this Jenkins instance.
      */
     protected Collection<MavenModule> getAllMavenModules() {
-        return Jenkins.getInstance().getAllItems(MavenModule.class);
+        return Jenkins.get().getAllItems(MavenModule.class);
     }
     
     /**
@@ -744,7 +744,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
         goals = Util.fixEmpty(req.getParameter("goals").trim());
 
         // dependency setting might have been changed by the user, so rebuild.
-        Jenkins.getInstance().rebuildDependencyGraphAsync();
+        Jenkins.get().rebuildDependencyGraphAsync();
     }
 
     @Override

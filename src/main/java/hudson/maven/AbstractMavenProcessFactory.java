@@ -49,6 +49,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 
@@ -198,7 +199,6 @@ public abstract class AbstractMavenProcessFactory
         static final class AcceptorImpl implements Acceptor, Serializable {
             private static final long serialVersionUID = -2226788819948521018L;
             private transient final ServerSocket serverSocket;
-            private transient Socket socket;
 
             AcceptorImpl() throws IOException {
                 // open a TCP socket to talk to the launched Maven process.
@@ -210,7 +210,7 @@ public abstract class AbstractMavenProcessFactory
             }
 
             public Connection accept() throws IOException {
-                socket = serverSocket.accept();
+                Socket socket = serverSocket.accept();
                 socket.setKeepAlive(true);
 
                 // we'd only accept one connection
@@ -254,7 +254,7 @@ public abstract class AbstractMavenProcessFactory
                 charset = Charset.forName(launcher.getChannel().call(new GetCharset()));
             } catch (UnsupportedCharsetException e) {
                 // choose the bit preserving charset. not entirely sure if iso-8859-1 does that though.
-                charset = Charset.forName("iso-8859-1");
+                charset = StandardCharsets.ISO_8859_1;
             }
 
             MavenConsoleAnnotator mca = new MavenConsoleAnnotator(out,charset);
@@ -392,7 +392,7 @@ public abstract class AbstractMavenProcessFactory
             throw new RunnerAbortedException();
         }
 
-        boolean isMaster = getCurrentNode()== Jenkins.getInstance();
+        boolean isMaster = getCurrentNode()== Jenkins.get();
         FilePath slaveRoot=null;
         if(!isMaster)
             slaveRoot = getCurrentNode().getRootPath();
@@ -491,8 +491,7 @@ public abstract class AbstractMavenProcessFactory
                     if ((localMavenOpts!=null) && (localMavenOpts.trim().length()>0)) {
                         mavenOpts = localMavenOpts;
                     }
-                } catch (IOException e) {
-                } catch (InterruptedException e) {
+                } catch (IOException | InterruptedException e) {
                     // Don't do anything - this just means the slave isn't running, so we
                     // don't want to use its MAVEN_OPTS anyway.
                 }

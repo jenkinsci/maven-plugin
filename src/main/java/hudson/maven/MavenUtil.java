@@ -73,7 +73,7 @@ public class MavenUtil {
     public static MavenEmbedder createEmbedder(TaskListener listener, AbstractProject<?,?> project, String profiles) throws MavenEmbedderException, IOException, InterruptedException {
         MavenInstallation m=null;
         if (project instanceof ProjectWithMaven)
-            m = ((ProjectWithMaven) project).inferMavenInstallation().forNode(Jenkins.getInstance(),listener);
+            m = ((ProjectWithMaven) project).inferMavenInstallation().forNode(Jenkins.get(),listener);
 
         return createEmbedder(listener,m!=null?m.getHomeDir():null,profiles);
     }
@@ -93,7 +93,7 @@ public class MavenUtil {
         AbstractProject<?,?> project = build.getProject();
         
         if (project instanceof ProjectWithMaven) {
-            m = ((ProjectWithMaven) project).inferMavenInstallation().forNode(Jenkins.getInstance(),listener);
+            m = ((ProjectWithMaven) project).inferMavenInstallation().forNode(Jenkins.get(),listener);
         }
         if (project instanceof MavenModuleSet) {
             String altSet = SettingsProvider.getSettingsRemotePath(((MavenModuleSet) project).getSettings(), build, listener);
@@ -229,7 +229,7 @@ public class MavenUtil {
      *
      * @throws AbortException
      *      errors will be reported to the listener and the exception thrown.
-     * @throws MavenEmbedderException
+     * @throws MavenEmbedderException if any embedded issue
      */
     public static void resolveModules( MavenEmbedder embedder, MavenProject project, String rel,
                                        Map<MavenProject, String> relativePathInfo, BuildListener listener,
@@ -319,8 +319,8 @@ public class MavenUtil {
     /**
      * support of {@link org.apache.maven.eventspy.EventSpy} only since 3.0.2
      * due to the current implementation will be supported only for maven 3.1.0
-     * @param mavenVersion
-     * @return
+     * @param mavenVersion the maven version
+     * @return <code>true</code> if MavenSpy is supported by this version
      */
     public static boolean supportEventSpy(String mavenVersion){
         // null or empty so false !

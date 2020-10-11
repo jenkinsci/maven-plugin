@@ -23,6 +23,9 @@ package hudson.maven;
  */
 
 import hudson.model.TaskListener;
+import org.apache.maven.model.building.ModelBuildingRequest;
+import org.eclipse.aether.repository.WorkspaceReader;
+import org.eclipse.aether.transfer.TransferListener;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,11 +34,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.model.building.ModelBuildingRequest;
-import org.eclipse.aether.repository.WorkspaceReader;
-import org.eclipse.aether.transfer.TransferListener;
 
 /**
  * @author Olivier Lamy
@@ -317,20 +315,16 @@ public class MavenEmbedderRequest
                     // because RemoteClassLoader mangles the path, we can't check for plexus/components.xml,
                     // which would have otherwise made the test cheaper.
                     if(s.endsWith("components.xml")) {
-                        BufferedReader r=null;
-                        try {
+                        try (BufferedReader r = new BufferedReader(new InputStreamReader(url.openStream()))) {
                             // is this designated for interception purpose? If so, don't load them in the MavenEmbedder
                             // earlier I tried to use a marker file in the same directory, but that won't work
-                            r = new BufferedReader(new InputStreamReader(url.openStream()));
                             for (int i=0; i<2; i++) {
                                 String l = r.readLine();
                                 if(l!=null && l.contains("MAVEN-INTERCEPTION-TO-BE-MASKED"))
                                     return true;
                             }
-                        } catch (IOException _) {
+                        } catch (IOException e) {
                             // let whoever requesting this resource re-discover an error and report it
-                        } finally {
-                            IOUtils.closeQuietly(r);
                         }
                     }
                     return false;

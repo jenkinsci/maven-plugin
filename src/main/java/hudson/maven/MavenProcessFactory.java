@@ -72,11 +72,8 @@ final class MavenProcessFactory extends AbstractMavenProcessFactory implements P
             if (jar.exists() && jar.digest().equals(Util.getDigestOf(MavenProcessFactory.class.getClassLoader().getResourceAsStream("classworlds.jar")))) {
                 listener.getLogger().println("classworlds.jar already up to date");
             } else {
-                InputStream in = MavenProcessFactory.class.getClassLoader().getResourceAsStream("classworlds.jar");
-                try {
+                try(InputStream in = MavenProcessFactory.class.getClassLoader().getResourceAsStream("classworlds.jar")) {
                     jar.copyFrom(in);
-                } finally {
-                    in.close();
                 }
                 listener.getLogger().println("Copied classworlds.jar");
             }
@@ -168,11 +165,8 @@ final class MavenProcessFactory extends AbstractMavenProcessFactory implements P
      * tools/maven-3.0-alpha-6/boot/plexus-classworlds-2.2.2.jar
      * </pre>
      */
-    private static final FilenameFilter CLASSWORLDS_FILTER = new FilenameFilter() {
-        public boolean accept(File dir, String name) {
-            return name.contains("classworlds") && name.endsWith(".jar");
-        }
-    };
+    private static final FilenameFilter CLASSWORLDS_FILTER =
+        ( dir, name ) -> name.contains( "classworlds") && name.endsWith( ".jar");
     
     //-------------------------------------------------
     // Some of those fields are used for maven 3 too

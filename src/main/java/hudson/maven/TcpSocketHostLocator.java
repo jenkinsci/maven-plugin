@@ -23,7 +23,7 @@ public abstract class TcpSocketHostLocator implements ExtensionPoint {
     /**
      * Try to identify the slave agent TCP socket host name or IP.
      * @return <code>null</code> if not found or does not apply to this specific implementation
-     * @throws IOException
+     * @throws IOException if any exception
      */
     public abstract @CheckForNull String getTcpSocketHost() throws IOException;
 

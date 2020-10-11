@@ -769,7 +769,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 
     public Collection<Job> getAllJobs() {
-        Set<Job> jobs = new HashSet<Job>(getItems());
+        Set<Job> jobs = new HashSet<>(getItems());
         jobs.add(this);
         return jobs;
     }
@@ -959,7 +959,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
 
     @Override
     protected Set<ResourceActivity> getResourceActivities() {
-        final Set<ResourceActivity> activities = new HashSet<ResourceActivity>();
+        final Set<ResourceActivity> activities = new HashSet<>();
 
         activities.addAll(super.getResourceActivities());
         activities.addAll(Util.filter(publishers, ResourceActivity.class));
@@ -1429,7 +1429,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         
         /**
          * @since 1.394
-         * @return
+         * @return a Map of label/validation level
          */
         public Map<String, Integer> getMavenValidationLevels() {
             return mavenValidationLevels;

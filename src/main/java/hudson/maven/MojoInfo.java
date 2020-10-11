@@ -286,15 +286,10 @@ public class MojoInfo {
             try {
                 final Object oldObject = f.get(mojo);
 
-                Object newObject = Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, new InvocationHandler() {
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        return interceptor.invoke(proxy,method,args,new InvocationHandler() {
-                            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                                return method.invoke(oldObject,args);
-                            }
-                        });
-                    }
-                });
+                Object newObject = Proxy.newProxyInstance( type.getClassLoader(), new Class[]{type},
+                                                           ( proxy, method, args ) ->
+                                                               interceptor.invoke( proxy, method, args,
+                                                                                   ( proxy1, method1, args1 ) -> method1.invoke( oldObject, args1 ) ) );
 
                 f.set(mojo,newObject);
             } catch (IllegalAccessException e) {

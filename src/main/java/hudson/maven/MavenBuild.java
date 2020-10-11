@@ -798,12 +798,12 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
         @Override
         public MavenBuild getBuild() {
-            return (MavenBuild)super.getBuild();
+            return super.getBuild();
         }
 
         @Override
         public MavenModule getProject() {
-            return (MavenModule)super.getProject();
+            return super.getProject();
         }
 
         @Override

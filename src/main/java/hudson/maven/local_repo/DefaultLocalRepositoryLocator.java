@@ -6,7 +6,7 @@ import hudson.maven.AbstractMavenBuild;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Uses Maven's default local repository, which is usually <tt>~/.m2/repository</tt>,
+ * Uses Maven's default local repository, which is usually <code>~/.m2/repository</code>,
  * or the value of 'localRepository' in Maven's settings file, if defined.
  *
  * @see <a href="https://maven.apache.org/settings.html#Settings_Details">https://maven.apache.org/settings.html#Settings_Details</a>

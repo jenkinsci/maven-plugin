@@ -80,7 +80,7 @@ public class MavenTestDataPublisher extends Recorder {
                 continue;
             }
             
-            List<Data> data = new ArrayList<Data>();
+            List<Data> data = new ArrayList<>();
             if (getTestDataPublishers() != null) {
                 for (TestDataPublisher tdp : getTestDataPublishers()) {
                     Data d = tdp.getTestData(moduleBuild, launcher, listener, report.getResult());

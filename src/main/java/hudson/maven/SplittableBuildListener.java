@@ -43,6 +43,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -92,7 +93,7 @@ final class SplittableBuildListener implements BuildListener, Serializable {
                 }
             }
 
-            public void write(byte b[], int off, int len) throws IOException {
+            public void write(byte[] b, int off, int len) throws IOException {
                 base.write(b, off, len);
                 synchronized (lock()) {
                     side.write(b, off, len);
@@ -248,11 +249,7 @@ final class SplittableBuildListener implements BuildListener, Serializable {
     private static final byte[] MARK = toUTF8(MarkFindingOutputStream.MARK);
 
     private static byte[] toUTF8(String s) {
-        try {
-            return s.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new AssertionError(e);
-        }
+        return s.getBytes(StandardCharsets.UTF_8);
     }
 
     private static class SendMark extends MasterToSlaveCallable<Void, IOException> {

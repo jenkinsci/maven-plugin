@@ -157,7 +157,7 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
 		@SuppressWarnings("rawtypes")
         private boolean areUpstreamsBuilding(AbstractProject<?,?> downstreamProject,
 				AbstractProject<?,?> excludeProject, TaskListener listener) {
-			DependencyGraph graph = Jenkins.getInstance().getDependencyGraph();
+			DependencyGraph graph = Jenkins.get().getDependencyGraph();
 			Set<AbstractProject> tups = graph.getTransitiveUpstream(downstreamProject);
 			for (AbstractProject tup : tups) {
                 if (tup != excludeProject && (tup.isBuilding() || tup.isInQueue())) {
@@ -199,7 +199,7 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
     	}
 
 		private boolean inDownstreamProjects(AbstractProject<?,?> downstreamProject) {
-			DependencyGraph graph = Jenkins.getInstance().getDependencyGraph();
+			DependencyGraph graph = Jenkins.get().getDependencyGraph();
 			Set<AbstractProject> tups = graph.getTransitiveUpstream(downstreamProject);
 		
 			for (AbstractProject tup : tups) {
@@ -224,7 +224,7 @@ public abstract class AbstractMavenProject<P extends AbstractProject<P,R>,R exte
         // and if the last build failed very early, then the reports that
         // kick in later (like test results) won't be displayed.
         // so pick up last successful build, too.
-        Set<Class> added = new HashSet<Class>();
+        Set<Class> added = new HashSet<>();
         addTransientActionsFromBuild(getLastBuild(),r,added);
         addTransientActionsFromBuild(getLastSuccessfulBuild(),r,added);
 
