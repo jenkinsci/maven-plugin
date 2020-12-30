@@ -30,7 +30,11 @@ public class PlexusModuleContributorTest {
     @Test
     public void testCustomPlexusComponent() throws Exception {
         Maven36xBuildTest.configureMaven36();
+        DumbSlave s = j.createSlave();
+        s.toComputer().connect(false).get();
+
         MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
+        p.setAssignedLabel(s.getSelfLabel());
         p.setScm(new SingleFileSCM("pom.xml",getClass().getResource("custom-plexus-component.pom")));
         p.setGoals("clean");
         j.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -39,7 +43,11 @@ public class PlexusModuleContributorTest {
     @Test
     public void testCustomPlexusComponent_Maven3() throws Exception {
         Maven36xBuildTest.configureMaven36();
+        DumbSlave s = j.createSlave();
+        s.toComputer().connect(false).get();
+
         MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
+        p.setAssignedLabel(s.getSelfLabel());
         p.setScm(new SingleFileSCM("pom.xml",getClass().getResource("custom-plexus-component.pom")));
         p.setGoals("clean");
         j.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -53,7 +61,6 @@ public class PlexusModuleContributorTest {
 
         MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
         p.setAssignedLabel(s.getSelfLabel());
-
         p.setScm(new SingleFileSCM("pom.xml",getClass().getResource("custom-plexus-component.pom")));
         p.setGoals("clean");
         j.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -70,4 +77,6 @@ public class PlexusModuleContributorTest {
             return PlexusModuleContributor.of(localJar);
         }
     }
+
+
 }
