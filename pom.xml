@@ -58,7 +58,7 @@ THE SOFTWARE.
     -->
     <mavenMinimalVersion>3.5.4</mavenMinimalVersion>
     <maven.version>${mavenVersion}</maven.version>
-    <resolverVersion>1.1.1</resolverVersion>
+    <resolverVersion>1.6.1</resolverVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
     <wagonVersion>3.3.2</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
