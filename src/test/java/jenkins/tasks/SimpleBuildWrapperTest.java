@@ -78,7 +78,7 @@ public class SimpleBuildWrapperTest {
                 listener.getLogger().println("ran DisposerImpl #" + (++tearDownCount));
             }
         }
-        @TestExtension({ "disposer", "failedJobWithInterruptedDisposer" }) public static class DescriptorImpl extends BuildWrapperDescriptor {
+        @TestExtension("disposerWithMaven") public static class DescriptorImpl extends BuildWrapperDescriptor {
             @Override public boolean isApplicable(AbstractProject<?,?> item) {
                 return true;
             }
@@ -89,7 +89,7 @@ public class SimpleBuildWrapperTest {
         protected boolean runPreCheckout() {
             return true;
         }
-        @TestExtension({ "disposerForPreCheckoutWrapper", "disposerForPreCheckoutWrapperWithScmError" }) public static class DescriptorImpl extends BuildWrapperDescriptor {
+        @TestExtension("disposerWithMaven") public static class DescriptorImpl extends BuildWrapperDescriptor {
             @Override public boolean isApplicable(AbstractProject<?,?> item) {
                 return true;
             }
