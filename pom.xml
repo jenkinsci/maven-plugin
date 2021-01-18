@@ -82,15 +82,10 @@ THE SOFTWARE.
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.204.x</artifactId>
-        <version>12</version>
+        <artifactId>bom-2.263.x</artifactId>
+        <version>21</version>
         <scope>import</scope>
         <type>pom</type>
-      </dependency>
-      <dependency> <!-- TODO pending https://github.com/jenkinsci/bom/pull/294 -->
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>jackson2-api</artifactId>
-        <version>2.11.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -108,7 +103,6 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
-      <version>1.37</version> <!-- TODO pending https://github.com/jenkinsci/bom/pull/311 -->
       <exclusions>
         <exclusion> <!-- TODO smells like a mistake upstream; should be provided by core -->
           <groupId>com.github.spotbugs</groupId>
