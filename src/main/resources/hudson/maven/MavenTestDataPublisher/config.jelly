@@ -24,13 +24,14 @@ THE SOFTWARE.
 
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+         xmlns:m="/lib/maven">
   <j:invokeStatic var="testDataPublisherDescriptors"
                   className="hudson.tasks.junit.TestDataPublisher" method="all"/>
   <j:if test="${testDataPublisherDescriptors.size() > 0}">
     <j:set var="testDataPublisherInstances" value="${instance.testDataPublishers}"/>
     <f:entry title="" field="testDataPublishers">
-      <table width="100%">
+      <m:blockWrapper>
         <j:forEach var="tdpd" items="${testDataPublisherDescriptors}">
           <f:optionalBlock name="${tdpd.jsonSafeClassName}"
                            help="${tdpd.helpFile}" title="${tdpd.displayName}"
@@ -41,7 +42,7 @@ THE SOFTWARE.
                         optional="true"/>
           </f:optionalBlock>
         </j:forEach>
-      </table>
+      </m:blockWrapper>
     </f:entry>
   </j:if>
 </j:jelly>

@@ -26,7 +26,7 @@ THE SOFTWARE.
   Config page.
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project" xmlns:m="/lib/maven">
   <st:include page="configure-common.jelly" />
 
   <p:config-trigger>
@@ -36,12 +36,12 @@ THE SOFTWARE.
         title="${%Build whenever a SNAPSHOT dependency is built}"
         checked="${h.defaultToTrue(!it.ignoreUpstremChanges())}">
       <f:nested>
-          <table width="100%">
+          <m:blockWrapper>
               <f:optionalBlock name="maven.ignoreUnsuccessfulUpstreams"
                                title="${%Schedule build when some upstream has no successful builds}"
                                help="/plugin/maven-plugin/ignore-unsuccessful-upstreams.html"
                                checked="${it.ignoreUnsuccessfulUpstreams()}"/>
-          </table>
+          </m:blockWrapper>
       </f:nested>
     </f:optionalBlock>
     <p:config-upstream-pseudo-trigger />
@@ -120,12 +120,12 @@ THE SOFTWARE.
                        help="/plugin/maven-plugin/downstreamDisabled.html"
                        checked="${!it.disableTriggerDownstreamProjects}">
           <f:nested>
-              <table width="100%">
+              <m:blockWrapper>
                   <f:optionalBlock name="maven.blockTriggerWhenBuilding"
                                    title="${%Block downstream trigger when building}"
                                    help="/plugin/maven-plugin/blockTriggerWhenBuilding.html"
                                    checked="${it.blockTriggerWhenBuilding}"/>
-              </table>
+              </m:blockWrapper>
           </f:nested>
       </f:optionalBlock>
       <f:optionalBlock name="maven.perModuleBuild" title="${%Build modules in parallel}" help="/plugin/maven-plugin/aggregator.html"
