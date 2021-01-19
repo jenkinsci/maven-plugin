@@ -87,6 +87,12 @@ THE SOFTWARE.
         <scope>import</scope>
         <type>pom</type>
       </dependency>
+      <!-- remove when parent pom upgrade it -->
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>3.7.7</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -727,7 +733,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-inline</artifactId>
-      <version>3.5.7</version>
+      <version>3.7.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
