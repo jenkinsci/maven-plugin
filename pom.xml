@@ -35,7 +35,7 @@ THE SOFTWARE.
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
   <artifactId>maven-plugin</artifactId><!-- for the same reason, artifactId is against the convention -->
-  <version>3.9</version>
+  <version>${revision}${changelist}</version>
   <packaging>hpi</packaging>
 
   <name>Maven Integration plugin</name>
@@ -43,7 +43,7 @@ THE SOFTWARE.
   <url>https://github.com/jenkinsci/maven-plugin</url>
 
   <properties>
-    <revision>3.9</revision>
+    <revision>3.10</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/maven-plugin</gitHubRepo>
     <jenkins.version>2.270</jenkins.version>
@@ -963,7 +963,7 @@ THE SOFTWARE.
     <connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
     <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
     <url>http://github.com/${gitHubRepo}</url>
-    <tag>maven-plugin-3.9</tag>
+    <tag>${scmTag}</tag>
   </scm>
 
 </project>
