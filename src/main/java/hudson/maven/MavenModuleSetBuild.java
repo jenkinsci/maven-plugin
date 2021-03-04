@@ -1168,7 +1168,10 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                 for (ParameterDefinition parameterDefinition : parametersDefinitionProperty.getParameterDefinitions()) {
                     // those must used as env var
                     if (parameterDefinition instanceof StringParameterDefinition) {
-                        this.properties.put( "env." + parameterDefinition.getName(), ((StringParameterDefinition)parameterDefinition).getDefaultValue() );
+                        String defaultValue = ((StringParameterDefinition)parameterDefinition).getDefaultValue();
+                        if (defaultValue != null) {
+                            this.properties.put("env." + parameterDefinition.getName(), defaultValue);
+                        }
                     }
                 }
             }
