@@ -60,7 +60,7 @@ THE SOFTWARE.
     <maven.version>${mavenVersion}</maven.version>
     <resolverVersion>1.1.1</resolverVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
-    <wagonVersion>3.4.2</wagonVersion>
+    <wagonVersion>3.4.3</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <spotbugs.failOnError>false</spotbugs.failOnError>
     <!-- well the parent pom could defined an empty one instead of causing failure!! -->
