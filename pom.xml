@@ -60,7 +60,7 @@ THE SOFTWARE.
     <maven.version>${mavenVersion}</maven.version>
     <resolverVersion>1.1.1</resolverVersion>
     <sisuInjectVersion>0.3.3</sisuInjectVersion>
-    <wagonVersion>3.4.2</wagonVersion>
+    <wagonVersion>3.4.3</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <spotbugs.failOnError>false</spotbugs.failOnError>
     <!-- well the parent pom could defined an empty one instead of causing failure!! -->
@@ -91,7 +91,7 @@ THE SOFTWARE.
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>3.7.7</version>
+        <version>3.8.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
