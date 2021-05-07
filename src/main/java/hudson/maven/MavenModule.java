@@ -451,7 +451,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
 
     /**
      * {@link MavenModule} uses the workspace of the {@link MavenModuleSet},
-     * so it always needs to be built on the same slave as the parent.
+     * so it always needs to be built on the same agent as the parent.
      */
     @Override
     public Label getAssignedLabel() {

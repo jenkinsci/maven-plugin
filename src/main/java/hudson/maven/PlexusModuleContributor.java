@@ -31,7 +31,7 @@ public abstract class PlexusModuleContributor implements Serializable {
 
     /**
      * When {@link #getPlexusComponentJars()} is called, this field is set
-     * to the channel that represents the connection to the master.
+     * to the channel that represents the connection to the controller.
      */
     protected transient Channel channel;
 

@@ -229,12 +229,12 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     private boolean ignoreUnsuccessfulUpstreams = false;
 
     /**
-     * If true, do not archive artifacts to the master.
+     * If true, do not archive artifacts to the controller.
      */
     private boolean archivingDisabled = false;
     
     /**
-     * If true, do not archive artifacts to the master during site deploy.
+     * If true, do not archive artifacts to the controller during site deploy.
      */
     private boolean siteArchivingDisabled = false;
 
@@ -266,7 +266,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
 
     /**
      * Inform jenkins this build don't use UI code and can run without access to graphical environment. Could be used
-     * later to select a headless-slave from a pool, but first introduced for JENKINS-9785
+     * later to select a headless-agent from a pool, but first introduced for JENKINS-9785
      */
     private boolean runHeadless = false;
 

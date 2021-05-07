@@ -48,7 +48,7 @@ import org.kohsuke.stapler.Stapler;
  *
  * <p>
  * This information is first recorded in the maven process, then sent over
- * the remoting layer to the master, then persisted via XStream.
+ * the remoting layer to the controller, then persisted via XStream.
  *
  * @author Kohsuke Kawaguchi
  */

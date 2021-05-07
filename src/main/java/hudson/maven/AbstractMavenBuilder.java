@@ -93,7 +93,7 @@ public abstract class AbstractMavenBuilder extends MasterToSlaveCallable<Result,
     }
     
     /**
-     * Invoked after the maven has finished running, and in the master, not in the maven process.
+     * Invoked after the maven has finished running, and in the controlelr, not in the maven process.
      */
     void end(Launcher launcher) throws IOException, InterruptedException {
         for (Map.Entry<ModuleName,ProxyImpl2> e : sourceProxies.entrySet()) {

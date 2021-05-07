@@ -13,9 +13,9 @@ See [the changelog](CHANGELOG.md)
 **![](docs/images/hn.png)
 
 Maven jobs and Java versions compatibility** : Because java serialized classes are exchanged
-between Jenkins master and Maven Jobs it is required that the JVM used
+between Jenkins Controller and Maven Jobs it is required that the JVM used
 to launch Maven is superior or equal to the version of Java for which
-Jenkins Master is built for.
+Jenkins Controller is built for.
 
 -   Jenkins \>= 1.520 requires Java 6 thus Maven jobs must be launched
     with Java \>= 6.
@@ -29,7 +29,7 @@ See also
 [JENKINS-28294](https://issues.jenkins-ci.org/browse/JENKINS-28294)
 
 **If Jenkins detects that you are trying to use a JDK older than the
-master prerequisite, it automatically reconfigure your build to use the
+controller prerequisite, it automatically reconfigure your build to use the
 JDK on which your agent is running.** It displays in your build logs a
 message like :
 
@@ -37,9 +37,9 @@ message like :
 ERROR: ================================================================================
 ERROR: Invalid project setup: hudson/maven/AbstractMavenProcessFactory$ConfigureOriginalJDK : Unsupported major.minor version 51.0
 ERROR: [JENKINS-18403][JENKINS-28294] JDK 'j6' not supported to run Maven projects.
-ERROR: Maven projects have to be launched with a Java version greater or equal to the minimum version required by the master.
+ERROR: Maven projects have to be launched with a Java version greater or equal to the minimum version required by the controller.
 ERROR: Use the Maven JDK Toolchains (plugin) to build your maven project with an older JDK.
-ERROR: Retrying with slave Java and setting compile/test properties to point to /Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/.
+ERROR: Retrying with agent Java and setting compile/test properties to point to /Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/.
 ERROR: ================================================================================
 ```
 

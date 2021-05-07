@@ -47,7 +47,7 @@ import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * This class tests that environment variables from node properties are applied, and that the
- * priority is maintained: parameters > slave node properties > master node properties
+ * priority is maintained: parameters > agent node properties > controller node properties
  */
 public class ToolLocationNodePropertyTest {
 

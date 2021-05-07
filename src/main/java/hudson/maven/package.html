@@ -42,7 +42,7 @@ Maven support.
   compilation had an error, and access other rich information about the project build process.
 </p><p>
   To make communication between Hudson JVM and Maven JVM easier, we use the remoting technology that Hudson
-  uses between the master and the slave. We start a new JVM and bootstraps to the remoting, then use a socket
+  uses between the controller and the agent. We start a new JVM and bootstraps to the remoting, then use a socket
   to establish a connection to this process. This part of the code is in the "maven-agent" module.
   We then bootstrap Maven.
 </p><p>

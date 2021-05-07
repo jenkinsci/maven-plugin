@@ -196,7 +196,7 @@ public class RedeployPublisher extends Recorder {
     /**
      * 
      * copy from MavenUtil but here we have to ignore localRepo path and setting as thoses paths comes
-     * from the remote node and can not exist in master see http://issues.jenkins-ci.org/browse/JENKINS-8711
+     * from the remote node and can not exist in controller see http://issues.jenkins-ci.org/browse/JENKINS-8711
      * 
      */
     private MavenEmbedder createEmbedder(TaskListener listener, AbstractBuild<?,?> build) throws MavenEmbedderException, IOException, InterruptedException {
@@ -237,7 +237,7 @@ public class RedeployPublisher extends Recorder {
                 Node buildNode = build.getBuiltOn();
                 
                 if(buildNode == null) {
-                    // assume that build was made on master
+                    // assume that build was made on controller
                     buildNode = Jenkins.get();
                 }
 
@@ -247,7 +247,7 @@ public class RedeployPublisher extends Recorder {
                     altSettingsPath = remoteUserHome + "/.m2/settings.xml";
                 }
                 
-                // we copy this file in the master in a  temporary file 
+                // we copy this file in the controller in a  temporary file 
                 FilePath filePath = new FilePath( tmpSettings );
                 FilePath remoteSettings = build.getWorkspace().child( altSettingsPath );
                 if (!remoteSettings.exists()) {
@@ -264,7 +264,7 @@ public class RedeployPublisher extends Recorder {
 
                 String remoteGlobalSettingsPath = GlobalSettingsProvider.getSettingsRemotePath(((MavenModuleSet) project).getGlobalSettings(), build, listener);
                 if(remoteGlobalSettingsPath != null){
-                    // copy global settings from slave's remoteGlobalSettingsPath to tmpSettingsGlobal
+                    // copy global settings from agent's remoteGlobalSettingsPath to tmpSettingsGlobal
                     FilePath filePathGlobal = new FilePath( tmpSettingsGlobal );
                     FilePath remoteSettingsGlobal = build.getWorkspace().child( remoteGlobalSettingsPath );
 

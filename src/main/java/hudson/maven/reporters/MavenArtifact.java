@@ -58,7 +58,7 @@ import java.util.logging.Logger;
  * Jenkins, so that we can later deploy it to repositories of our choice.
  *
  * <p>
- * This object is created within the Maven process and sent back to the master,
+ * This object is created within the Maven process and sent back to the controller,
  * so it shouldn't contain anything non-serializable as fields.
  *
  * <p>

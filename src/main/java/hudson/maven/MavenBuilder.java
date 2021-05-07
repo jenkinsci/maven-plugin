@@ -78,7 +78,7 @@ public abstract class MavenBuilder extends AbstractMavenBuilder implements Deleg
 
     /**
      * Flag needs to be set at the constructor, so that this reflects
-     * the setting at master.
+     * the setting at controller.
      */
     private final boolean profile = MavenProcessFactory.profile;
 
