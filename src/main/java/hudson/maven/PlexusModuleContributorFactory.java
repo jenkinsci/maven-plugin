@@ -22,7 +22,7 @@ import java.util.List;
  * <p>
  * {@link PlexusModuleContributorFactory}s are instantiated as singletons on the controller, and whenever a new Maven
  * process starts, its {@link #createFor(AbstractBuild)} method is called to instantiate {@link PlexusModuleContributor},
- * which gets  serialized on the controller, then deserialized inside the Maven process, and then its
+ * which gets serialized on the controller, then deserialized inside the Maven process, and then its
  * {@link PlexusModuleContributor#getPlexusComponentJars()} will be invoked to determine the additional classpaths.
  * and then run.
  *

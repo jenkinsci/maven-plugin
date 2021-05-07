@@ -551,7 +551,7 @@ public abstract class AbstractMavenProcessFactory
     /**
      * Copies a Maven-related JAR to the agent on demand.
      * Can also be used when run on controller.
-     * @param root the FS root of the agent (null means running on controller)
+     * @param root the FS root of the agent (null means running on the built-in node)
      * @param representative a representative class present in the JAR
      * @param seedName the basename of the JAR
      * @param listener a listener for any problems

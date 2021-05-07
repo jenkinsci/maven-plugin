@@ -237,7 +237,7 @@ public class RedeployPublisher extends Recorder {
                 Node buildNode = build.getBuiltOn();
                 
                 if(buildNode == null) {
-                    // assume that build was made on controller
+                    // assume that build was made on the built-in node
                     buildNode = Jenkins.get();
                 }
 
@@ -247,7 +247,7 @@ public class RedeployPublisher extends Recorder {
                     altSettingsPath = remoteUserHome + "/.m2/settings.xml";
                 }
                 
-                // we copy this file in the controller in a  temporary file 
+                // we copy this file in the controller in a temporary file 
                 FilePath filePath = new FilePath( tmpSettings );
                 FilePath remoteSettings = build.getWorkspace().child( altSettingsPath );
                 if (!remoteSettings.exists()) {
