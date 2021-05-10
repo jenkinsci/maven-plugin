@@ -423,7 +423,7 @@ public abstract class AbstractMavenProcessFactory
         // remoting.jar
         String remotingJar = getLauncher().getChannel().call(new GetRemotingJar());
         if(remotingJar==null) {// this shouldn't be possible, but there are still reports indicating this, so adding a probe here.
-            listener.error("Failed to determine the location of agent.jar");
+            listener.error("Failed to determine the location of remoting.jar");
             throw new RunnerAbortedException();
         }
         args.add(remotingJar);
