@@ -80,7 +80,7 @@ public final class MavenProbeAction implements Action {
 
     /**
      * Gets the system properties of the JVM on this computer.
-     * If this is the master, it returns the system property of the master computer.
+     * If this is the controller, it returns the system property of the controller computer.
      */
     public Map<Object,Object> getSystemProperties() throws IOException, InterruptedException {
         Map<Object,Object> props = RemotingDiagnostics.getSystemProperties(channel);
@@ -100,7 +100,7 @@ public final class MavenProbeAction implements Action {
 
     /**
      * Gets the environment variables of the JVM on this computer.
-     * If this is the master, it returns the system property of the master computer.
+     * If this is the controller, it returns the system property of the controller computer.
      */
     public Map<String,String> getEnvVars() throws IOException, InterruptedException {
         EnvVars vars = EnvVars.getRemote(channel);
@@ -115,7 +115,7 @@ public final class MavenProbeAction implements Action {
     }
 
     /**
-     * Gets the thread dump of the slave JVM.
+     * Gets the thread dump of the agent JVM.
      * @return
      *      key is the thread name, and the value is the pre-formatted dump.
      */

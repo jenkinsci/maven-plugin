@@ -14,7 +14,7 @@ import hudson.model.AbstractDescribableImpl;
  */
 public abstract class LocalRepositoryLocator extends AbstractDescribableImpl<LocalRepositoryLocator> implements ExtensionPoint {
     /**
-     * Called during the build on the master to determine the location of the local Maven repository.
+     * Called during the build on the controller to determine the location of the local Maven repository.
      *
      * @return
      *      null to let Maven uses its default location. Otherwise this must be located on the same

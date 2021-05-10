@@ -47,8 +47,8 @@ import java.util.Set;
  *
  * <p>
  * Archive will be created in two places. One is inside the build directory,
- * to be served from Jenkins. The other is to the local repository of the master,
- * so that artifacts can be shared in maven builds happening in other slaves.
+ * to be served from Jenkins. The other is to the local repository of the controller,
+ * so that artifacts can be shared in maven builds happening in other agents.
  *
  * @author Kohsuke Kawaguchi
  */

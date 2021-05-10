@@ -60,13 +60,13 @@ final class MavenProcessFactory extends AbstractMavenProcessFactory implements P
         String classPath =
             classPathEntry(slaveRoot, Main.class, "maven-agent", listener)
                 + ( getLauncher().isUnix() ? ":" : ";" );
-        if (slaveRoot == null) { // master
+        if (slaveRoot == null) { // controller
             String classWorldsJar = getLauncher().getChannel().call(new GetClassWorldsJar(mvn.getHome(),listener));
             classPath += classWorldsJar;
         } else {
             // copy classworlds 1.1 for maven2 builds
             // if this line fails during the unit test from IDE, it means you need to "mvn compile" maven-plugin
-            // TODO why would we not pick it up using GetClassWorldsJar like we do for M2 on master or M3 anywhere?
+            // TODO why would we not pick it up using GetClassWorldsJar like we do for M2 on controller or M3 anywhere?
             FilePath jar = slaveRoot.child("classworlds.jar");
             // copied to root of this JAR using dependency:generate-resources:
             if (jar.exists() && jar.digest().equals(Util.getDigestOf(MavenProcessFactory.class.getClassLoader().getResourceAsStream("classworlds.jar")))) {

@@ -101,7 +101,7 @@ public class MavenFingerprinter extends MavenReporter {
     }
 
     /**
-     * Sends the collected fingerprints over to the master and record them.
+     * Sends the collected fingerprints over to the controller and record them.
      */
     public boolean postBuild(MavenBuildProxy build, MavenProject pom, BuildListener listener) throws InterruptedException, IOException {
         

@@ -1118,15 +1118,15 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
     }
 
     /**
-     * Executed on the slave to parse POM and extract information into {@link PomInfo},
-     * which will be then brought back to the master.
+     * Executed on the agent to parse POM and extract information into {@link PomInfo},
+     * which will be then brought back to the controller.
      */
     private static final class PomParser extends MasterToSlaveFileCallable<PomParser.Result> {
         private final BuildListener listener;
         private final String rootPOM;
         /**
          * Capture the value of the static field so that the debug flag
-         * takes an effect even when {@link PomParser} runs in a slave.
+         * takes an effect even when {@link PomParser} runs in a agent.
          */
         private final boolean verbose = debug;
         private final String mavenHome;

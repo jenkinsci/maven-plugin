@@ -456,7 +456,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
         /**
          * This method is implemented by the remote proxy before the invocation
-         * gets to this. So correct code shouldn't be invoking this method on the master ever.
+         * gets to this. So correct code shouldn't be invoking this method on the controller ever.
          *
          * @deprecated
          *      This helps IDE find coding mistakes when someone tries to call this method.

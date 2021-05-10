@@ -127,16 +127,16 @@ public abstract class AbstractMavenProcessFactory
      * This implementation is remoting aware, so it can be safely sent to the remote callable object.
      *
      * <p>
-     * When Maven runs on the master, Connection.in/.out just points to SocketInput/OutputStream,  and
+     * When Maven runs on the controller, Connection.in/.out just points to SocketInput/OutputStream,  and
      * a channel will be built on top of it. No complication.
      *
      * <p>
-     * When we run Maven on a slave, the master may not have a direct TCP/IP connectivity to the slave.
-     * That means the {@link Channel} between the master and the Maven needs to be tunneled through
-     * the channel between master and the slave, then go to TCP socket to the Maven.
+     * When we run Maven on an agent, the controller may not have a direct TCP/IP connectivity to the agent.
+     * That means the {@link Channel} between the controller and the Maven needs to be tunneled through
+     * the channel between controller and the agent, then go to TCP socket to the Maven.
      *
-     * In this case, we'll have a thread running on the slave to read the socket as fast as we can
-     * and buffer data on the master. What we need to avoid here is to have channel input stream be a
+     * In this case, we'll have a thread running on the agent to read the socket as fast as we can
+     * and buffer data on the controller. What we need to avoid here is to have channel input stream be a
      * {@link RemoteInputStream}, as it'll turn every read into a remote read that has a large latency.
      */
     static final class Connection implements Serializable {
@@ -305,9 +305,9 @@ public abstract class AbstractMavenProcessFactory
                             listener.error("Invalid project setup: "+t.getMessage());
                             listener.error("[JENKINS-18403][JENKINS-28294] JDK '" + jdk.getName() +
                                     "' not supported to run Maven projects.");
-                            listener.error("Maven projects have to be launched with a Java version greater or equal to the minimum version required by the master.");
+                            listener.error("Maven projects have to be launched with a Java version greater or equal to the minimum version required by the controller.");
                             listener.error("Use the Maven JDK Toolchains (plugin) to build your maven project with an older JDK.");
-                            listener.error("Retrying with slave Java and setting compile/test properties to point to " +
+                            listener.error("Retrying with agent Java and setting compile/test properties to point to " +
                                     jdk.getHome() + ".");
                             listener.error("================================================================================");
                             originalJdk = jdk;
@@ -353,7 +353,7 @@ public abstract class AbstractMavenProcessFactory
         }
     }
 
-    /** Locates JRE this slave agent is running on, or null. */
+    /** Locates JRE this agent is running on, or null. */
     private static final class FindJavaHome extends MasterToSlaveCallable<JDK,Error> {
         private static final long serialVersionUID = 1;
         @Override public JDK call() throws Error {
@@ -423,7 +423,7 @@ public abstract class AbstractMavenProcessFactory
         // remoting.jar
         String remotingJar = getLauncher().getChannel().call(new GetRemotingJar());
         if(remotingJar==null) {// this shouldn't be possible, but there are still reports indicating this, so adding a probe here.
-            listener.error("Failed to determine the location of slave.jar");
+            listener.error("Failed to determine the location of remoting.jar");
             throw new RunnerAbortedException();
         }
         args.add(remotingJar);
@@ -492,7 +492,7 @@ public abstract class AbstractMavenProcessFactory
                         mavenOpts = localMavenOpts;
                     }
                 } catch (IOException | InterruptedException e) {
-                    // Don't do anything - this just means the slave isn't running, so we
+                    // Don't do anything - this just means the agent isn't running, so we
                     // don't want to use its MAVEN_OPTS anyway.
                 }
 
@@ -516,7 +516,7 @@ public abstract class AbstractMavenProcessFactory
         } else {
             if (Platform.isDarwin()) {
                 // Would be cool to replace the generic Java icon with jenkins logo, but requires
-                // the file absolute path to be available on slave *before* the process run on it :-/
+                // the file absolute path to be available on agent *before* the process run on it :-/
                 // Maybe we could enforce this from the DMG installer on OSX
                 // TODO mavenOpts += " -Xdock:name=Jenkins -Xdock:icon=jenkins.png";
             }
@@ -549,9 +549,9 @@ public abstract class AbstractMavenProcessFactory
     }
 
     /**
-     * Copies a Maven-related JAR to the slave on demand.
-     * Can also be used when run on master.
-     * @param root the FS root of the slave (null means running on master)
+     * Copies a Maven-related JAR to the agent on demand.
+     * Can also be used when run on controller.
+     * @param root the FS root of the agent (null means running on the built-in node)
      * @param representative a representative class present in the JAR
      * @param seedName the basename of the JAR
      * @param listener a listener for any problems
@@ -561,17 +561,17 @@ public abstract class AbstractMavenProcessFactory
      * @since 1.530
      */
     protected final String classPathEntry(FilePath root, Class<?> representative, String seedName, TaskListener listener) throws IOException, InterruptedException {
-        if (root == null) { // master
+        if (root == null) { // controller
             return Which.jarFile(representative).getAbsolutePath();
         } else {
             return copyJar(listener.getLogger(), root, representative, seedName).getRemote();
         }
     }
     /**
-     * Copies a jar file from the master to slave.
+     * Copies a jar file from the controller to agent.
      */
     static FilePath copyJar(PrintStream log, FilePath dst, Class<?> representative, String seedName) throws IOException, InterruptedException {
-        // in normal execution environment, the master should be loading 'representative' from this jar, so
+        // in normal execution environment, the controller should be loading 'representative' from this jar, so
         // in that way we can find it.
         File jar = Which.jarFile(representative);
         FilePath copiedJar = dst.child(seedName + ".jar");
@@ -591,7 +591,7 @@ public abstract class AbstractMavenProcessFactory
             return copiedJar;
         }
 
-        // Theoretically could be a race condition on a multi-executor Windows slave; symptom would be an IOException during the build.
+        // Theoretically could be a race condition on a multi-executor Windows agent; symptom would be an IOException during the build.
         // Could perhaps be solved by synchronizing on dst.getChannel() or similar.
         new FilePath(jar).copyTo(copiedJar);
         log.println("Copied " + seedName + ".jar");

@@ -170,7 +170,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     }
     
     /**
-     * Check if the the site goal will work when run from a slave.
+     * Check if the the site goal will work when run from an agent.
      */
     @Bug(5943)
     public void testMultiModuleSiteBuildOnSlave() throws Exception {

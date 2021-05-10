@@ -47,8 +47,8 @@ import javax.annotation.Nonnull;
  * Serializable representation of the key information obtained from Maven POM.
  *
  * <p>
- * This is used for the master to introspect POM, which is only available
- * as {@link MavenProject} object on slaves.
+ * This is used for the controller to introspect POM, which is only available
+ * as {@link MavenProject} object on agents.
  *
  * @author Kohsuke Kawaguchi
  */

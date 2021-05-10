@@ -71,7 +71,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
     /**
      * Flag needs to be set at the constructor, so that this reflects
-     * the setting at master.
+     * the setting at controller.
      */
     private final boolean profile = MavenProcessFactory.profile;
 
@@ -93,7 +93,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
         this.maven3LauncherClass = maven3BuilderRequest.maven3LauncherClass;
         this.maven3MainClass = maven3BuilderRequest.maven3MainClass;
         this.supportEventSpy = maven3BuilderRequest.supportEventSpy;
-        assert Jenkins.get() != null : "this is supposed to be run on master";
+        assert Jenkins.get() != null : "this is supposed to be run on controller";
         mojoNote = new Maven3MojoNote().encode();
     }
 

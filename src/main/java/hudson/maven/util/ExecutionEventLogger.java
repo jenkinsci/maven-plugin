@@ -122,8 +122,8 @@ public class ExecutionEventLogger
 
     //----------------------------------------------------------------
     // This is ugly/hackhish/etc  but the classloader mechanism used
-    // need this as some classes from maven core are loaded by jenkins
-    // master for parsing poms so we need to avoid the new methods
+    // need this as some classes from maven core are loaded by Jenkins
+    // controller for parsing poms so we need to avoid the new methods
     // from maven core
     //----------------------------------------------------------------
 

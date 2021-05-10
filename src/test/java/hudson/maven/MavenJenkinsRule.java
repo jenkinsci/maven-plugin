@@ -32,7 +32,7 @@ public class MavenJenkinsRule extends JenkinsRule {
     }
 
     /**
-     * Fix the focus issue when a JVM is created to launch a slave by adding {@link #JAVA_HEADLESS_OPT}
+     * Fix the focus issue when a JVM is created to launch an agent by adding {@link #JAVA_HEADLESS_OPT}
      */
     @Override
     public ComputerLauncher createComputerLauncher(EnvVars env) throws URISyntaxException, IOException {
@@ -42,9 +42,9 @@ public class MavenJenkinsRule extends JenkinsRule {
         int sz = this.jenkins.getNodes().size();
         final URL slaveJarURL;
         try {
-            slaveJarURL = this.jenkins.getJnlpJars("slave.jar").getURL();
+            slaveJarURL = this.jenkins.getJnlpJars("agent.jar").getURL();
         } catch (IOException ex) {
-            throw new AssertionError("Cannot retrieve slave.jar for the test", ex);
+            throw new AssertionError("Cannot retrieve agent.jar for the test", ex);
         }
         return new SimpleCommandLauncher(String.format("\"%s/bin/java\" %s %s -jar \"%s\"",
                 new Object[]{System.getProperty("java.home"), JAVA_HEADLESS_OPT, SLAVE_DEBUG_PORT > 0 ?

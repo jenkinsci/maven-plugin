@@ -39,14 +39,14 @@ import jenkins.security.SlaveToMasterCallable;
  * Remoting proxy interface for {@link MavenReporter}s to talk to {@link MavenBuild}
  * during the build.
  * 
- * That is, this represents {@link MavenBuild} objects in the master's JVM to code
+ * That is, this represents {@link MavenBuild} objects in the controller's JVM to code
  * running inside Maven JVM.
  *
  * @author Kohsuke Kawaguchi
  */
 public interface MavenBuildProxy {
     /**
-     * Executes the given {@link BuildCallable} on the master, where one
+     * Executes the given {@link BuildCallable} on the controller, where one
      * has access to {@link MavenBuild} and all the other Hudson objects.
      *
      * <p>
@@ -66,7 +66,7 @@ public interface MavenBuildProxy {
     <V,T extends Throwable> V execute( BuildCallable<V,T> program ) throws T, IOException, InterruptedException;
 
     /**
-     * Executes the given {@link BuildCallable} asynchronously on the master.
+     * Executes the given {@link BuildCallable} asynchronously on the controller.
      * <p>
      * This method works like {@link #execute(BuildCallable)} except that
      * the method returns immediately and doesn't wait for the completion of the program.
@@ -102,7 +102,7 @@ public interface MavenBuildProxy {
 
     /**
      * @param artifactPath a relative {@code /}-separated path
-     * @param artifact absolute path name on the slave in the workspace
+     * @param artifact absolute path name on the agent in the workspace
      * @see ArtifactManager#archive
      * @since 1.532
      */
@@ -121,19 +121,19 @@ public interface MavenBuildProxy {
     /**
      * # of milliseconds elapsed since {@link #getTimestamp()}.
      *
-     * Where the clock skew is involved between the master and the Maven JVM, comparing
+     * Where the clock skew is involved between the controller and the Maven JVM, comparing
      * current time on Maven JVM with {@link #getTimestamp()} could be problematic,
      * but this value is more robust.
      */
     long getMilliSecsSinceBuildStart();
 
     /**
-     * If true, artifacts will not actually be archived to master. Calls {@link MavenModuleSet#isArchivingDisabled()}.
+     * If true, artifacts will not actually be archived to controller. Calls {@link MavenModuleSet#isArchivingDisabled()}.
      */
     boolean isArchivingDisabled();
     
     /**
-     * If true, artifacts will not actually be archived to master during site deploy. Calls {@link MavenModuleSet#isSiteArchivingDisabled()}.
+     * If true, artifacts will not actually be archived to controller during site deploy. Calls {@link MavenModuleSet#isSiteArchivingDisabled()}.
      */
     boolean isSiteArchivingDisabled();
     
@@ -142,7 +142,7 @@ public interface MavenBuildProxy {
      * for this build by using {@link MavenReporter#getProjectActions(MavenModule)}.
      *
      * <p>
-     * The specified {@link MavenReporter} object will be transfered to the master
+     * The specified {@link MavenReporter} object will be transfered to the controller
      * and will become a persisted part of the {@link MavenBuild}. 
      */
     void registerAsProjectAction(MavenReporter reporter);
@@ -152,7 +152,7 @@ public interface MavenBuildProxy {
      * for this build by using {@link MavenReporter#getProjectActions(MavenModule)}.
      *
      * <p>
-     * The specified {@link MavenReporter} object will be transferred to the master
+     * The specified {@link MavenReporter} object will be transferred to the controller
      * and will become a persisted part of the {@link MavenBuild}.
      *
      * @since 1.372
@@ -164,7 +164,7 @@ public interface MavenBuildProxy {
      * for this build by using {@link MavenReporter#getAggregatedProjectAction(MavenModuleSet)}.
      *
      * <p>
-     * The specified {@link MavenReporter} object will be transfered to the master
+     * The specified {@link MavenReporter} object will be transfered to the controller
      * and will become a persisted part of the {@link MavenModuleSetBuild}.
      */
     void registerAsAggregatedProjectAction(MavenReporter  reporter);
@@ -290,7 +290,7 @@ public interface MavenBuildProxy {
             }
 
             public Object call() throws Throwable {
-                // by the time this method is invoked on the master, proxy points to a real object
+                // by the time this method is invoked on the controller, proxy points to a real object
                 proxy.execute(program);
                 return null;    // ignore the result, as there's no point in sending it back
             }
