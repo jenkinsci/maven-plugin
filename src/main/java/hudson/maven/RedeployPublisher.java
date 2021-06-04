@@ -388,6 +388,7 @@ public class RedeployPublisher extends Recorder {
     public static class WrappedArtifactRepository implements ArtifactRepository {
         private ArtifactRepository artifactRepository;
         private boolean uniqueVersion;
+        private boolean blocked;
         public WrappedArtifactRepository (ArtifactRepository artifactRepository, boolean uniqueVersion)
         {
             this.artifactRepository = artifactRepository;
@@ -510,6 +511,14 @@ public class RedeployPublisher extends Recorder {
         {
             // noop            
         }
-    }    
+        public boolean isBlocked()
+        {
+            return blocked;
+        }
+        public void setBlocked(boolean blocked)
+        {
+            this.blocked = blocked;
+        }
+    }
     
 }
