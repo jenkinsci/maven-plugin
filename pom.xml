@@ -91,7 +91,7 @@ THE SOFTWARE.
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>3.7.7</version>
+        <version>3.11.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
