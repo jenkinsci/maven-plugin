@@ -49,15 +49,12 @@ THE SOFTWARE.
     <jenkins.version>2.270</jenkins.version>
     <java.level>8</java.level>
     <mavenInterceptorsVersion>1.13</mavenInterceptorsVersion>
-    <!-- Version of Maven Components -->
-    <mavenVersion>3.5.2</mavenVersion>
     <!--
       Minimal supported version of Maven.
       It declares version of the core, which should be included into the the server-side.
       Note that the plugin still bundles agent support for Maven 3.0.5, probably it's not really operational
     -->
     <mavenMinimalVersion>3.8.1</mavenMinimalVersion>
-    <maven.version>${mavenVersion}</maven.version>
     <resolverVersion>1.6.2</resolverVersion>
     <sisuInjectVersion>0.3.4</sisuInjectVersion>
     <wagonVersion>3.4.3</wagonVersion>
