@@ -51,9 +51,8 @@ doesn't work anymore if your agent or maven job is using Java \< 7 -
 Known issues are listed [in Jira](https://issues.jenkins-ci.org/issues/?jql=project%20%3D%20JENKINS%20AND%20status%20in%20(Open%2C%20%22In%20Progress%22%2C%20Reopened)%20AND%20component%20%3D%20%27maven-plugin%27)
 
 Historically this plugin was released alongside Jenkins core releases.
-Since version 2.0 this plugin is released separately, but still bundled
-with Jenkins - though not always the newest version of the plugin might
-be bundled.
+2.0 releases up to 2.204.1 saw this plugin released separately, but still bundled
+with Jenkins, although not always in the newest version. See [Stop bundling Maven plugin and Subversion plugin with Jenkins](https://www.jenkins.io/doc/upgrade-guide/2.204/#stop-bundling-maven-plugin-and-subversion-plugin-with-jenkins).
 
 This plugin provides an advanced integration for Maven 2/3 projects.
 
