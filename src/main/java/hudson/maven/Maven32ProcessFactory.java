@@ -64,7 +64,7 @@ public class Maven32ProcessFactory extends Maven3ProcessFactory
             (getLauncher().isUnix()?":":";")+classWorldsJar;
 
         // TODO this configurable??
-        path += (getLauncher().isUnix()?":":";")+mvn.getHomeDir().getPath()+"/conf/logging";
+        path += getLoggingPath(mvn);
 
         return path;
     }
