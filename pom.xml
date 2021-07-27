@@ -29,7 +29,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.15</version>
+    <version>4.19</version>
     <relativePath />
   </parent>
 
@@ -46,7 +46,7 @@ THE SOFTWARE.
     <revision>3.13</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/maven-plugin</gitHubRepo>
-    <jenkins.version>2.270</jenkins.version>
+    <jenkins.version>2.289.1</jenkins.version>
     <java.level>8</java.level>
     <mavenInterceptorsVersion>1.13</mavenInterceptorsVersion>
     <!--
@@ -79,16 +79,10 @@ THE SOFTWARE.
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.263.x</artifactId>
-        <version>21</version>
+        <artifactId>bom-2.289.x</artifactId>
+        <version>887.vae9c8ac09ff7</version>
         <scope>import</scope>
         <type>pom</type>
-      </dependency>
-      <!-- remove when parent pom upgrade it -->
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>3.7.7</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -738,7 +732,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-inline</artifactId>
-      <version>3.7.7</version>
+      <version>3.10.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -830,7 +824,7 @@ THE SOFTWARE.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.3.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
