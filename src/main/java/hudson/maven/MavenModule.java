@@ -525,7 +525,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
                 for (MavenModule m : getAllMavenModules()) {
                     if(m.isDisabled())  continue;
                     ModuleDependency moduleDependency = m.asDependency().withUnknownVersion();
-                    data.allModules.put(moduleDependency,m);
+                    data.put(moduleDependency,m);
                 }
                 data.withUnknownVersions = true;
             }
@@ -686,24 +686,28 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
          */
         private final Map<ModuleDependency,MavenModule> allModules;
 
+        private Multimap<ModuleName,ModuleDependency> byName = HashMultimap.create();
+        
         public MavenDependencyComputationData(Map<ModuleDependency, MavenModule> modules) {
             this.allModules = modules;
+            for (ModuleDependency dependency : allModules.keySet()) {
+            	byName.put(dependency.getName(),dependency);
+            }
         }
+        
+        public void put(ModuleDependency moduleDependency, MavenModule m) {
+			this.allModules.put(moduleDependency, m);
+			byName.put(moduleDependency.getName(), moduleDependency);
+		}
 
-        /**
+		/**
          * Builds a map of all the modules, keyed against the groupId and artifactId. The values are a list of modules
          * that match this criteria.
          *
          * @return {@link #allModules} keyed by their {@linkplain ModuleName names}.
          */
         private Multimap<ModuleName,ModuleDependency> byName() {
-            Multimap<ModuleName,ModuleDependency> map = HashMultimap.create();
-
-            for (ModuleDependency dependency : allModules.keySet()) {
-                map.put(dependency.getName(),dependency);
-            }
-
-            return map;
+            return this.byName;
         }
     }
 
