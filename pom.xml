@@ -80,7 +80,7 @@ THE SOFTWARE.
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-2.289.x</artifactId>
-        <version>887.vae9c8ac09ff7</version>
+        <version>918.vae501d2cdc99</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -714,7 +714,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.11</version>
+      <version>3.12.0</version>
     </dependency>
 
     <dependency>
