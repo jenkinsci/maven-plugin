@@ -92,8 +92,9 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest
         Collection<File> files = FileUtils.listFiles( directory, new String[]{ "jar" }, true );
         Assert.assertTrue( "Found jars in previous build, that should not happen", files.isEmpty() );
         Collection<File> files2 =
-            FileUtils.listFiles( new File( new FilePath( jobs, "p/builds/2" ).getRemote() ), new String[]{ "jar" },
-                                 true );
+            FileUtils.listFiles(new File( new FilePath( jobs, "p/builds/2" ).getRemote() ), new String[]{ "jar" }, true);
+        System.out.println("Files:"+ FileUtils.listFiles(new File( new FilePath( jobs, "p/builds/2" ).getRemote() ), null,
+                true ));
         Assert.assertFalse( "No jars in last build ALERT!", files2.isEmpty() );
     }
 
