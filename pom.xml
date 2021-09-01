@@ -552,6 +552,11 @@ THE SOFTWARE.
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.14.2</version>
+    </dependency>
+    <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>apache-httpcomponents-client-4-api</artifactId>
     </dependency>
