@@ -226,6 +226,7 @@ public abstract class AbstractMaven3xBuildTest {
     @Issue("JENKINS-9326")
     // Because of https://bugs.eclipse.org/bugs/show_bug.cgi?id=340852 this test is failing
     // if you maven installation (MAVEN_HOME) is using a symbolic link
+    @Ignore("Flaky test which need too much external resource download")
     public void testTychoTestResults() throws Exception {
         // a pain to get tycho build working with 11
         if(!SystemUtils.IS_JAVA_1_8) return;
