@@ -84,6 +84,11 @@ THE SOFTWARE.
         <scope>import</scope>
         <type>pom</type>
       </dependency>
+      <dependency>
+        <groupId>org.jenkins-ci.main</groupId>
+        <artifactId>jenkins-test-harness</artifactId>
+        <version>1589.vc23fca066d5c</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
