@@ -766,7 +766,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>promoted-builds</artifactId>
-      <version>3.7</version>
+      <version>3.10</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
