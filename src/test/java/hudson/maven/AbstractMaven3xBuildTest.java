@@ -254,6 +254,7 @@ public abstract class AbstractMaven3xBuildTest {
 
     @Test
     @Bug(9326)
+    @Ignore("Flaky test which need too much external resource download")
     public void testTychoEclipseTestResults() throws Exception {
         // a pain to get tycho build working with 11
         if(!SystemUtils.IS_JAVA_1_8) return;
