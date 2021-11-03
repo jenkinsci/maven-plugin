@@ -80,17 +80,20 @@ public interface MavenBuildProxy {
     /**
      * Root directory of the build.
      *
-     * @see MavenBuild#getRootDir() 
+     * @see MavenBuild#getRootDir()
+     * @see MavenReporterDescriptor#reportedFilePattern
      */
     FilePath getRootDir();
 
     /**
      * Root directory of the parent of this build.
+     * @see MavenReporterDescriptor#reportedFilePattern
      */
     FilePath getProjectRootDir();
 
     /**
      * Root directory of the owner {@link MavenModuleSet}
+     * @see MavenReporterDescriptor#reportedFilePattern
      */
     FilePath getModuleSetRootDir();
 
