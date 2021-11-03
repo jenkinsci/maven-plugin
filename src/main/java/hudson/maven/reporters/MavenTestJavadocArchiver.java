@@ -72,6 +72,12 @@ public class MavenTestJavadocArchiver extends AbstractMavenJavadocArchiver {
         public MavenTestJavadocArchiver newAutoInstance(MavenModule module) {
             return new MavenTestJavadocArchiver();
         }
+
+        @Override
+        public String reportedFilePattern() {
+            return "test-javadoc/";
+        }
+
     }
 
     private static final long serialVersionUID = 1L;
