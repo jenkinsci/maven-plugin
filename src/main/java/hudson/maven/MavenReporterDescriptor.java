@@ -23,6 +23,7 @@
  */
 package hudson.maven;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.maven.reporters.MavenArtifactArchiver;
 import hudson.model.Descriptor;
 import hudson.model.Describable;
@@ -104,4 +105,17 @@ public abstract class MavenReporterDescriptor extends Descriptor<MavenReporter> 
         // use getDescriptorList and not getExtensionList to pick up legacy instances
         return Jenkins.getInstance().getDescriptorList(MavenReporter.class);
     }
+
+    /**
+     * File patterns this reporter might create when running inside the Maven JVM.
+     * Applies to usages from {@link MavenReporter#postBuild} and similar callbacks
+     * of {@link MavenBuildProxy#getRootDir}, {@link MavenBuildProxy#getProjectRootDir}, and {@link MavenBuildProxy#getModuleSetRootDir}.
+     * (But not {@link MavenBuildProxy#getArtifactsDir}, which should not be used anyway.)
+     * @return an Ant-style file pattern of files we expect to copy, or null if not applicable (default)
+     */
+    @CheckForNull
+    public String reportedFilePattern() {
+        return null;
+    }
+
 }

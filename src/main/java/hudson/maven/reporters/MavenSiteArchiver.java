@@ -187,6 +187,12 @@ public class MavenSiteArchiver extends MavenReporter {
         public MavenSiteArchiver newAutoInstance(MavenModule module) {
             return new MavenSiteArchiver();
         }
+
+        @Override
+        public String reportedFilePattern() {
+            return "site/";
+        }
+
     }
 
     private static final long serialVersionUID = 1L;
