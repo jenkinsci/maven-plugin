@@ -24,6 +24,7 @@
 package hudson.maven;
 
 import hudson.EnvVars;
+import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
@@ -90,9 +91,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
 
@@ -465,16 +468,36 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             throw new AssertionError();
         }
 
+        private FilePath transferArea() {
+            FilePath ws = getWorkspace();
+            Channel mavenChannel = Channel.current();
+            if (mavenChannel != null) {
+                ws = new FilePath(mavenChannel, ws.getRemote());
+            }
+            return WorkspaceList.tempDir(ws).child("maven-reporters");
+        }
+
+        private void copyFromTransferArea(FilePath transferAreaSubdir, File target, BuildListener listener, boolean restricted) throws IOException, InterruptedException {
+            if (transferAreaSubdir.isDirectory()) {
+                listener.getLogger().println("Copying " + transferAreaSubdir + " to " + target);
+                if (restricted) {
+                    transferAreaSubdir.copyRecursiveTo(ExtensionList.lookup(MavenReporterDescriptor.class).stream().map(MavenReporterDescriptor::reportedFilePattern).filter(Objects::nonNull).collect(Collectors.joining(",")), new FilePath(target));
+                } else {
+                    transferAreaSubdir.copyRecursiveTo(new FilePath(target));
+                }
+            }
+        }
+
         public FilePath getRootDir() {
-            return new FilePath(MavenBuild.this.getRootDir());
+            return transferArea().child("build");
         }
 
         public FilePath getProjectRootDir() {
-            return new FilePath(MavenBuild.this.getParent().getRootDir());
+            return transferArea().child("project");
         }
 
         public FilePath getModuleSetRootDir() {
-            return new FilePath(MavenBuild.this.getParent().getParent().getRootDir());
+            return transferArea().child("moduleset");
         }
 
         /**
@@ -482,7 +505,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
          */
         @Deprecated
         public FilePath getArtifactsDir() {
-            return new FilePath(MavenBuild.this.getArtifactsDir());
+            return transferArea().child("artifacts");
         }
 
         @Override public void queueArchiving(String artifactPath, String artifact) {
@@ -518,6 +541,11 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                 FilePath f = new FilePath(ws, e.getValue());
                 am.archive(f.getParent(), launcher, listener, Collections.singletonMap(e.getKey(), f.getName()));
             }
+
+            copyFromTransferArea(getRootDir(), MavenBuild.this.getRootDir(), listener, true);
+            copyFromTransferArea(getProjectRootDir(), MavenBuild.this.getParent().getRootDir(), listener, true);
+            copyFromTransferArea(getModuleSetRootDir(), MavenBuild.this.getParent().getParent().getRootDir(), listener, true);
+            copyFromTransferArea(getArtifactsDir(), MavenBuild.this.getArtifactsDir(), listener, false);
 
             if (false) {
                 long duration = System.currentTimeMillis()-startTime;
