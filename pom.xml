@@ -43,7 +43,7 @@ THE SOFTWARE.
   <url>https://github.com/jenkinsci/maven-plugin</url>
 
   <properties>
-    <revision>3.15.2</revision>
+    <revision>3.16</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/maven-plugin</gitHubRepo>
     <jenkins.version>2.289.1</jenkins.version>
