@@ -174,7 +174,7 @@ public class MavenFingerprinter extends MavenReporter {
      */
     private void record(Artifact a, Map<String,String> record) throws IOException, InterruptedException {
         File f = a.getFile();
-        record(a.getGroupId(), f, record);
+        record(a.getGroupId()+":"+a.getArtifactId(), f, record);
     }
 
     /**
