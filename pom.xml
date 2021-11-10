@@ -56,7 +56,7 @@ THE SOFTWARE.
     -->
     <mavenMinimalVersion>3.8.1</mavenMinimalVersion>
     <resolverVersion>1.6.2</resolverVersion>
-    <sisuInjectVersion>0.3.4</sisuInjectVersion>
+    <sisuInjectVersion>0.3.5</sisuInjectVersion>
     <wagonVersion>3.4.3</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <spotbugs.failOnError>false</spotbugs.failOnError>
@@ -938,7 +938,7 @@ THE SOFTWARE.
           <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
           </dependency>
         </dependencies>
       </plugin>
