@@ -41,7 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.RandomlyFails;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -65,7 +65,7 @@ public class SurefireArchiverUnitTest {
         this.archiver = new SurefireArchiver();
         this.build = mock(MavenBuild.class);
         final List<Action> actions = new ArrayList<>();
-        when(build.getAction(Matchers.any(Class.class))).thenAnswer( (Answer<Action>) invocation -> {
+        when(build.getAction(ArgumentMatchers.any(Class.class))).thenAnswer( (Answer<Action>) invocation -> {
             Class<?> type = (Class<?>) invocation.getArguments()[0];
             for (Action action : actions) {
                 if (type.isInstance(action)) {
@@ -103,7 +103,7 @@ public class SurefireArchiverUnitTest {
         
         MojoInfo spy = spy(info);
         
-        doReturn(Boolean.FALSE).when(spy).getConfigurationValue(Matchers.anyString(), Matchers.eq(Boolean.class));
+        doReturn(Boolean.FALSE).when(spy).getConfigurationValue(ArgumentMatchers.anyString(), ArgumentMatchers.eq(Boolean.class));
         return spy;
     }
     
