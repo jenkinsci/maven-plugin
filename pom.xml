@@ -795,27 +795,6 @@ THE SOFTWARE.
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>resgen</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <!-- we use copy as this is a dependency from outside the reactor -->
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <!--  classworld 1.1 for maven 2 builds -->
-                <artifactItem>
-                  <groupId>classworlds</groupId>
-                  <artifactId>classworlds</artifactId>
-                  <version>1.1</version>
-                  <type>jar</type>
-                  <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                  <destFileName>classworlds.jar</destFileName>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
             <id>copy-binary-files</id>
             <phase>process-resources</phase>
             <goals>
