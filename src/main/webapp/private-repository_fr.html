@@ -1,8 +1,8 @@
 ﻿<div>
   Normalement, Jenkins utilise le repository Maven local que Maven détermine lui-même &mdash;
-  le process exact ne semble pas documenté mais ce répertoire est généralement <tt>~/.m2/repository</tt>.
-  Il peut être modifié par le paramêtre &lt;localRepository> dans le fichier <tt>~/.m2/settings.xml</tt>
-  (voir <a  href="http://maven.apache.org/settings.html">la référence</a> pour plus de détails.)
+  le process exact ne semble pas documenté mais ce répertoire est généralement <code>~/.m2/repository</code>.
+  Il peut être modifié par le paramêtre &lt;localRepository> dans le fichier <code>~/.m2/settings.xml</code>
+  (voir <a  href="https://maven.apache.org/settings.html">la référence</a> pour plus de détails.)
 
   <p>
   Cela signifie que, normalement, tous les jobs qui sont exécutés sur le même noeud (même machine) partagent
@@ -17,7 +17,7 @@
   repository local.
 
   <p>
-  Quand cette option est sélectionnée, Jenkins demandera à Maven d'utiliser <tt>$WORKSPACE/.repository</tt>
+  Quand cette option est sélectionnée, Jenkins demandera à Maven d'utiliser <code>$WORKSPACE/.repository</code>
   comme répertoire local Maven.
   Du coup, chaque job aura son propre repository Maven parfaitement isolé. Cela règle les problèmes
   cités ci-dessus, en échange de plus d'espace disque.
@@ -29,5 +29,5 @@
   <p>
   Si vous préférez activer ce mode pour tous les jobs Maven exécutés par Jenkins, référez-vous à la
   technique décrite
-  <a href="http://jenkins.361315.n4.nabble.com/Hudson-on-2-4-8-16-core-boxes-td371215.html#a371217">ici</a>.
+  <a href="https://jenkins.361315.n4.nabble.com/Hudson-on-2-4-8-16-core-boxes-td371215.html#a371217">ici</a>.
 </div>

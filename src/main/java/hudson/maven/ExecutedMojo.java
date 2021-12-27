@@ -190,9 +190,9 @@ public final class ExecutedMojo implements Serializable {
         if(m!=null)
             return Stapler.getCurrentRequest().getContextPath()+m.getUrl();
         if(groupId.equals("org.apache.maven.plugins"))
-            return "http://maven.apache.org/plugins/"+artifactId+'/';
+            return "https://maven.apache.org/plugins/"+artifactId+'/';
         if (groupId.equals("org.codehaus.mojo"))
-            return "http://mojo.codehaus.org/"+artifactId+'/';
+            return "https://www.mojohaus.org/"+artifactId+'/';
         return null;
     }
 

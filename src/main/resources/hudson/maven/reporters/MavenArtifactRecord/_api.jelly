@@ -31,7 +31,7 @@ THE SOFTWARE.
     <a href="../attachedArtifacts/0/file">attached artifact #1</a>,
     <a href="../attachedArtifacts/1/file">attached artifact #2</a>, etc., all have
     stable URLs that's not affected by their GAV IDs (if you want to access them through GAV IDs,
-    you can do so through the artifacts link.) Swap the last <tt>file</tt> with <tt>api</tt>
+    you can do so through the artifacts link.) Swap the last <code>file</code> with <code>api</code>
     and you can retrieve their GAV IDs and other information, such as
     <a href="../mainArtifact/api/">this</a>.
   </p>

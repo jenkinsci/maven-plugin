@@ -39,7 +39,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 import java.util.Collections;
 
 /**
- * See http://ml.seasar.org/archives/operation/2008-November/004003.html
+ * See https://ml.seasar.org/archives/operation/2008-November/004003.html
  *
  * @author Kohsuke Kawaguchi
  */

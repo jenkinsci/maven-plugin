@@ -1,7 +1,7 @@
 <div>
   通常、JenkinsはMavenが決めたローカルのリポジトリを使用します。&mdash; 正確なルールは文書化されていないようですが、
-  それは<tt>~/.m2/repository</tt>で、<tt>~/.m2/settings.xml</tt>の&lt;localRepository>で設定を変更できます。
-  (詳細は、<a  href="http://maven.apache.org/settings.html">リファレンス</a>を参照)
+  それは<code>~/.m2/repository</code>で、<code>~/.m2/settings.xml</code>の&lt;localRepository>で設定を変更できます。
+  (詳細は、<a  href="https://maven.apache.org/settings.html">リファレンス</a>を参照)
 
   <p>
   これは、通常同一のノードで実行されるジョブはすべて1つのリポジトリを共有することを意味します。
@@ -14,7 +14,7 @@
 
 
   <p>
-  このオプションをチェックすると、Jenkinsはローカルなリポジトリとして<tt>$WORKSPACE/.repository</tt> を使うようにMavenに指示します。
+  このオプションをチェックすると、Jenkinsはローカルなリポジトリとして<code>$WORKSPACE/.repository</code> を使うようにMavenに指示します。
   つまり、どのジョブも専用の独立したリポジトリを使用します。ディスクの使用量の増大と引き替えに、上記の問題を解決します。
 
   <p>
@@ -22,6 +22,6 @@
 
   <p>
   Jenkinsで実行するすべてのMavenプロジェクトのビルドで、このモードを有効にしたいのなら、
-   <a href="http://jenkins.361315.n4.nabble.com/Hudson-on-2-4-8-16-core-boxes-td371215.html#a371217">ここ</a>で説明されている
+   <a href="https://jenkins.361315.n4.nabble.com/Hudson-on-2-4-8-16-core-boxes-td371215.html#a371217">ここ</a>で説明されている
    テクニックを参考にしてください。
 </div>
