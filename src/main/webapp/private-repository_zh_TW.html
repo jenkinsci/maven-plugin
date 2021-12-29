@@ -1,7 +1,7 @@
 <div>
   一般 Jenkins 會直接用 Maven 判斷出的本地 Maven 儲存庫 (實際的流程找不到相關文獻，看起來是
   <code>~/.m2/repository</code>，而且可以用 <code>~/.m2/settings.xml</code> 裡的 &lt;localRepository&gt; 修改
-  (詳情請參考<a  href="http://maven.apache.org/settings.html">這份資料</a>)。
+  (詳情請參考<a  href="https://maven.apache.org/settings.html">這份資料</a>)。
 
   <p>
   自然這就代表在同一節點上面執行的作業都會共用同一個 Maven 儲存庫。
@@ -21,5 +21,5 @@
 
   <p>
   如果您想讓 Jenkins 上的所有 Maven 作業都啟用這個模式，可以參考<a
-  href="http://jenkins.361315.n4.nabble.com/Hudson-on-2-4-8-16-core-boxes-td371215.html#a371217">這裡</a>提到的技巧。
+  href="https://jenkins.361315.n4.nabble.com/Hudson-on-2-4-8-16-core-boxes-td371215.html#a371217">這裡</a>提到的技巧。
 </div>

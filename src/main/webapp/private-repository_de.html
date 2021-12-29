@@ -1,8 +1,8 @@
 <div>
   Normalerweise verwendet Jenkins das lokale Maven-Repository so wie es von Maven
   bestimmt wird &mdash; das exakte Verfahren dafür scheint undokumentiert, aber es ist typischerweise
-  <tt>~/.m2/repository</tt> und kann durch &lt;localRepository> in <tt>~/.m2/settings.xml</tt>
-  überschrieben werden (mehr dazu in der <a  href="http://maven.apache.org/settings.html">Maven-Dokumentation</a>).
+  <code>~/.m2/repository</code> und kann durch &lt;localRepository> in <code>~/.m2/settings.xml</code>
+  überschrieben werden (mehr dazu in der <a  href="https://maven.apache.org/settings.html">Maven-Dokumentation</a>).
 
   <p>
   Dies bedeutet, dass sich alle Jobs, die auf dem gleichen Knoten ausgeführt werden, ein gemeinsames
@@ -16,7 +16,7 @@
   dasselbe lokale Repository zu verwenden.
   
   <p>
-  Wenn diese Option angewählt ist, startet Jenkins Maven mit <tt>$WORKSPACE/.repository</tt>
+  Wenn diese Option angewählt ist, startet Jenkins Maven mit <code>$WORKSPACE/.repository</code>
   als lokalem Maven-Repository. Dadurch verwendet jeder Job ein eigenes, isoliertes Maven-Repository.
   Dies löst die oben angesprochenen Probleme auf Kosten eines höheren Speicherplatzbedarfs auf der Festplatte.
   
@@ -26,5 +26,5 @@
 
   <p>
   Möchten Sie diese Option in allen Maven-Jobs aktivieren, die über Jenkins ausgeführt
-  werden, folgen Sie den Anweisungen <a href="http://jenkins.361315.n4.nabble.com/Hudson-on-2-4-8-16-core-boxes-td371215.html#a371217">hier</a>.
+  werden, folgen Sie den Anweisungen <a href="https://jenkins.361315.n4.nabble.com/Hudson-on-2-4-8-16-core-boxes-td371215.html#a371217">hier</a>.
 </div>

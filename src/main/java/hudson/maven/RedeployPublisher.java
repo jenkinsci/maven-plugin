@@ -196,7 +196,7 @@ public class RedeployPublisher extends Recorder {
     /**
      * 
      * copy from MavenUtil but here we have to ignore localRepo path and setting as thoses paths comes
-     * from the remote node and can not exist in controller see http://issues.jenkins-ci.org/browse/JENKINS-8711
+     * from the remote node and can not exist in controller see https://issues.jenkins.io/browse/JENKINS-8711
      * 
      */
     private MavenEmbedder createEmbedder(TaskListener listener, AbstractBuild<?,?> build) throws MavenEmbedderException, IOException, InterruptedException {

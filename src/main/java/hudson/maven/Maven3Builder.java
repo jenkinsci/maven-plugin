@@ -181,7 +181,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
         }
     }
 
-    // worakround for verbose logging https://issues.jenkins-ci.org/browse/JENKINS-19396
+    // worakround for verbose logging https://issues.jenkins.io/browse/JENKINS-19396
 	private void configureConsoleLogging() {
 	    Logger rootLogger = Logger.getLogger("");
 	    Handler[] handlers = rootLogger.getHandlers();
@@ -657,7 +657,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
 
         private Exception getExecutionException(ExecutionEvent event) {
-            // http://issues.jenkins-ci.org/browse/JENKINS-8493
+            // https://issues.jenkins.io/browse/JENKINS-8493
             // with maven 3.0.2 see http://jira.codehaus.org/browse/MNG-4922
             // catch NoSuchMethodError if folks not using 3.0.2+
             try {

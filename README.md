@@ -25,8 +25,8 @@ Jenkins Controller is built for.
     with Java \>= 8.
 
 See also
-[JENKINS-18403](https://issues.jenkins-ci.org/browse/JENKINS-18403),
-[JENKINS-28294](https://issues.jenkins-ci.org/browse/JENKINS-28294)
+[JENKINS-18403](https://issues.jenkins.io/browse/JENKINS-18403),
+[JENKINS-28294](https://issues.jenkins.io/browse/JENKINS-28294)
 
 **If Jenkins detects that you are trying to use a JDK older than the
 controller prerequisite, it automatically reconfigure your build to use the
@@ -45,10 +45,10 @@ ERROR: =========================================================================
 
 **But due to the remoting upgrade in Jenkins 2.27+ this workaround
 doesn't work anymore if your agent or maven job is using Java \< 7 -
-[JENKINS-40990](https://issues.jenkins-ci.org/browse/JENKINS-40990)
+[JENKINS-40990](https://issues.jenkins.io/browse/JENKINS-40990)
 (Because remoting is compiled for Java 7)**
 
-Known issues are listed [in Jira](https://issues.jenkins-ci.org/issues/?jql=project%20%3D%20JENKINS%20AND%20status%20in%20(Open%2C%20%22In%20Progress%22%2C%20Reopened)%20AND%20component%20%3D%20%27maven-plugin%27)
+Known issues are listed [in Jira](https://issues.jenkins.io/issues/?jql=project%20%3D%20JENKINS%20AND%20status%20in%20(Open%2C%20%22In%20Progress%22%2C%20Reopened)%20AND%20component%20%3D%20%27maven-plugin%27)
 
 Historically this plugin was released alongside Jenkins core releases.
 2.0 releases up to 2.204.1 saw this plugin released separately, but still bundled
