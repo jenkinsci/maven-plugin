@@ -4,7 +4,7 @@ maven-plugin
 [![Changelog](https://img.shields.io/github/v/tag/jenkinsci/maven-plugin?label=changelog)](https://github.com/jenkinsci/maven-plugin/blob/master/CHANGELOG.md)
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/maven-plugin?color=blue)](https://plugins.jenkins.io/maven-plugin)
 Jenkins plugin for building Maven 2/3 jobs.
-See [Maven Project Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Maven+Project+Plugin) on Jenkins' Wiki for more information.
+See [Maven Project Plugin](https://plugins.jenkins.io/maven-plugin/) on Jenkins' Wiki for more information.
 
 ## Version history
 
