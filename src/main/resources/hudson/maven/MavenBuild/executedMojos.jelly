@@ -23,7 +23,7 @@ THE SOFTWARE.
 -->
 
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
   <l:layout title="${it.fullDisplayName} Execution Record">
     <st:include page="sidepanel.jelly" />
     <l:main-panel>
@@ -43,7 +43,8 @@ THE SOFTWARE.
         <j:otherwise>
           <j:set var="cache" value="${it.createExecutedMojoCache()}"/>
           
-          <table class="middle-align sortable pane bigtable">
+          <table class="jenkins-table sortable">
+            <thead>
             <tr>
               <th>${%Plugin}</th>
               <th>${%Version}</th>
@@ -52,6 +53,8 @@ THE SOFTWARE.
               <th>${%Duration}</th>
               <th>${%Fingerprint}</th>
             </tr>
+            </thead>
+            <tbody>
 
             <j:forEach var="m" items="${it.executedMojos}">
               <tr>
@@ -74,6 +77,7 @@ THE SOFTWARE.
                 </td>
               </tr>
             </j:forEach>
+            </tbody>
           </table>
         </j:otherwise>
       </j:choose>
