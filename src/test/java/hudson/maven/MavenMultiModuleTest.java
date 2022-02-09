@@ -2,41 +2,32 @@ package hudson.maven;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.FilePath;
-import hudson.Functions;
 import org.junit.Assert;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.ExtractChangeLogSet;
 
 import hudson.Launcher;
-import hudson.Util;
 import hudson.maven.reporters.MavenArtifactRecord;
 import hudson.maven.reporters.MavenFingerprinter;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
-import hudson.model.Job;
-import hudson.model.PermalinkProjectAction;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.Fingerprinter.FingerprintAction;
-import java.io.File;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import jenkins.model.ArtifactManager;
-import java.util.Set;
-import java.util.TreeSet;
 import jenkins.model.ArtifactManagerConfiguration;
 import jenkins.model.ArtifactManagerFactory;
 import jenkins.util.VirtualFile;
 import static org.junit.Assert.*;
-import org.junit.Assume;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
@@ -67,7 +58,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.getReporters().add(new MavenFingerprinter());
-    	m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod.zip"),
+    	m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod.zip"),
     						   getClass().getResource("maven-multimod-changes.zip")));
     
     	j.buildAndAssertSuccess(m);
@@ -142,7 +133,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setRootPOM("parent/pom.xml");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-rel-base.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod-rel-base.zip"),
 						   getClass().getResource("maven-multimod-changes.zip")));
         
         j.buildAndAssertSuccess(m);
@@ -186,7 +177,7 @@ public class MavenMultiModuleTest {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod.zip"),
                 getClass().getResource("maven-multimod-changes.zip")));
 
         m.setIncrementalBuild(true);
@@ -237,7 +228,7 @@ public class MavenMultiModuleTest {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-incr.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod-incr.zip"),
 						   getClass().getResource("maven-multimod-changes.zip")));
 
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
@@ -301,7 +292,7 @@ public class MavenMultiModuleTest {
         m.setIncrementalBuild(true);
         m.getReporters().add(new TestReporter());
         m.getPublishers().add(new DummyRedeployPublisher());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multimod-incr.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod-incr.zip"),
                            getClass().getResource("maven-multimod-changes.zip")));
 
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
