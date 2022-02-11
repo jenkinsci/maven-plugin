@@ -42,7 +42,7 @@ THE SOFTWARE.
                 <l:icon class="${mb.iconColor.iconClassName} icon-sm" alt="${mb.iconColor.description}" />
               </a>
               <st:nbsp/>
-              <a href="${m.key.shortUrl}">
+              <a href="${m.key.shortUrl}" class="model-link">
                 ${m.key.displayName}
               </a>
             </td><td data="${mb.duration}">
