@@ -3,7 +3,6 @@ package hudson.maven;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Result;
-import hudson.tasks.Maven.MavenInstallation;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.ExtractChangeLogSet;
@@ -16,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 
 /**
  * Test incremental build for a project with modules and submodules.
@@ -46,7 +45,7 @@ public class MavenMultiLevelModuleTest {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
-        m.setScm(new ExtractResourceWithChangesSCM2(getClass().getResource("maven-multilevelmod.zip"),
+        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multilevelmod.zip"),
                 getClass().getResource("maven-multilevelmod-changes.zip")));
 
         j.buildAndAssertSuccess(m);

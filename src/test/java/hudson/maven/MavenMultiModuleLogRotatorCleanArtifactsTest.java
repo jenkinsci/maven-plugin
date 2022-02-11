@@ -8,7 +8,6 @@ import hudson.Launcher;
 import hudson.maven.reporters.MavenFingerprinter;
 import hudson.model.BuildListener;
 import hudson.tasks.LogRotator;
-import hudson.tasks.Maven.MavenInstallation;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,11 +16,11 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.For;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.ToolInstallations;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 
 /**
  *
@@ -70,7 +69,7 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest
         m.setBuildDiscarder( new LogRotator( "-1", "2", "-1", "1" ) );
         m.getReporters().add( new TestReporter() );
         m.getReporters().add( new MavenFingerprinter() );
-        m.setScm( new ExtractResourceWithChangesSCM2( getClass().getResource( "maven-multimod.zip" ),
+        m.setScm( new ExtractResourceWithChangesSCM( getClass().getResource( "maven-multimod.zip" ),
                                                       getClass().getResource( "maven-multimod-changes.zip" ) ) );
         j.buildAndAssertSuccess( m );
         // Now run a second build with the changes.
