@@ -66,7 +66,7 @@ public final class MavenProbeAction implements Action {
 
     public String getIconFileName() {
         if(channel==null)   return null;
-        return "computer.png";
+        return "computer.svg";
     }
 
     public String getDisplayName() {
