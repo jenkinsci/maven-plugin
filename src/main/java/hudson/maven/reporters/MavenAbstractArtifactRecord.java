@@ -141,7 +141,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
         @Exported
         public BallColor getIconColor() {
             if(result==null)
-                return BallColor.GREY_ANIME;
+                return BallColor.NOTBUILT_ANIME;
             else
                 return result.color;
         }

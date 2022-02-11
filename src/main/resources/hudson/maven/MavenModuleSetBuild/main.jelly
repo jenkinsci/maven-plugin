@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:t="/lib/hudson">
   <h2>${%Module Builds}</h2>
   <table>
     <j:forEach var="m" items="${it.moduleBuilds}">
@@ -30,7 +30,7 @@ THE SOFTWARE.
         <j:choose>
           <j:when test="${m.value.size()==0}">
             <td class="no-wrap">
-              <img src="${imagesURL}/16x16/grey.png" alt="" height="16" width="16"/>
+              <l:icon class="icon-nobuilt icon-sm" alt="" />
               <st:nbsp/>${m.key.displayName} (${%noRun})
             </td><td>
             </td>
@@ -39,8 +39,7 @@ THE SOFTWARE.
             <j:set var="mb" value="${m.value.get(0)}"/>
             <td class="no-wrap">
               <a href="${m.key.shortUrl}">
-                <img src="${imagesURL}/16x16/${mb.buildStatusUrl}"
-                     alt="${mb.iconColor.description}" height="16" width="16"/>
+                <l:icon class="${mb.iconColor.iconClassName} icon-sm" alt="${mb.iconColor.description}" />
               </a>
               <st:nbsp/>
               <a href="${m.key.shortUrl}">
