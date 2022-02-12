@@ -97,7 +97,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>javadoc</artifactId>
-      <version>1.6</version>
+      <version>217.v905b_86277a_2a_</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -594,7 +594,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-component-annotations</artifactId>
-      <version>2.1.0</version>
+      <version>2.1.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
