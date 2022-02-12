@@ -141,7 +141,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
         @Exported
         public BallColor getIconColor() {
             if(result==null)
-                return BallColor.GREY_ANIME;
+                return BallColor.NOTBUILT_ANIME;
             else
                 return result.color;
         }
@@ -169,7 +169,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
     }
 
     public final String getIconFileName() {
-        return getACL().hasPermission(getPermission()) ? "redo.png" : null;
+        return getACL().hasPermission(getPermission()) ? "redo.svg" : null;
     }
 
     public final String getDisplayName() {

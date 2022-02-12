@@ -163,7 +163,7 @@ public class MavenSiteArchiver extends MavenReporter {
 
         public String getIconFileName() {
             if(getSiteDir(project).exists())
-                return "help.png";
+                return "help.svg";
             else
                 // hide it since we don't have site yet.
                 return null;
@@ -174,7 +174,7 @@ public class MavenSiteArchiver extends MavenReporter {
          */
         public DirectoryBrowserSupport doDynamic() {
             File siteDir = getSiteDir(project);
-            return new DirectoryBrowserSupport(project, new FilePath(siteDir), project.getDisplayName() + " site", "help.gif", !new File(siteDir, "index.html").isFile());
+            return new DirectoryBrowserSupport(project, new FilePath(siteDir), project.getDisplayName() + " site", "help.svg", !new File(siteDir, "index.html").isFile());
         }
     }
 

@@ -23,7 +23,7 @@ THE SOFTWARE.
 -->
 
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:test="/lib/test">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:test="/lib/test">
   <l:layout>
     <st:include it="${it.owner}" page="sidepanel.jelly" />
     <l:main-panel>
@@ -32,14 +32,16 @@ THE SOFTWARE.
       <j:set var="prev" value="${it.previousResult}" />
       <test:bar />
 
-      <table class="pane sortable bigtable" id="testresult">
-        <tr>
-          <td class="pane-header">${%Module}</td>
-          <td class="pane-header" style="width:5em">${%Fail}</td>
-          <td class="pane-header" style="width:1em; font-size:smaller; white-space:nowrap;">(${%diff})</td>
-          <td class="pane-header" style="width:5em">${%Total}</td>
-          <td class="pane-header" style="width:1em; font-size:smaller; white-space:nowrap;">(${%diff})</td>
-        </tr>
+      <table class="pane sortable jenkins-table" id="testresult">
+        <thead>
+          <tr>
+            <td class="pane-header">${%Module}</td>
+            <td class="pane-header" style="width:5em">${%Fail}</td>
+            <td class="pane-header" style="width:1em; font-size:smaller; white-space:nowrap;">(${%diff})</td>
+            <td class="pane-header" style="width:5em">${%Total}</td>
+            <td class="pane-header" style="width:1em; font-size:smaller; white-space:nowrap;">(${%diff})</td>
+          </tr>
+        </thead>
         <tbody>
           <j:forEach var="c" items="${it.children}">
             <j:set var="p" value="${it.getChildReport(c)}"/>
