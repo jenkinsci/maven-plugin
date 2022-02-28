@@ -36,7 +36,7 @@ THE SOFTWARE.
 
   <groupId>org.jenkins-ci.main</groupId><!-- for historical reason, this plugin has a different groupId -->
   <artifactId>maven-plugin</artifactId><!-- for the same reason, artifactId is against the convention -->
-  <version>3.18</version>
+  <version>${revision}${changelist}</version>
   <packaging>hpi</packaging>
 
   <name>Maven Integration plugin</name>
@@ -44,7 +44,7 @@ THE SOFTWARE.
   <url>https://github.com/jenkinsci/${project.artifactId}</url>
 
   <properties>
-    <revision>3.18</revision>
+    <revision>3.19</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
     <jenkins.version>2.321</jenkins.version>
@@ -894,7 +894,7 @@ THE SOFTWARE.
     <connection>scm:git:https://github.com/${gitHubRepo}</connection>
     <developerConnection>scm:git:https://github.com/${gitHubRepo}</developerConnection>
     <url>https://github.com/${gitHubRepo}</url>
-    <tag>maven-plugin-3.18</tag>
+    <tag>${scmTag}</tag>
   </scm>
 
 </project>
