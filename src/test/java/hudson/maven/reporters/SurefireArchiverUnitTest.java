@@ -38,6 +38,7 @@ import org.codehaus.plexus.component.configurator.ComponentConfigurationExceptio
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.RandomlyFails;
@@ -171,6 +172,7 @@ public class SurefireArchiverUnitTest {
     }
     
     @Test
+    @Ignore("See https://github.com/jenkinsci/junit-plugin/pull/348")
     @Issue("JENKINS-31524")
     public void testUpdatedExistingResultsAreCounted() throws InterruptedException, IOException, URISyntaxException, ComponentConfigurationException {
         URL resource = SurefireArchiverUnitTest.class.getResource("/surefire-archiver-test2");
