@@ -56,7 +56,7 @@ THE SOFTWARE.
       Note that the plugin still bundles agent support for Maven 3.0.5, probably it's not really operational
     -->
     <mavenMinimalVersion>3.8.3</mavenMinimalVersion>
-    <resolverVersion>1.7.2</resolverVersion>
+    <resolverVersion>1.7.3</resolverVersion>
     <sisuInjectVersion>0.3.5</sisuInjectVersion>
     <wagonVersion>3.4.3</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
@@ -81,7 +81,7 @@ THE SOFTWARE.
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-2.319.x</artifactId>
-        <version>1013.vf8058992a042</version>
+        <version>1210.vcd41f6657f03</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
