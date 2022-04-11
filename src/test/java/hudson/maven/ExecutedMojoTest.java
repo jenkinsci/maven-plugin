@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 
 /**
  * Unit test for {@link ExecutedMojo}.
@@ -61,7 +62,7 @@ public class ExecutedMojoTest {
     }
     
     @Test
-    @Bug(5044)
+    @Issue("JENKINS-5044")
     public void testMojoFromClassesDirectory() throws IOException, InterruptedException {
         // Faking this class as the mojo impl:
         this.mojoDescriptor.setImplementation(getClass().getName());

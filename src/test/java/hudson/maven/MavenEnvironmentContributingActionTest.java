@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 import org.kohsuke.stapler.StaplerRequest;
@@ -42,7 +43,7 @@ public class MavenEnvironmentContributingActionTest {
     public JenkinsRule j = new MavenJenkinsRule();
 
     @Test
-    @Bug(17555)
+    @Issue("JENKINS-17555")
     public void envVariableFromEnvironmentContributingActionMustBeAvailableInMavenModuleSetBuild() throws Exception {
         j.jenkins.getInjector().injectMembers(this);
 

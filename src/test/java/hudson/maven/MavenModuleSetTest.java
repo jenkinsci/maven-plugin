@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**
@@ -29,7 +30,7 @@ public class MavenModuleSetTest extends AbstractMavenTestCase {
         assertTrue(before!=p.getLocalRepository());
     }
 
-    @Bug(17402)
+    @Issue("JENKINS-17402")
     public void testGetItem() throws Exception {
         assertNull(jenkins.createProject(MavenModuleSet.class, "p").getItem("invalid"));
     }
@@ -71,7 +72,7 @@ public class MavenModuleSetTest extends AbstractMavenTestCase {
         assertNull(jenkins.getDescriptorByType(MavenFingerprinter.DescriptorImpl.class).newAutoInstance(m.getRootModule()));
     }
 
-    @Bug(21903)
+    @Issue("JENKINS-21903")
     public void testConfigRoundtripTriggers() throws Exception {
         // New project defaults to trigger with blocks:
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");

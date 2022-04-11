@@ -74,7 +74,7 @@ public class MavenMailerTest {
 	@Rule public JenkinsRule j = new MavenJenkinsRule();
 
 	@Test
-	@Bug(5695)
+	@Issue("JENKINS-5695")
     public void testMulipleMails() throws Exception {
 
         // there is one module failing in the build, therefore we expect one mail for the failed module and one for the over all build status
@@ -84,7 +84,7 @@ public class MavenMailerTest {
     }
 
 	@Test
-    @Bug(5695)
+    @Issue("JENKINS-5695")
     public void testSingleMails() throws Exception {
 
         final Mailbox inbox = runMailTest(false);
@@ -94,7 +94,7 @@ public class MavenMailerTest {
 
     public Mailbox runMailTest(boolean perModuleEamil) throws Exception {
 
-        final DescriptorImpl mailDesc = Jenkins.getInstance().getDescriptorByType(Mailer.DescriptorImpl.class);
+        final DescriptorImpl mailDesc = Jenkins.get().getDescriptorByType(Mailer.DescriptorImpl.class);
 
         // intentionally give the whole thin in a double quote
         Mailer.descriptor().setAdminAddress(EMAIL_ADMIN);
@@ -185,7 +185,7 @@ public class MavenMailerTest {
 	 * @throws Exception
 	 */
     @Test
-    @Bug(6421)
+    @Issue("JENKINS-6421")
     public void testCiManagementNotificationModule() throws Exception {
     	
     	JenkinsLocationConfiguration.get().setAdminAddress(EMAIL_ADMIN);
@@ -292,7 +292,7 @@ public class MavenMailerTest {
     }
 
     @Test
-    @Bug(20209)
+    @Issue("JENKINS-20209")
     public void testRecipientsNotNullAndMavenRecipientsNull () {
         MavenMailer fixture = new MavenMailer();
         fixture.recipients = "your-mail@gmail.com";
@@ -302,7 +302,7 @@ public class MavenMailerTest {
     }
     
     @Test
-    @Bug(20209)
+    @Issue("JENKINS-20209")
     public void testMavenRecipientsNotNullAndRecipientsNull () {
         MavenMailer fixture = new MavenMailer();
         fixture.recipients = null;
@@ -312,7 +312,7 @@ public class MavenMailerTest {
     }
     
     @Test
-    @Bug(20209)
+    @Issue("JENKINS-20209")
     public void testMavenRecipientsAndRecipientsNotNull () {
         MavenMailer fixture = new MavenMailer();
         fixture.recipients = "your-mail@gmail.com";

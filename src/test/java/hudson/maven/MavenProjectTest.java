@@ -48,6 +48,8 @@ import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 import java.net.HttpURLConnection;
+
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**
@@ -66,13 +68,13 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         assertFalse(xml, xml.contains("<maven2-module-set"));
     }
     
-    @Bug(16499)
+    @Issue("JENKINS-16499")
     public void testCopyFromExistingMavenProject() throws Exception {
         MavenModuleSet project = createSimpleProject();
         project.setGoals("abcdefg");
         project.save();
         
-        MavenModuleSet copy = (MavenModuleSet) Jenkins.getInstance().copy((AbstractProject<?, ?>)project, "copy" + System.currentTimeMillis());
+        MavenModuleSet copy = (MavenModuleSet) Jenkins.get().copy((AbstractProject<?, ?>)project, "copy" + System.currentTimeMillis());
         assertNotNull("Copied project must not be null", copy);
         assertEquals(project.getGoals(), copy.getGoals());
     }
@@ -105,7 +107,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     /**
      * Check if the generated site is linked correctly.
      */
-    @Bug(3497)
+    @Issue("JENKINS-3497")
     public void testSiteBuild() throws Exception {
         MavenModuleSet project = createSimpleProject();
         project.setGoals("site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
@@ -138,7 +140,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         wc.getPage(project, "site/core");
         wc.getPage(project, "site/client");
 
-        //@Bug(7577): check that site generation succeeds also if only a single module is build
+        //@Issue("JENKINS-7577"): check that site generation succeeds also if only a single module is build
         MavenModule coreModule = project.getModule("mmtest:core");
         Assert.assertEquals("site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8", coreModule.getGoals());
         try {
@@ -172,7 +174,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
     /**
      * Check if the the site goal will work when run from an agent.
      */
-    @Bug(5943)
+    @Issue("JENKINS-5943")
     public void testMultiModuleSiteBuildOnSlave() throws Exception {
         MavenModuleSet project = createProject("maven-multimodule-site.zip");
         project.setGoals("site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
@@ -191,7 +193,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         wc.getPage(project, "site/client");
     }
 
-    @Bug(6779)
+    @Issue("JENKINS-6779")
     public void testDeleteSetBuildDeletesModuleBuilds() throws Exception {
         MavenModuleSet project = createProject("maven-multimod.zip");
         project.setLocalRepository(new DefaultLocalRepositoryLocator());
@@ -205,7 +207,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         assertEquals(1, project.getModule("org.jvnet.hudson.main.test.multimod:moduleA").getBuilds().size());
         assertEquals(1, project.getModule("org.jvnet.hudson.main.test.multimod:moduleB").getBuilds().size());
     }
-    @Bug(7261)
+    @Issue("JENKINS-7261")
     public void testAbsolutePathPom() throws Exception {
         File pom = new File(this.getClass().getResource("test-pom-7162.xml").toURI());
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
@@ -216,7 +218,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         buildAndAssertSuccess(project);
     }
     
-    @Bug(17177)
+    @Issue("JENKINS-17177")
     public void testCorrectResultInPostStepAfterFailedPreBuildStep() throws Exception {
         MavenModuleSet p = createSimpleProject();
         MavenInstallation mi = Maven36xBuildTest.configureMaven36();

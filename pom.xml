@@ -30,7 +30,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.31</version>
+    <version>4.40</version>
     <relativePath />
   </parent>
 
@@ -40,15 +40,13 @@ THE SOFTWARE.
   <packaging>hpi</packaging>
 
   <name>Maven Integration plugin</name>
-  <description>This plug-in provides, for better and for worse, a deep integration of Jenkins and Maven: Automatic triggers between projects depending on SNAPSHOTs, automated configuration of various Jenkins publishers (Junit, ...).</description>
   <url>https://github.com/jenkinsci/${project.artifactId}</url>
 
   <properties>
     <revision>3.19</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
-    <jenkins.version>2.321</jenkins.version>
-    <java.level>8</java.level>
+    <jenkins.version>2.332.1</jenkins.version>
     <mavenInterceptorsVersion>1.13</mavenInterceptorsVersion>
     <!--
       Minimal supported version of Maven.
@@ -58,7 +56,7 @@ THE SOFTWARE.
     <mavenMinimalVersion>3.8.3</mavenMinimalVersion>
     <resolverVersion>1.7.3</resolverVersion>
     <sisuInjectVersion>0.3.5</sisuInjectVersion>
-    <wagonVersion>3.4.3</wagonVersion>
+    <wagonVersion>3.5.1</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <spotbugs.failOnError>false</spotbugs.failOnError>
     <!-- well the parent pom could defined an empty one instead of causing failure!! -->
@@ -80,8 +78,8 @@ THE SOFTWARE.
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.319.x</artifactId>
-        <version>1013.vf8058992a042</version>
+        <artifactId>bom-2.332.x</artifactId>
+        <version>1246.va_b_50630c1d19</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -98,6 +96,12 @@ THE SOFTWARE.
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>javadoc</artifactId>
       <version>217.v905b_86277a_2a_</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jenkins-ci</groupId>
+          <artifactId>symbol-annotation</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -453,6 +457,12 @@ THE SOFTWARE.
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-cipher</artifactId>
       <version>2.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.sisu</groupId>
+          <artifactId>org.eclipse.sisu.inject</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -579,7 +589,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>3.0</version>
+      <version>3.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -704,6 +714,12 @@ THE SOFTWARE.
       <groupId>org.mockito</groupId>
       <artifactId>mockito-inline</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>jna-platform</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jvnet.mock-javamail</groupId>

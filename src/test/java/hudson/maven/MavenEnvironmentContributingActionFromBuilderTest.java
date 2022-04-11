@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class MavenEnvironmentContributingActionFromBuilderTest {
     public JenkinsRule j = new MavenJenkinsRule();
 
     @Test
-    @Bug(20844)
+    @Issue("JENKINS-20844")
     public void builderInjectedVariableFromEnvironmentContributingActionMustBeAvailableInMavenModuleSetBuild() throws Exception {
         j.jenkins.getInjector().injectMembers(this);
 

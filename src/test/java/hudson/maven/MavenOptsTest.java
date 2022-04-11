@@ -6,6 +6,7 @@ import hudson.model.Result;
 import hudson.tasks.Maven.MavenInstallation;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**
@@ -88,7 +89,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
         assertLogContains("[hudson.mavenOpt.test=foo]", m.getLastBuild());
     }
     
-    @Bug(5651)
+    @Issue("JENKINS-5651")
     public void testNewlinesInOptsRemoved() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
@@ -119,7 +120,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
         assertLogContains("[hudson.mavenOpt.test=foo]", m.getLastBuild());
     }
     
-    @Bug(13926)
+    @Issue("JENKINS-13926")
     public void testMustnt_store_global_maven_opts_in_job_maven_opts() throws Exception {
         final String firstGlobalMavenOpts = "first maven opts";
         final String secondGlobalMavenOpts = "second maven opts";

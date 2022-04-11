@@ -9,13 +9,14 @@ import java.io.IOException;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractChangeLogSet;
 import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
+import org.jvnet.hudson.test.Issue;
 
 /**
  * @author Andrew Bayer
  */
 public class MavenMultiModuleTestIncremental extends AbstractMavenTestCase {
 
-    @Bug(7684)
+    @Issue("JENKINS-7684")
     public void testRelRootPom() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");

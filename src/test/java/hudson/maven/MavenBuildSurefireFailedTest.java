@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.RunLoadCounter;
 import org.jvnet.hudson.test.ToolInstallations;
 
@@ -15,7 +16,7 @@ import org.jvnet.hudson.test.ToolInstallations;
  */
 public class MavenBuildSurefireFailedTest extends AbstractMavenTestCase {
 
-    @Bug(8415)
+    @Issue("JENKINS-8415")
     public void testMaven2Unstable() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
@@ -24,7 +25,7 @@ public class MavenBuildSurefireFailedTest extends AbstractMavenTestCase {
         assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
     }
     
-    @Bug(8415)
+    @Issue("JENKINS-8415")
     public void testMaven3Failed() throws Exception {
         Maven36xBuildTest.configureMaven36();
         final MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
@@ -42,7 +43,7 @@ public class MavenBuildSurefireFailedTest extends AbstractMavenTestCase {
         }));
     }   
     
-    @Bug(8415)
+    @Issue("JENKINS-8415")
     public void testMaven3Unstable() throws Exception {
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( Maven36xBuildTest.configureMaven36().getName() );
@@ -51,7 +52,7 @@ public class MavenBuildSurefireFailedTest extends AbstractMavenTestCase {
         assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
     }
     
-    @Bug(8415)
+    @Issue("JENKINS-8415")
     public void testMaven3Failure() throws Exception {
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( Maven36xBuildTest.configureMaven36().getName() );
@@ -60,7 +61,7 @@ public class MavenBuildSurefireFailedTest extends AbstractMavenTestCase {
         assertBuildStatus(Result.FAILURE, m.scheduleBuild2(0).get());
     }    
     
-    @Bug(14102)
+    @Issue("JENKINS-14102")
     public void testMaven3SkipPostBuilder() throws Exception {
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven( Maven36xBuildTest.configureMaven36().getName() );
@@ -72,7 +73,7 @@ public class MavenBuildSurefireFailedTest extends AbstractMavenTestCase {
         assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
     }        
     
-    @Bug(14102)
+    @Issue("JENKINS-14102")
     public void testMaven2SkipPostBuilder() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");

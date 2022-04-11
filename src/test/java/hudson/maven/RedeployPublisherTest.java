@@ -55,7 +55,7 @@ public class RedeployPublisherTest {
     @Rule public TemporaryFolder tmp = new TemporaryFolder();
 
     @RandomlyFails("Not a v4.0.0 POM. for project org.jvnet.maven-antrun-extended-plugin:maven-antrun-extended-plugin at /home/jenkins/.m2/repository/org/jvnet/maven-antrun-extended-plugin/maven-antrun-extended-plugin/1.39/maven-antrun-extended-plugin-1.39.pom")
-    @Bug(2593)
+    @Issue("JENKINS-2593")
     @Test
     public void testBug2593() throws Exception {
         Maven36xBuildTest.configureMaven36();
@@ -89,7 +89,7 @@ public class RedeployPublisherTest {
      * Are we having a problem in handling file names with multiple extensions, like ".tar.gz"?
      */
     @Email("http://www.nabble.com/tar.gz-becomes-.gz-after-Hudson-deployment-td25391364.html")
-    @Bug(3814)
+    @Issue("JENKINS-3814")
     @Test
     public void testTarGz() throws Exception {
         ToolInstallations.configureMaven35();
@@ -231,7 +231,7 @@ public class RedeployPublisherTest {
         }
     }    
 
-    @Bug(3773)
+    @Issue("JENKINS-3773")
     @Test
     public void testDeployUnstable() throws Exception {
         Maven36xBuildTest.configureMaven36();
@@ -249,7 +249,7 @@ public class RedeployPublisherTest {
                    new File(repo,"test/test/1.0-SNAPSHOT").isDirectory());
     }
 
-    @Bug(7010)
+    @Issue("JENKINS-7010")
     @Test
     public void testSettingsInsidePromotion() throws Exception {
         ToolInstallations.configureMaven35();

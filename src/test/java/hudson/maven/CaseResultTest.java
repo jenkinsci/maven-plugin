@@ -33,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
 
@@ -43,7 +44,7 @@ public class CaseResultTest {
     /**
      * Verifies that the error message and stacktrace from a failed junit test actually render properly.
      */
-    @Bug(4257)
+    @Issue("JENKINS-4257")
     @Test public void mavenErrorMsgAndStacktraceRender() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "maven-render-test");

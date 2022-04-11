@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.For;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.File;
@@ -81,7 +82,7 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest
     }
 
     @Test
-    @Bug( 17508 )
+    @Issue("JENKINS-17508")
     @For( { MavenModuleSetBuild.class, LogRotator.class } )
     @SuppressWarnings( "unchecked" )
     public void testArtifactsAreDeletedInBuildOneWhenBuildDiscarderRun()

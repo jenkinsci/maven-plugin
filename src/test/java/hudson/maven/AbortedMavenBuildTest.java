@@ -5,12 +5,13 @@ import hudson.model.BuildListener;
 import hudson.model.Result;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.ToolInstallations;
 
 import java.io.IOException;
 
 public class AbortedMavenBuildTest extends AbstractMavenTestCase {
-    @Bug(8054)
+    @Issue("JENKINS-8054")
     public void testBuildWrapperSeesAbortedStatus() throws Exception {
         ToolInstallations.configureMaven35();
         MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");

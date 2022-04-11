@@ -25,7 +25,7 @@ import org.jvnet.hudson.test.Issue;
 public class TestMojoTest {
     
     @Test
-    @Bug(16573)
+    @Issue("JENKINS-16573")
     public void testGetReportFilesThrowsNoException() throws ComponentConfigurationException {
         // no 'reportsDirectory' or so config value set:
         MojoInfo mojoInfo = MojoInfoBuilder.mojoBuilder("com.some", "testMojo", "test").build();

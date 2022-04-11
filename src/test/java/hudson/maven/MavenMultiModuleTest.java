@@ -42,7 +42,7 @@ public class MavenMultiModuleTest {
     /**
      * NPE in {@code build.getProject().getWorkspace()} for {@link MavenBuild}.
      */
-    @Bug(4192)
+    @Issue("JENKINS-4192")
     @Test public void multiModMavenWsExists() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -127,7 +127,7 @@ public class MavenMultiModuleTest {
         // but it's complicated to find out the dependencies of the build
     }
 
-    @Bug(5357)
+    @Issue("JENKINS-5357")
     @Test public void incrRelMultiModMaven() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -187,7 +187,7 @@ public class MavenMultiModuleTest {
     /**
      * When "-N' or "--non-recursive" show up in the goals, any child modules should be ignored.
      */
-    @Bug(4491)
+    @Issue("JENKINS-4491")
     @Test public void multiModMavenNonRecursiveParsing() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -222,7 +222,7 @@ public class MavenMultiModuleTest {
      * Module failures in build X should lead to those modules being re-run in build X+1, even if
      * incremental build is enabled and nothing changed in those modules.
      */
-    @Bug(4152)
+    @Issue("JENKINS-4152")
     @Test public void incrementalMultiModWithErrorsMaven() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -285,7 +285,7 @@ public class MavenMultiModuleTest {
      * If "deploy modules" is checked and aggregator build failed
      * then all modules build this time, have to be build next time, again.
      */
-    @Bug(5121)
+    @Issue("JENKINS-5121")
     @Test public void incrementalRedeployAfterAggregatorError() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -348,7 +348,7 @@ public class MavenMultiModuleTest {
     /**
      * Test failures in a child module should lead to the parent being marked as unstable.
      */
-    @Bug(4378)
+    @Issue("JENKINS-4378")
     @Test public void multiModWithTestFailuresMaven() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -378,7 +378,7 @@ public class MavenMultiModuleTest {
         }	
     }
     
-    @Bug(8484)
+    @Issue("JENKINS-8484")
     @Test public void multiModMavenNonRecursive() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -390,7 +390,7 @@ public class MavenMultiModuleTest {
         assertEquals("not only one module", 1, m.getModules().size());
     }    
 
-    @Bug(17713)
+    @Issue("JENKINS-17713")
     @Test public void modulesPageLinks() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet ms = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -404,7 +404,7 @@ public class MavenMultiModuleTest {
         modulesPage.getAnchorByText(m.getDisplayName()).openLinkInNewWindow();
     }
 
-    @Bug(17236)
+    @Issue("JENKINS-17236")
     @Test public void artifactArchiving() throws Exception {
         ArtifactManagerConfiguration.get().getArtifactManagerFactories().add(new TestAMF());
         ToolInstallations.configureMaven35();

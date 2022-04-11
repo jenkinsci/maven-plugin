@@ -32,7 +32,7 @@ THE SOFTWARE.
       <j:set var="prev" value="${it.previousResult}" />
       <test:bar />
 
-      <table class="pane sortable jenkins-table" id="testresult">
+      <table class="sortable jenkins-table" id="testresult">
         <thead>
           <tr>
             <td class="pane-header">${%Module}</td>

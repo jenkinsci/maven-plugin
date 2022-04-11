@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.Email;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.SingleFileSCM;
 import org.jvnet.hudson.test.ToolInstallations;
@@ -54,7 +55,7 @@ public class MavenBuildTest {
     /**
      * NPE in {@code build.getProject().getWorkspace()} for {@link MavenBuild}.
      */
-    @Bug(4192)
+    @Issue("JENKINS-4192")
     @Test
     public void testMavenWorkspaceExists() throws Exception {
         Maven36xBuildTest.configureMaven36();
@@ -68,7 +69,7 @@ public class MavenBuildTest {
      * {@link Result} getting set to SUCCESS even if there's a test failure, when the test failure
      * does not happen in the final task segment.
      */
-    @Bug(4177)
+    @Issue("JENKINS-4177")
     @Test
     public void testTestFailureInEarlyTaskSegment() throws Exception {
         Maven36xBuildTest.configureMaven36();
@@ -93,7 +94,7 @@ public class MavenBuildTest {
     /**
      * Workspace determination problem on non-aggregator style build.
      */
-    @Bug(4226)
+    @Issue("JENKINS-4226")
     @Test
     public void testParallelModuleBuild() throws Exception {
         Maven36xBuildTest.configureMaven36();
@@ -110,7 +111,7 @@ public class MavenBuildTest {
     }
 
 
-    @Bug(value=8445)
+    @Issue("JENKINS-8445")
     @Test
     public void testMaven2SeveralModulesInDirectory() throws Exception {
         
@@ -142,7 +143,7 @@ public class MavenBuildTest {
         assertFalse( mmsb.getProject().getModules().isEmpty());
     }     
     
-    @Bug(8573)
+    @Issue("JENKINS-8573")
     @Test
     public void testBuildTimeStampProperty() throws Exception {
         MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
@@ -159,7 +160,7 @@ public class MavenBuildTest {
         System.out.println( "content " + content );
     }
     
-    @Bug(value=15865)
+    @Issue("JENKINS-15865")
     @Test
     public void testMavenFailsafePluginTestResultsAreRecorded() throws Exception {
         
@@ -187,7 +188,7 @@ public class MavenBuildTest {
         assertEquals(1, testResultAction.getTotalCount());
     }
 
-    @Bug(18178)
+    @Issue("JENKINS-18178")
     @Test
     public void testExtensionsConflictingWithCore() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -201,7 +202,7 @@ public class MavenBuildTest {
         j.buildAndAssertSuccess(m);
     }
 
-    @Bug(19801)
+    @Issue("JENKINS-19801")
     @Test
     public void stopBuildAndAllSubmoduleBuilds() throws Exception {
         Maven36xBuildTest.configureMaven36();
@@ -273,7 +274,7 @@ public class MavenBuildTest {
      * 
      * @throws Exception
      */
-    @Bug(16522)
+    @Issue("JENKINS-16522")
     @Test
     public void testCorrectModuleBuildStatus() throws Exception {
         MavenModuleSet mavenProject = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -310,7 +311,7 @@ public class MavenBuildTest {
      * 
      * @throws Exception
      */
-    @Bug(20506)
+    @Issue("JENKINS-20506")
     @Test
     public void testActionsOfPreAndPostBuildersMustBeExposed() throws Exception {
         Maven36xBuildTest.configureMaven36();

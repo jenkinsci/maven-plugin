@@ -113,7 +113,7 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(value=8395)
+    @Issue("JENKINS-8395")
     public void testMaven3BuildWrongScope() throws Exception {
         
         File pom = new File(this.getClass().getResource("test-pom-8395.xml").toURI());
@@ -130,7 +130,7 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(value=8390)
+    @Issue("JENKINS-8390")
     public void testMaven3BuildWrongInheritence() throws Exception {
         
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -146,7 +146,7 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(value=8445)
+    @Issue("JENKINS-8445")
     public void testMavenSeveralModulesInDirectory() throws Exception {
         
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -178,7 +178,7 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(8484)
+    @Issue("JENKINS-8484")
     public void testMultiModMavenNonRecursive() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -192,7 +192,7 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(8573)
+    @Issue("JENKINS-8573")
     public void testBuildTimeStampProperty() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -207,7 +207,7 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(1557)
+    @Issue("JENKINS-1557")
     public void testDuplicateTestResults() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -253,7 +253,7 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(9326)
+    @Issue("JENKINS-9326")
     @Ignore("Flaky test which need too much external resource download")
     public void testTychoEclipseTestResults() throws Exception {
         // a pain to get tycho build working with 11
@@ -286,7 +286,7 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(11964)
+    @Issue("JENKINS-11964")
     public void testSingleModuleBuild() throws Exception {
         // Given a multi-module build.
         MavenInstallation mavenInstallation = configureMaven3x();
@@ -317,7 +317,7 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(12109)
+    @Issue("JENKINS-12109")
     public void testMultiModuleInvalidRecursivePom() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "JENKINS-12109");
