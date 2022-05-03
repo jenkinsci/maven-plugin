@@ -32,14 +32,14 @@ THE SOFTWARE.
       <j:set var="prev" value="${it.previousResult}" />
       <test:bar />
 
-      <table class="pane sortable jenkins-table" id="testresult">
+      <table class="sortable jenkins-table" id="testresult">
         <thead>
           <tr>
-            <td class="pane-header">${%Module}</td>
-            <td class="pane-header" style="width:5em">${%Fail}</td>
-            <td class="pane-header" style="width:1em; font-size:smaller; white-space:nowrap;">(${%diff})</td>
-            <td class="pane-header" style="width:5em">${%Total}</td>
-            <td class="pane-header" style="width:1em; font-size:smaller; white-space:nowrap;">(${%diff})</td>
+            <th class="pane-header">${%Module}</th>
+            <th class="pane-header" align="center" style="width:5em">${%Fail}</th>
+            <th class="pane-header" align="center" style="width:1em; font-size:smaller; white-space:nowrap;">(${%diff})</th>
+            <th class="pane-header" align="center" style="width:5em">${%Total}</th>
+            <th class="pane-header" align="center" style="width:1em; font-size:smaller; white-space:nowrap;">(${%diff})</th>
           </tr>
         </thead>
         <tbody>
@@ -52,12 +52,12 @@ THE SOFTWARE.
                   ${c.name}
                 </a>
               </td>
-              <td class="pane" style="text-align:right">${p.failCount}</td>
-              <td class="pane" style="text-align:right">
+              <td class="pane" style="text-align:center">${p.failCount}</td>
+              <td class="pane" style="text-align:center">
                 ${h.getDiffString2(p.failCount-prev.failCount)}
               </td>
-              <td class="pane" style="text-align:right">${p.totalCount}</td>
-              <td class="pane" style="text-align:right">
+              <td class="pane" style="text-align:center">${p.totalCount}</td>
+              <td class="pane" style="text-align:center">
                 ${h.getDiffString2(p.totalCount-prev.totalCount)}
               </td>
             </tr>
