@@ -53,8 +53,7 @@ public class NodeTest {
     @Issue("JENKINS-26391")
     @Test
     public void testGetAssignedLabelWithJobs() throws Exception {
-        final Node node = j.createOnlineSlave();
-        node.setLabelString("label1 label2");
+        final Node node = j.createSlave("label1 label2", null);
         MavenModuleSet mavenProject = j.jenkins.createProject(MavenModuleSet.class, "p");
         mavenProject.setAssignedLabel(j.jenkins.getLabel("label1"));
         RunLoadCounter.prepare(mavenProject);
@@ -78,10 +77,8 @@ public class NodeTest {
     @Issue("JENKINS-26391")
     @Test
     public void testGetAssignedLabelMultipleSlaves() throws Exception {
-        final Node node1 = j.createOnlineSlave();
-        node1.setLabelString("label1");
-        final Node node2 = j.createOnlineSlave();
-        node1.setLabelString("label1");
+        final Node node1 = j.createSlave("label1", null);
+        final Node node2 = j.createSlave("label1", null);
 
         MavenModuleSet project = j.jenkins.createProject(MavenModuleSet.class, "p1");
         final Label label = j.jenkins.getLabel("label1");
@@ -103,8 +100,7 @@ public class NodeTest {
     @Issue("JENKINS-26391")
     @Test
     public void testGetAssignedLabelWhenLabelRemoveFromProject() throws Exception {
-        final Node node = j.createOnlineSlave();
-        node.setLabelString("label1");
+        final Node node = j.createSlave("label1", null);
 
         MavenModuleSet project = j.jenkins.createProject(MavenModuleSet.class, "p");
         final Label label = j.jenkins.getLabel("label1");
