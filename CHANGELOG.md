@@ -17,7 +17,7 @@
 ### Version 3.3 (June 14, 2019)
 
 -   ![(tick)](docs/images/check.svg) Fixed: maven-plugin random socket leak, leading to
-    threads leak on slave and master
+    threads leak on agent and controller
     ([JENKINS-57119](https://issues.jenkins.io/browse/JENKINS-57119))
 -   ![(tick)](docs/images/check.svg) Fixed: [java.io](http://java.io).NotSerializableException:
     The calling thread Thread has no associated
@@ -430,7 +430,7 @@ This version requires Jenkins 1.580.1 or later.
 -   New: support notifications via the ciManagement section of the POM
     ([JENKINS-1201](https://issues.jenkins.io/browse/JENKINS-1201),
     [JENKINS-6421](https://issues.jenkins.io/browse/JENKINS-6421))
--   Fixed: build may fail if master and slave use different VM types
+-   Fixed: build may fail if controller and agent use different VM types
     ([JENKINS-19978](https://issues.jenkins.io/browse/JENKINS-19978))
 -   Fixed: Set the correct status of a maven build, in case that one
     module has test failures and other module don't compile
