@@ -718,7 +718,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jvnet.mock-javamail</groupId>
       <artifactId>mock-javamail</artifactId>
-      <version>1.9</version>
+      <version>1.12</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -771,11 +771,6 @@ THE SOFTWARE.
       <artifactId>credentials-binding</artifactId>
       <scope>test</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.jenkins-ci</groupId>-->
-<!--      <artifactId>symbol-annotation</artifactId>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>org.jenkins-ci</groupId>
       <artifactId>annotation-indexer</artifactId>
