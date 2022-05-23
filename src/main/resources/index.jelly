@@ -1,0 +1,5 @@
+<?jelly escape-by-default='true'?>
+<div>
+This plug-in provides a deep integration of Jenkins and Maven: Automatic triggers between projects depending on SNAPSHOTs, automated configuration of various Jenkins publishers (Junit, ...).
+This plugin is deprecated and it's recommended to avoid using it.
+</div>
