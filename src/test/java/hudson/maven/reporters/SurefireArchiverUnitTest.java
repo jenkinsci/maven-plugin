@@ -30,9 +30,11 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
@@ -255,10 +257,10 @@ public class SurefireArchiverUnitTest {
         }
     }
  
-    private void touchReportFiles(File reportsDir) {
+    private void touchReportFiles(File reportsDir) throws IOException {
         File[] files = reportsDir.listFiles();
         for(File f : files) {
-            Files.setLastModifiedTime(this.mojoInfo.getStartTime();
+            Files.setLastModifiedTime(f.toPath(), FileTime.from(this.mojoInfo.getStartTime(), TimeUnit.MILLISECONDS));
         }
     }
 
