@@ -110,7 +110,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
-      <version>1.64-rc1125.3df584ea_396e</version>
+      <version>1.64-rc1131.54eb_5e13f32d</version>
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.dataformat</groupId>
