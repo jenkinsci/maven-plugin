@@ -29,6 +29,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -257,7 +258,7 @@ public class SurefireArchiverUnitTest {
     private void touchReportFiles(File reportsDir) {
         File[] files = reportsDir.listFiles();
         for(File f : files) {
-            f.setLastModified(this.mojoInfo.getStartTime());
+            Files.setLastModifiedTime(this.mojoInfo.getStartTime();
         }
     }
 
