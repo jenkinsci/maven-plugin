@@ -132,14 +132,17 @@ public class SurefireArchiver extends TestFailureDetector {
         if(fileSet != null) {
             synchronized (build) {
             	
-                if(result==null)    result = new TestResult();
+                if(result==null)  {
+                    result = new TestResult();
+                    result.setSkipOldReports(true);
+                }
                 
                 // filter all the already parsed files:
                 fileSet = Iterables.filter(fileSet, new SurefireArchiverPredicate(parsedFiles));
                 
                 if (!fileSet.iterator().hasNext())
                     return true;
-                
+
                 result.parse(System.currentTimeMillis() - build.getMilliSecsSinceBuildStart(), fileSet);
                 // TODO kutzi: the following is a 'more correct' way to get the reports associated to a mojo,
                 // but needs more testing
