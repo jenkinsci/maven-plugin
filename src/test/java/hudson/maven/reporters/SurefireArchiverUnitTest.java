@@ -260,7 +260,8 @@ public class SurefireArchiverUnitTest {
     private void touchReportFiles(File reportsDir) throws IOException {
         File[] files = reportsDir.listFiles();
         for(File f : files) {
-            Files.setLastModifiedTime(f.toPath(), FileTime.from(this.mojoInfo.getStartTime(), TimeUnit.MILLISECONDS));
+            // yup some OS need to live in the future!
+            Files.setLastModifiedTime(f.toPath(), FileTime.from(this.mojoInfo.getStartTime() + 5000, TimeUnit.MILLISECONDS));
         }
     }
 
