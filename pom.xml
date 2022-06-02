@@ -56,7 +56,7 @@ THE SOFTWARE.
     <mavenMinimalVersion>3.8.3</mavenMinimalVersion>
     <resolverVersion>1.7.3</resolverVersion>
     <sisuInjectVersion>0.3.5</sisuInjectVersion>
-    <wagonVersion>3.4.3</wagonVersion>
+    <wagonVersion>3.5.1</wagonVersion>
     <!--TODO: change to true after the code cleanup-->
     <spotbugs.failOnError>false</spotbugs.failOnError>
     <!-- well the parent pom could defined an empty one instead of causing failure!! -->
