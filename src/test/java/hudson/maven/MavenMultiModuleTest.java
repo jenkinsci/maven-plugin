@@ -400,6 +400,8 @@ public class MavenMultiModuleTest {
         assertNotNull(m);
         assertEquals(1, m.getLastBuild().getNumber());
         JenkinsRule.WebClient wc = j.createWebClient();
+        // https://github.com/HtmlUnit/htmlunit/issues/232
+        wc.setJavaScriptEnabled(false);
         HtmlPage modulesPage = wc.getPage(ms, "modules");
         modulesPage.getAnchorByText(m.getDisplayName()).openLinkInNewWindow();
     }

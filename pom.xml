@@ -30,7 +30,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.31</version>
+    <version>4.40</version>
     <relativePath />
   </parent>
 
@@ -40,15 +40,13 @@ THE SOFTWARE.
   <packaging>hpi</packaging>
 
   <name>Maven Integration plugin</name>
-  <description>This plug-in provides, for better and for worse, a deep integration of Jenkins and Maven: Automatic triggers between projects depending on SNAPSHOTs, automated configuration of various Jenkins publishers (Junit, ...).</description>
   <url>https://github.com/jenkinsci/${project.artifactId}</url>
 
   <properties>
     <revision>3.19</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
-    <jenkins.version>2.321</jenkins.version>
-    <java.level>8</java.level>
+    <jenkins.version>2.332.1</jenkins.version>
     <mavenInterceptorsVersion>1.13</mavenInterceptorsVersion>
     <!--
       Minimal supported version of Maven.
@@ -80,8 +78,8 @@ THE SOFTWARE.
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.319.x</artifactId>
-        <version>1013.vf8058992a042</version>
+        <artifactId>bom-2.332.x</artifactId>
+        <version>1370.vfa_e23fe119c3</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -98,6 +96,12 @@ THE SOFTWARE.
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>javadoc</artifactId>
       <version>217.v905b_86277a_2a_</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jenkins-ci</groupId>
+          <artifactId>symbol-annotation</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -106,15 +110,8 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
+      <version>1119.va_a_5e9068da_d7</version>
       <exclusions>
-        <exclusion> <!-- TODO smells like a mistake upstream; should be provided by core -->
-          <groupId>com.github.spotbugs</groupId>
-          <artifactId>spotbugs-annotations</artifactId>
-        </exclusion>
-        <exclusion> <!-- TODO ditto -->
-          <groupId>com.google.errorprone</groupId>
-          <artifactId>error_prone_annotations</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>com.fasterxml.jackson.dataformat</groupId>
           <artifactId>jackson-dataformat-yaml</artifactId>
@@ -453,6 +450,12 @@ THE SOFTWARE.
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-cipher</artifactId>
       <version>2.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.sisu</groupId>
+          <artifactId>org.eclipse.sisu.inject</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -704,11 +707,17 @@ THE SOFTWARE.
       <groupId>org.mockito</groupId>
       <artifactId>mockito-inline</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>jna-platform</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jvnet.mock-javamail</groupId>
       <artifactId>mock-javamail</artifactId>
-      <version>1.9</version>
+      <version>1.12</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -759,11 +768,6 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>credentials-binding</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci</groupId>
-      <artifactId>symbol-annotation</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -850,7 +854,7 @@ THE SOFTWARE.
             </goals>
             <configuration>
               <rules>
-                <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                <restrictImports>
                   <basePackage>**</basePackage>
                   <includeTestCode>true</includeTestCode>
                   <bannedImports>
