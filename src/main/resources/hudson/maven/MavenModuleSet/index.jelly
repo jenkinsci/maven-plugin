@@ -42,26 +42,10 @@ THE SOFTWARE.
             ${act.displayName}
           </t:summary>
         </j:forEach>
-        <t:summary icon="folder.svg" href="ws/" permission="${it.WORKSPACE}">
-          ${%Workspace}
-        </t:summary>
 
         <t:artifactList caption="${%Last Successful Artifacts}"
             build="${it.lastSuccessfulBuild}" baseURL="lastSuccessfulBuild/"
             permission="${it.lastSuccessfulBuild.ARTIFACTS}" />
-
-        <t:summary icon="notepad.svg" href="changes">
-          ${%Recent Changes}
-        </t:summary>
-
-        <j:set var="tr" value="${it.testResultAction}"/>
-        <j:if test="${tr!=null}">
-          <t:summary icon="clipboard.svg">
-            <a href="lastBuild/testReport/">${%Latest Test Result}</a>
-            <st:nbsp/>
-            <t:test-result it="${tr}" />
-          </t:summary>
-        </j:if>
       </table>
 
       <st:include page="jobpropertysummaries.jelly" />
