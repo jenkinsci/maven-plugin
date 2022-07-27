@@ -46,7 +46,7 @@ public class MavenModuleSetTest extends AbstractMavenTestCase {
         assertTrue(m.isFingerprintConfigured());
         Fingerprinter.FingerprintAction fa = buildAndAssertSuccess(m).getAction(Fingerprinter.FingerprintAction.class); // determines root module as a side effect
         assertNotNull(fa);
-        assertEquals("[junit:junit-3.8.1.jar, test:test:pom.xml]", new TreeSet<String>(fa.getFingerprints().keySet()).toString());
+        assertEquals("[junit:junit:junit-3.8.1.jar, test:test:pom.xml]", new TreeSet<String>(fa.getFingerprints().keySet()).toString());
         assertNotNull(jenkins.getDescriptorByType(MavenFingerprinter.DescriptorImpl.class).newAutoInstance(m.getRootModule()));
         m.setIsArchivingDisabled(true);
         m.setIsSiteArchivingDisabled(true);

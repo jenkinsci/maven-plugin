@@ -118,7 +118,7 @@ public class MavenMultiModuleTest {
         
         MavenArtifactRecord artifactRecord = moduleBuild.getAction(MavenArtifactRecord.class);
         Assert.assertNotNull(artifactRecord);
-        String fingerprintName = artifactRecord.mainArtifact.groupId + ":" + artifactRecord.mainArtifact.fileName;
+        String fingerprintName = artifactRecord.mainArtifact.groupId + ":" + artifactRecord.mainArtifact.artifactId + ":" + artifactRecord.mainArtifact.fileName;
         
         Assert.assertTrue("Expected fingerprint " + fingerprintName + " in module build " + moduleBuild,
               action.getFingerprints().containsKey(fingerprintName));
