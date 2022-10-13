@@ -47,7 +47,7 @@ THE SOFTWARE.
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
     <jenkins.version>2.332.1</jenkins.version>
-    <mavenInterceptorsVersion>1.13</mavenInterceptorsVersion>
+    <mavenInterceptorsVersion>1.14</mavenInterceptorsVersion>
     <!--
       Minimal supported version of Maven.
       It declares version of the core, which should be included into the the server-side.
@@ -118,7 +118,7 @@ THE SOFTWARE.
         </exclusion>
       </exclusions>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven-agent</artifactId>
@@ -139,7 +139,7 @@ THE SOFTWARE.
         </exclusion>
       </exclusions>
     </dependency>
-     
+
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven-interceptor</artifactId>
@@ -156,13 +156,13 @@ THE SOFTWARE.
         </exclusion>
       </exclusions>
     </dependency>
-     
+
     <dependency>
       <groupId>org.jvnet.hudson</groupId>
       <artifactId>maven2.1-interceptor</artifactId>
       <version>1.2</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jenkins-ci.main.maven</groupId>
       <artifactId>maven3-agent</artifactId>
@@ -410,7 +410,7 @@ THE SOFTWARE.
           <artifactId>org.eclipse.sisu.inject</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-compat</artifactId>
@@ -477,7 +477,7 @@ THE SOFTWARE.
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-util</artifactId>
       <version>${resolverVersion}</version>
-    </dependency>                                   
+    </dependency>
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-transport-wagon</artifactId>
@@ -866,7 +866,7 @@ THE SOFTWARE.
             </configuration>
           </execution>
         </executions>
-        
+
         <!-- Consider adding to Jenkins plugin parent POM? -->
         <dependencies>
           <dependency>

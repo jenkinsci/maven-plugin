@@ -1,18 +1,18 @@
 /*
  * The MIT License
- * 
+ *
  * Copyright (c) 2004-2009, Sun Microsystems, Inc., Kohsuke Kawaguchi, Olivier Lamy
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -107,7 +107,7 @@ import org.codehaus.plexus.util.dag.CycleDetectedException;
 
 /**
  * {@link Run} for {@link MavenModule}.
- * 
+ *
  * @author Kohsuke Kawaguchi
  */
 @SuppressWarnings("deprecation") // as we're restricted to Maven 2.x API here, but compile against Maven 3.x we cannot avoid deprecations
@@ -125,7 +125,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
      * @since 1.98.
      */
     private List<ExecutedMojo> executedMojos;
-    
+
     public MavenBuild(MavenModule job) throws IOException {
         super(job);
     }
@@ -274,7 +274,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         else
             return Collections.unmodifiableList(executedMojos);
     }
-    
+
     @Override
     public void run() {
         execute(new MavenBuildExecution());
@@ -310,7 +310,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
     protected void setWorkspace(FilePath path) {
         super.setWorkspace(path);
     }
-    
+
     @Override
     public MavenModule getParent() {// don't know why, but javac wants this
         return super.getParent();
@@ -355,7 +355,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
             private static final long serialVersionUID = 1L;
         }
-      
+
         /**
          * @deprecated Used APIs are deprecated and probably unstable according to
          * {@link ProjectSorter#getTopLevelProject()} comments.
@@ -367,7 +367,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             if (sortedProjects.isEmpty()) {
                 return null;
             }
-            
+
             final ProjectSorter sorter;
             try {
                 sorter = new ProjectSorter(sortedProjects);
@@ -378,7 +378,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             }
             return sorter.getTopLevelProject();
         }
-        
+
         @Override
         void preBuild(MavenSession session, ReactorManager rm, EventDispatcher dispatcher) throws BuildFailureException, LifecycleExecutionException, IOException, InterruptedException {
             for (MavenReporter r : reporters.get(moduleName))
@@ -441,7 +441,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         public boolean hasBuildFailures() {
             return hasTestFailures.get();
         }
-        
+
         private static final long serialVersionUID = 1L;
     }
 
@@ -572,11 +572,11 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
         public boolean isArchivingDisabled() {
             return MavenBuild.this.getParent().getParent().isArchivingDisabled();
         }
-        
+
         public boolean isSiteArchivingDisabled() {
             return MavenBuild.this.getParent().getParent().isSiteArchivingDisabled();
         }
-        
+
         public void registerAsProjectAction(MavenReporter reporter) {
             MavenBuild.this.registerAsProjectAction(reporter);
         }
@@ -613,7 +613,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
     public class ProxyImpl2 extends ProxyImpl implements MavenBuildProxy2 {
         private static final long serialVersionUID = -3377221864644014218L;
-        
+
         private final SplittableBuildListener listener;
         long startTime;
         private OutputStream log;
@@ -731,18 +731,18 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                     }
                 });
             }
-            
+
             rememberModulesToBuildAgainNextTime();
         }
 
         private void rememberModulesToBuildAgainNextTime() {
             MavenModuleSetBuild moduleSetBuild = getModuleSetBuild();
-            
+
             if (moduleSetBuild == null) {
                 // ModuleSetBuild is gone, for whatever reason JENKINS-9822
                 return;
             }
-            
+
             if(hasntStartedYet()) {
                 // record modules which have not been build though they should have - i.e. because they
                 // have SCM changes.
@@ -772,10 +772,10 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                         }
                     }
                 }
-                
+
                 if (moduleSetBuild.getParent().isIncrementalBuild() &&
                         (moduleSetBuild.getResult() != Result.SUCCESS)) {
-                
+
                     // JENKINS-5121: maybe module needs to be deployed on next build over the deployment threshold
                     MavenModuleSet mavenModuleSet = moduleSetBuild.getParent();
                     boolean isDeploying = false;
@@ -788,7 +788,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                             break;
                         }
                     }
-                    
+
                     if (isDeploying && moduleSetBuild.getResult().isWorseThan(deploymentThreshold)) {
                         UnbuiltModuleAction action = moduleSetBuild.getAction(UnbuiltModuleAction.class);
                         if (action == null) {
@@ -818,8 +818,8 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
             this.blockBuildEvents = blockBuildEvents;
         }
     }
-    
-    
+
+
 
     private class MavenBuildExecution extends AbstractBuildExecution {
         private List<MavenReporter> reporters;
@@ -1010,6 +1010,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
                 case MAVEN_3_3:
                     request.maven3MainClass = Maven33Main.class;
                     request.maven3LauncherClass = Maven33Launcher.class;
+                    break;
                 default:
                     request.maven3MainClass = Maven35Main.class;
                     request.maven3LauncherClass = Maven35Launcher.class;
