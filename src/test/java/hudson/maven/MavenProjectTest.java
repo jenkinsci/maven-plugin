@@ -113,7 +113,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         buildAndAssertSuccess(project);
 
         // this should succeed
-        HudsonTestCase.WebClient wc = new WebClient();
+        HudsonTestCase.WebClient wc = createWebClient();
         wc.getPage(project,"site");
         wc.assertFails(project.getUrl() + "site/no-such-file", HttpURLConnection.HTTP_NOT_FOUND);
     }
@@ -133,7 +133,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         }
 
         // this should succeed
-        HudsonTestCase.WebClient wc = new WebClient();
+        HudsonTestCase.WebClient wc = createWebClient();
         wc.getPage(project, "site");
         wc.getPage(project, "site/core");
         wc.getPage(project, "site/client");
@@ -160,7 +160,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         }
 
         // this should succeed
-        HudsonTestCase.WebClient wc = new WebClient();
+        HudsonTestCase.WebClient wc = createWebClient();
         wc.getPage(project, "site");
         wc.getPage(project, "site/core");
         wc.getPage(project, "site/client");
@@ -185,7 +185,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         }
 
         // this should succeed
-        HudsonTestCase.WebClient wc = new WebClient();
+        HudsonTestCase.WebClient wc = createWebClient();
         wc.getPage(project, "site");
         wc.getPage(project, "site/core");
         wc.getPage(project, "site/client");

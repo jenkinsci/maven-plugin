@@ -81,7 +81,7 @@ public class RedeployPublisherTest {
         MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
         RedeployPublisher rp = new RedeployPublisher("theId", "http://some.url/", true, true);
         p.getPublishersList().add(rp);
-        j.submit(j.new WebClient().getPage(p,"configure").getFormByName("config"));
+        j.submit(j.createWebClient().getPage(p,"configure").getFormByName("config"));
         j.assertEqualBeans(rp,p.getPublishersList().get(RedeployPublisher.class),"id,url,uniqueVersion,evenIfUnstable");
     }
 
