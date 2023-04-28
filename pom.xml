@@ -895,7 +895,6 @@ THE SOFTWARE.
                   <excludes>
                     <exclude>org.apache.commons:commons-lang3</exclude>
                   </excludes>
-                  <searchTransitive>false</searchTransitive>
                 </bannedDependencies>
               </rules>
               <fail>true</fail>
