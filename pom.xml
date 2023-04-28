@@ -891,6 +891,12 @@ THE SOFTWARE.
                     <bannedImport>org.apache.commons.httpclient.**</bannedImport>
                   </bannedImports>
                 </restrictImports>
+                <bannedDependencies>
+                  <excludes>
+                    <exclude>org.apache.commons:commons-lang3</exclude>
+                  </excludes>
+                  <searchTransitive>false</searchTransitive>
+                </bannedDependencies>
               </rules>
               <fail>true</fail>
             </configuration>
