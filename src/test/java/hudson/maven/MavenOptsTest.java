@@ -93,7 +93,7 @@ public class MavenOptsTest extends AbstractMavenTestCase {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
 	    m.setScm(new ExtractResourceSCM(getClass().getResource("maven-surefire-unstable.zip")));
-        m.setMavenOpts(JAVA_HEADLESS_OPT + " -XX:MaxPermSize=512m\r\n-Xms128m\r\n-Xmx512m");
+        m.setMavenOpts(JAVA_HEADLESS_OPT + " -Xms128m\r\n-Xmx512m");
         m.setGoals("install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         
 	    assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());

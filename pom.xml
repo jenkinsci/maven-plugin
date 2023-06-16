@@ -30,7 +30,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.47</version>
+    <version>4.67</version>
     <relativePath />
   </parent>
 
@@ -46,7 +46,7 @@ THE SOFTWARE.
     <revision>3.23</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
-    <jenkins.version>2.332.1</jenkins.version>
+    <jenkins.version>2.387.3</jenkins.version>
     <mavenInterceptorsVersion>1.14</mavenInterceptorsVersion>
     <!--
       Minimal supported version of Maven.
@@ -56,11 +56,9 @@ THE SOFTWARE.
     <mavenMinimalVersion>3.8.3</mavenMinimalVersion>
     <resolverVersion>1.7.3</resolverVersion>
     <sisuInjectVersion>0.3.5</sisuInjectVersion>
-    <wagonVersion>3.5.2</wagonVersion>
-    <!--TODO: change to true after the code cleanup-->
-    <spotbugs.failOnError>false</spotbugs.failOnError>
-    <!-- well the parent pom could defined an empty one instead of causing failure!! -->
-    <argLine />
+    <wagonVersion>3.5.3</wagonVersion>
+    <!-- TODO fix existing violatiosn -->
+    <spotbugs.threshold>High</spotbugs.threshold>
   </properties>
 
   <issueManagement>
@@ -78,8 +76,8 @@ THE SOFTWARE.
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.332.x</artifactId>
-        <version>1370.vfa_e23fe119c3</version>
+        <artifactId>bom-2.387.x</artifactId>
+        <version>2163.v2d916d90c305</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -95,13 +93,6 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>javadoc</artifactId>
-      <version>217.v905b_86277a_2a_</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jenkins-ci</groupId>
-          <artifactId>symbol-annotation</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -110,13 +101,6 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
-      <version>1119.va_a_5e9068da_d7</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.dataformat</groupId>
-          <artifactId>jackson-dataformat-yaml</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -414,6 +398,11 @@ THE SOFTWARE.
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-lang3</artifactId>
         </exclusion>
+        <!-- Provided by Jenkins core -->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -453,6 +442,11 @@ THE SOFTWARE.
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-lang3</artifactId>
         </exclusion>
+        <!-- Provided by Jenkins core -->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -483,6 +477,11 @@ THE SOFTWARE.
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-lang3</artifactId>
         </exclusion>
+        <!-- Provided by Jenkins core -->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -499,11 +498,25 @@ THE SOFTWARE.
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-transport-wagon</artifactId>
       <version>${resolverVersion}</version>
+      <exclusions>
+        <!-- Provided by Jenkins core -->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-connector-basic</artifactId>
       <version>${resolverVersion}</version>
+      <exclusions>
+        <!-- Provided by Jenkins core -->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -531,10 +544,12 @@ THE SOFTWARE.
       <artifactId>wagon-http</artifactId>
       <version>${wagonVersion}</version>
       <exclusions>
+        <!-- Provided by Jenkins core -->
         <exclusion>
           <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
         </exclusion>
+        <!-- Provided by apache-httpcomponents-client-4-api plugin -->
         <exclusion>
           <groupId>org.apache.httpcomponents</groupId>
           <artifactId>httpcore</artifactId>
@@ -542,6 +557,15 @@ THE SOFTWARE.
         <exclusion>
           <groupId>org.apache.httpcomponents</groupId>
           <artifactId>httpclient</artifactId>
+        </exclusion>
+        <!-- Provided by Jenkins core -->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -568,9 +592,15 @@ THE SOFTWARE.
       <artifactId>wagon-ftp</artifactId>
       <version>${wagonVersion}</version>
       <exclusions>
+        <!-- Provided by Jenkins core -->
         <exclusion>
           <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
+        </exclusion>
+        <!-- Provided by Jenkins core -->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -599,7 +629,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>3.0</version>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -633,7 +663,7 @@ THE SOFTWARE.
           <artifactId>commons-cli</artifactId>
         </exclusion>
         <exclusion>
-          <!-- Excluded to pull in the version from Jenkins core -->
+          <!-- Provided by Jenkins core -->
           <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
         </exclusion>
@@ -668,9 +698,14 @@ THE SOFTWARE.
       <artifactId>wagon-webdav-jackrabbit</artifactId>
       <version>${wagonVersion}</version>
       <exclusions>
-        <exclusion><!-- jcl-over-slf4j version needs to match with slf4j-api version, which makes this fragile. let's not try to intercept jcl calls -->
+        <!-- Provided by Jenkins core -->
+        <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
         </exclusion>
         <!-- SECURITY-61: unused -->
         <exclusion>
@@ -681,6 +716,7 @@ THE SOFTWARE.
           <groupId>nekohtml</groupId>
           <artifactId>xercesMinimal</artifactId>
         </exclusion>
+        <!-- Provided by Jenkins core -->
         <exclusion>
           <groupId>commons-io</groupId>
           <artifactId>commons-io</artifactId>
@@ -705,7 +741,6 @@ THE SOFTWARE.
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>commons-lang3-api</artifactId>
-      <version>3.12.0-36.vd97de6465d5b_</version>
     </dependency>
 
     <dependency>
@@ -722,26 +757,31 @@ THE SOFTWARE.
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>net.java.dev.jna</groupId>
-          <artifactId>jna-platform</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jvnet.mock-javamail</groupId>
       <artifactId>mock-javamail</artifactId>
-      <version>1.12</version>
+      <version>2.1</version>
       <scope>test</scope>
       <exclusions>
+        <!-- Provided by jakarta-activation-api plugin -->
         <exclusion>
-          <groupId>javax.mail</groupId>
-          <artifactId>mail</artifactId>
+          <groupId>com.sun.activation</groupId>
+          <artifactId>jakarta.activation</artifactId>
+        </exclusion>
+        <!-- Provided by jakarta-mail-api plugin -->
+        <exclusion>
+          <groupId>com.sun.mail</groupId>
+          <artifactId>jakarta.mail</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>jakarta-mail-api</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.test</groupId>
@@ -752,25 +792,13 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>promoted-builds</artifactId>
-      <version>3.10.1</version>
+      <version>892.vd6219fc0a_efb</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jenkins-ci.main</groupId>
-          <artifactId>maven-plugin</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>jenkins-test-harness</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-net</groupId>
-          <artifactId>commons-net</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -788,24 +816,9 @@ THE SOFTWARE.
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jenkins-ci</groupId>
-      <artifactId>annotation-indexer</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>io.jenkins.configuration-as-code</groupId>
       <artifactId>test-harness</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-databind</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.dataformat</groupId>
-          <artifactId>jackson-dataformat-yaml</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 

@@ -23,6 +23,7 @@
  */
 package hudson.maven;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.console.ConsoleNote;
 import hudson.console.HyperlinkNote;
 import hudson.model.BuildListener;
@@ -67,20 +68,24 @@ final class SplittableBuildListener implements BuildListener, Serializable {
      * {@link DeferredFileOutputStream} is used so that even if we get out of sync with Maven
      * and end up accumulating a lot of data, we still won't kill the JVM.
      */
+    @SuppressFBWarnings(value = "SE_BAD_FIELD", justification = "TODO needs triage")
     private DeferredFileOutputStream unclaimed = newLog();
 
+    @SuppressFBWarnings(value = "SE_BAD_FIELD_STORE", justification = "TODO needs triage")
     private volatile OutputStream side = unclaimed;
 
     /**
      * Constant {@link PrintStream} connected to both {@link #core} and {@link #side}.
      * This is so that we can change the side stream without the client noticing it.
      */
+    @SuppressFBWarnings(value = "SE_BAD_FIELD", justification = "TODO needs triage")
     private final PrintStream logger;
     
     private int markCount = 0;
     private final Object markCountLock = new Object();
     private final Object synchronizeLock = new Object();
 
+    @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "TODO needs triage")
     public SplittableBuildListener(BuildListener core) {
         this.core = core;
         final OutputStream base = core.getLogger();
@@ -210,21 +215,25 @@ final class SplittableBuildListener implements BuildListener, Serializable {
         return logger;
     }
 
+    @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "TODO needs triage")
     public PrintWriter error(String msg) {
         core.error(msg);
         return new PrintWriter(logger, true);
     }
 
+    @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "TODO needs triage")
     public PrintWriter error(String format, Object... args) {
         core.error(format,args);
         return new PrintWriter(logger, true);
     }
 
+    @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "TODO needs triage")
     public PrintWriter fatalError(String msg) {
         core.fatalError(msg);
         return new PrintWriter(logger, true);
     }
 
+    @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "TODO needs triage")
     public PrintWriter fatalError(String format, Object... args) {
         core.fatalError(format,args);
         return new PrintWriter(logger, true);

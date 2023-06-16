@@ -19,6 +19,7 @@ package hudson.maven.util;
  * under the License.
  */
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.execution.BuildFailure;
 import org.apache.maven.execution.BuildSuccess;
 import org.apache.maven.execution.BuildSummary;
@@ -38,6 +39,7 @@ import java.util.List;
 import static org.apache.maven.shared.utils.logging.MessageUtils.buffer;
 
 // Note: copied from package org.apache.maven.cli with just one minor adaption for Maven3Mojo
+@SuppressFBWarnings(value = "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", justification = "TODO needs triage")
 public class ExecutionEventLogger
 	extends org.apache.maven.cli.event.ExecutionEventLogger
 {

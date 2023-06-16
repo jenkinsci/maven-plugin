@@ -1,5 +1,6 @@
 package hudson.maven;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -149,6 +150,7 @@ public abstract class AbstractMavenProcessFactory
         // only used on the sender side that was Socket object locally
         private transient Socket socket;
 
+        @SuppressFBWarnings(value = "SE_BAD_FIELD_STORE", justification = "TODO needs triage")
         Connection(Socket socket) throws IOException {
             this.in =  new SocketInputStream(socket);
             this.out = new SocketOutputStream(socket);

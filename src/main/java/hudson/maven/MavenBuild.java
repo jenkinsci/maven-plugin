@@ -23,6 +23,7 @@
  */
 package hudson.maven;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.ExtensionList;
 import hudson.FilePath;
@@ -448,6 +449,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
     /**
      * {@link MavenBuildProxy} implementation.
      */
+    @SuppressFBWarnings(value = "SE_BAD_FIELD_INNER_CLASS", justification = "TODO needs triage")
     class ProxyImpl implements MavenBuildProxy, Serializable {
         private static final long serialVersionUID = 8865133776526671879L;
 
