@@ -24,6 +24,7 @@
 package hudson.maven;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.maven.MavenBuild.ProxyImpl2;
 import hudson.maven.reporters.TestFailureDetector;
 import hudson.maven.util.ExecutionEventLogger;
@@ -360,6 +361,7 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
         private final Map<ModuleName, Long> currentMojoStartPerModuleName = new ConcurrentHashMap<>();
 
+        @SuppressFBWarnings(value = "SE_BAD_FIELD", justification = "TODO needs triage")
         protected ExecutionEventLogger eventLogger;
 
         MavenExecutionListener(Maven3Builder maven3Builder) {
@@ -737,5 +739,6 @@ public class Maven3Builder extends AbstractMavenBuilder implements DelegatingCal
 
     private static final Logger LOGGER = Logger.getLogger(Maven3Builder.class.getName());
 
+    @SuppressFBWarnings(value = "MS_SHOULD_BE_FINAL", justification = "TODO needs triage")
     public static boolean DUMP_PERFORMANCE_COUNTERS = Boolean.getBoolean(Maven3Builder.class.getName()+".dumpPerformanceCounters");
 }

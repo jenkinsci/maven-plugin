@@ -1,6 +1,6 @@
 package hudson.maven;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlPage;
 import hudson.FilePath;
 import org.junit.Assert;
 import org.jvnet.hudson.test.Bug;

@@ -22,6 +22,7 @@ package hudson.maven;
  * under the License.
  */
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.TaskListener;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.eclipse.aether.repository.WorkspaceReader;
@@ -308,6 +309,7 @@ public class MavenEmbedderRequest
                     }
                 }
 
+                @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "TODO needs triage")
                 private boolean shouldBeIgnored(URL url) {
                     String s = url.toExternalForm();
                     if(s.contains("maven-plugin-tools-api"))

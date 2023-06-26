@@ -23,6 +23,7 @@
  */
 package hudson.maven.reporters;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Action;
 import org.apache.maven.reporting.MavenReport;
 
@@ -36,6 +37,7 @@ import java.io.Serializable;
  */
 public final class ReportAction implements Action, Serializable {
 
+    @SuppressFBWarnings(value = "SE_BAD_FIELD", justification = "TODO needs triage")
     private final List<Entry> entries = new ArrayList<>();
 
     public static final class Entry {

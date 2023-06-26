@@ -23,6 +23,7 @@
  */
 package hudson.maven;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Util;
 import hudson.Proc;
 import hudson.model.BuildListener;
@@ -238,6 +239,7 @@ public final class ProcessCache {
 
 
 
+    @SuppressFBWarnings(value = "MS_SHOULD_BE_REFACTORED_TO_BE_FINAL", justification = "TODO needs triage")
     public static int MAX_AGE = 5;
 
     static {

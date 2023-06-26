@@ -37,9 +37,9 @@ import hudson.slaves.NodePropertyDescriptor;
 import hudson.tasks.Mailer;
 import hudson.tasks.Mailer.DescriptorImpl;
 
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.Address;
+import jakarta.mail.Message;
+import jakarta.mail.internet.InternetAddress;
 
 import hudson.util.DescribableList;
 import jenkins.model.Jenkins;

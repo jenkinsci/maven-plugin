@@ -23,6 +23,7 @@
  */
 package hudson.maven.reporters;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.console.AnnotatedLargeText;
 import hudson.maven.MavenEmbedder;
 import hudson.maven.MavenEmbedderException;
@@ -202,6 +203,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
         return new HistoryWidgetImpl();
     }
 
+    @SuppressFBWarnings(value = "DM_BOXED_PRIMITIVE_FOR_PARSING", justification = "TODO needs triage")
     public Object getDynamic(String token, StaplerRequest req, StaplerResponse rsp) {
         return records.get(Integer.valueOf(token));
     }

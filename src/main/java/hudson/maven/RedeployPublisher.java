@@ -23,6 +23,7 @@
  */
 package hudson.maven;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -199,6 +200,7 @@ public class RedeployPublisher extends Recorder {
      * from the remote node and can not exist in controller see https://issues.jenkins.io/browse/JENKINS-8711
      * 
      */
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "TODO needs triage")
     private MavenEmbedder createEmbedder(TaskListener listener, AbstractBuild<?,?> build) throws MavenEmbedderException, IOException, InterruptedException {
         MavenInstallation m=null;
         File settingsLoc = null, remoteGlobalSettingsFromConfig = null;
