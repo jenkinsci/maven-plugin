@@ -53,7 +53,7 @@ THE SOFTWARE.
       It declares version of the core, which should be included into the the server-side.
       Note that the plugin still bundles agent support for Maven 3.0.5, probably it's not really operational
     -->
-    <mavenMinimalVersion>3.8.3</mavenMinimalVersion>
+    <mavenMinimalVersion>3.9.4</mavenMinimalVersion>
     <resolverVersion>1.7.3</resolverVersion>
     <sisuInjectVersion>0.3.5</sisuInjectVersion>
     <wagonVersion>3.5.3</wagonVersion>
