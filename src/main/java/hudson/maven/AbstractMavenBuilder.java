@@ -98,7 +98,13 @@ public abstract class AbstractMavenBuilder extends MasterToSlaveCallable<Result,
     void end(Launcher launcher) throws IOException, InterruptedException {
         for (Map.Entry<ModuleName,ProxyImpl2> e : sourceProxies.entrySet()) {
             ProxyImpl2 p = e.getValue();
-            for (MavenReporter r : reporters.get(e.getKey())) {
+            ModuleName module = e.getKey();
+			List<MavenReporter> moduleReporters = reporters.get(module);
+			if (moduleReporters == null) {
+				// Safety: Key set of reporter and source list has become inconsistent.
+				continue;
+			}
+			for (MavenReporter r : moduleReporters) {
                 // we'd love to do this when the module build ends, but doing so requires
                 // we know how many task segments are in the current build.
                 r.end(p.owner(),launcher,listener);
