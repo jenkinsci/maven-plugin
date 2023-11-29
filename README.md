@@ -136,7 +136,7 @@ This feature can be disabled on demand - see configuration option `Build wheneve
 
 ## Maven surefire test results
 
-The Maven Integration plugin understands the POM and knows about specific Maven testing plugins, such as the [https://maven.apache.org/surefire/maven-surefire-plugin/](Maven Surefire Plugin) and the [Tycho Surefire Plugin](https://www.eclipse.org/tycho/sitedocs/tycho-surefire-plugin/plugin-info.html).
+The Maven Integration plugin understands the POM and knows about specific Maven testing plugins, such as the [Maven Surefire Plugin](https://maven.apache.org/surefire/maven-surefire-plugin/) and the [Tycho Surefire Plugin](https://www.eclipse.org/tycho/sitedocs/tycho-surefire-plugin/plugin-info.html).
 The definitive list of supported test plugins can be found in the [TestMojo source code](https://github.com/jenkinsci/maven-plugin/blob/master/src/main/java/hudson/maven/reporters/TestMojo.java).
 
 For such known test plugins the Maven Integration plugin is able to collect test results from their default or POM-configured reports directory.
