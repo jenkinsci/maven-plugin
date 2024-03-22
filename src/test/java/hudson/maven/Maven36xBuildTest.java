@@ -43,7 +43,7 @@ public class Maven36xBuildTest
         Maven.MavenInstallation mvn = ToolInstallations.configureDefaultMaven("apache-maven-3.6.3", MavenInstallation.MAVEN_30);
 
         Maven.MavenInstallation m3 = new Maven.MavenInstallation( "apache-maven-3.6.3", mvn.getHome(), JenkinsRule.NO_PROPERTIES);
-        Jenkins.getInstance().getDescriptorByType( Maven.DescriptorImpl.class).setInstallations( m3);
+        Jenkins.get().getDescriptorByType( Maven.DescriptorImpl.class).setInstallations( m3);
         return m3;
     }
 

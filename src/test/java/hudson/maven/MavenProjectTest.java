@@ -72,7 +72,7 @@ public class MavenProjectTest extends AbstractMavenTestCase {
         project.setGoals("abcdefg");
         project.save();
         
-        MavenModuleSet copy = (MavenModuleSet) Jenkins.getInstance().copy((AbstractProject<?, ?>)project, "copy" + System.currentTimeMillis());
+        MavenModuleSet copy = (MavenModuleSet) Jenkins.get().copy((AbstractProject<?, ?>)project, "copy" + System.currentTimeMillis());
         assertNotNull("Copied project must not be null", copy);
         assertEquals(project.getGoals(), copy.getGoals());
     }

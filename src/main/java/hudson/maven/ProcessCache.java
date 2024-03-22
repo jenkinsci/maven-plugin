@@ -35,7 +35,6 @@ import hudson.remoting.VirtualChannel;
 import hudson.remoting.RequestAbortedException;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.util.DelegatingOutputStream;
-import hudson.util.NullStream;
 import jenkins.security.MasterToSlaveCallable;
 
 import java.io.IOException;
@@ -132,7 +131,7 @@ public final class ProcessCache {
             if(age>=MAX_AGE || maxProcess==0)
                 discard();
             else {
-                output.set(new NullStream());
+                output.set(OutputStream.nullOutputStream());
                 // make room for the new process and reuse.
                 synchronized(parent.processes) {
                     while(parent.processes.size()>=maxProcess)

@@ -151,7 +151,7 @@ public abstract class AbstractMavenBuilder extends MasterToSlaveCallable<Result,
 
     // since reporters might be from plugins, use the uberjar to resolve them.
     public ClassLoader getClassLoader() {
-        return Jenkins.getInstance().getPluginManager().uberClassLoader;
+        return Jenkins.get().getPluginManager().uberClassLoader;
     }
 
     /**

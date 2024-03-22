@@ -1054,7 +1054,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
             // we might have added new modules
             if (needsDependencyGraphRecalculation) {
                 logger.println("Modules changed, recalculating dependency graph");
-                Jenkins.getInstance().rebuildDependencyGraph();
+                Jenkins.get().rebuildDependencyGraph();
             }
 
             // module builds must start with this build's number
