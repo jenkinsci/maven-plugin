@@ -6,7 +6,6 @@ import hudson.maven.MojoInfo;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -16,7 +15,6 @@ import org.apache.tools.ant.types.FileSet;
 import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
 /**
