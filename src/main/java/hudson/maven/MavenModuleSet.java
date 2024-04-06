@@ -315,7 +315,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         // backward compatibility, maven-plugin used to have a dependency to the config-file-provider plugin
         Plugin plugin = null;
         if(StringUtils.isNotBlank(this.settingConfigId) || StringUtils.isNotBlank(this.globalSettingConfigId)) {
-            plugin = Jenkins.getInstance().getPlugin("config-file-provider");
+            plugin = Jenkins.get().getPlugin("config-file-provider");
             if(plugin == null || !plugin.getWrapper().isEnabled()){
                 LOGGER.severe(Messages.MavenModuleSet_readResolve_missingConfigProvider());
             }  
@@ -391,7 +391,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
      *      Use {@link #MavenModuleSet(ItemGroup, String)}
      */
     public MavenModuleSet(String name) {
-        this(Jenkins.getInstance(), name);
+        this(Jenkins.get(), name);
     }
 
     public MavenModuleSet(ItemGroup parent, String name) {
@@ -1153,14 +1153,14 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
      * Returns the {@link MavenModule}s that are in the queue.
      */
     public List<Queue.Item> getQueueItems() {
-        return filter(Arrays.asList(Jenkins.getInstance().getQueue().getItems()));
+        return filter(Arrays.asList(Jenkins.get().getQueue().getItems()));
     }
 
     /**
      * Returns the {@link MavenModule}s that are in the queue.
      */
     public List<Queue.Item> getApproximateQueueItemsQuickly() {
-        return filter(Jenkins.getInstance().getQueue().getApproximateItemsQuickly());
+        return filter(Jenkins.get().getQueue().getApproximateItemsQuickly());
     }
 
     private List<Queue.Item> filter(Collection<Queue.Item> base) {
@@ -1293,7 +1293,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 
     public DescriptorImpl getDescriptor() {
-        return (DescriptorImpl)Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return (DescriptorImpl)Jenkins.get().getDescriptorOrDie(getClass());
     }
 
     /**

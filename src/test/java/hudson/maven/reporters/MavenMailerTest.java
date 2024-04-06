@@ -51,7 +51,6 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.ToolInstallations;
 import org.jvnet.mock_javamail.Mailbox;
 
 import java.util.List;
@@ -94,7 +93,7 @@ public class MavenMailerTest {
 
     public Mailbox runMailTest(boolean perModuleEamil) throws Exception {
 
-        final DescriptorImpl mailDesc = Jenkins.getInstance().getDescriptorByType(Mailer.DescriptorImpl.class);
+        final DescriptorImpl mailDesc = Jenkins.get().getDescriptorByType(Mailer.DescriptorImpl.class);
 
         // intentionally give the whole thin in a double quote
         Mailer.descriptor().setAdminAddress(EMAIL_ADMIN);
