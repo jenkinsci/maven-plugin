@@ -3,7 +3,7 @@ package hudson.maven;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.io.IOException;
 import java.util.List;
 

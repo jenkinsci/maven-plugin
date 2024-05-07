@@ -1,5 +1,5 @@
 package hudson.maven.reporters;
-
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Util;
 import hudson.maven.MojoInfo;
 
@@ -7,8 +7,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import org.apache.maven.project.MavenProject;
 import org.apache.tools.ant.types.FileSet;
@@ -183,7 +182,7 @@ enum TestMojo {
      * @return The directory containing the test reports.
      * @throws ComponentConfigurationException if unable to retrieve the report directory from the MOJO configuration.
      */
-    @Nonnull protected File getReportsDirectory(MavenProject pom, MojoInfo mojo) throws ComponentConfigurationException {
+    @NonNull protected File getReportsDirectory(MavenProject pom, MojoInfo mojo) throws ComponentConfigurationException {
         // [JENKINS-31258] Allow unknown MOJOs to contribute test results in arbitrary locations by setting a Maven property.
         String reportsDirectoryOverride = getReportsDirectoryOverride(mojo);
         if (reportsDirectoryOverride != null)

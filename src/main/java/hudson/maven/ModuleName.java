@@ -23,6 +23,8 @@
  */
 package hudson.maven;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import org.apache.maven.execution.ExecutionEvent;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.model.Plugin;
@@ -31,7 +33,6 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.ReportPlugin;
 
 import java.io.Serializable;
-import javax.annotation.Nonnull;
 
 /**
  * Version independent name of a Maven project. GroupID+artifactId.
@@ -40,8 +41,8 @@ import javax.annotation.Nonnull;
  * @see ModuleDependency
  */
 public class ModuleName implements Comparable<ModuleName>, Serializable {
-    public final @Nonnull String groupId;
-    public final @Nonnull String artifactId;
+    public final @NonNull String groupId;
+    public final @NonNull String artifactId;
 
     public ModuleName(String groupId, String artifactId) {
         if (groupId == null) {

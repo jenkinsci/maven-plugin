@@ -44,7 +44,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Method;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import hudson.util.InvocationInterceptor;
 import hudson.util.ReflectionUtils;

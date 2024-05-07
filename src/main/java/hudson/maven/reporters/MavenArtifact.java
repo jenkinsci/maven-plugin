@@ -24,6 +24,7 @@
 package hudson.maven.reporters;
 
 import com.google.common.collect.Maps;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Util;
 import hudson.maven.MavenBuild;
 import hudson.maven.MavenBuildProxy;
@@ -42,7 +43,6 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.annotation.Nonnull;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -236,7 +236,7 @@ public final class MavenArtifact implements Serializable {
      * @return a representation of the artifact
      * @since 2.0.3
      */
-    public @Nonnull TemporaryFile getTemporaryFile(MavenBuild build) {
+    public @NonNull TemporaryFile getTemporaryFile(MavenBuild build) {
         return new TemporaryFile(build);
     }
 
@@ -259,7 +259,7 @@ public final class MavenArtifact implements Serializable {
          * This is the preferred method for code that does not need to deal with {@link File} specifically.
          * @return the purported location of the artifact (might no longer exist if it has since been deleted)
          */
-        public @Nonnull VirtualFile getVirtualFile() {
+        public @NonNull VirtualFile getVirtualFile() {
             return build.getArtifactManager().root().child(artifactPath());
         }
 
@@ -268,7 +268,7 @@ public final class MavenArtifact implements Serializable {
          * You must {@link #close} it when finished; do not delete the result file yourself.
          * @return either the original artifact, or a copy thereof; may not exist if it has since been deleted
          */
-        public @Nonnull synchronized File getFile() throws IOException {
+        public @NonNull synchronized File getFile() throws IOException {
             if (copy == null) {
                 try {
                     return MavenArtifact.this.getFile(build);
