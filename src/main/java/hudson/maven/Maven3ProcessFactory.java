@@ -149,4 +149,8 @@ public class Maven3ProcessFactory extends AbstractMavenProcessFactory implements
         }
     };
 
+    protected final String getLoggingPath(MavenInstallation mvn){
+        return (getLauncher().isUnix()?":":";")+mvn.getHome()+"/conf/logging";
+    }
+
 }
