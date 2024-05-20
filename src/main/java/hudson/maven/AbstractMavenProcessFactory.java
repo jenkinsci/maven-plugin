@@ -34,7 +34,7 @@ import jenkins.security.MasterToSlaveCallable;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Zip;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
