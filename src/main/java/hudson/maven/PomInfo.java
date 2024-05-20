@@ -23,6 +23,8 @@
  */
 package hudson.maven;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
@@ -40,8 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * Serializable representation of the key information obtained from Maven POM.
@@ -56,7 +57,7 @@ final class PomInfo implements Serializable {
     
     public static final String PACKAGING_TYPE_PLUGIN = "maven-plugin";
 
-    public final @Nonnull ModuleName name;
+    public final @NonNull ModuleName name;
 
     /**
      * This is a human readable name of the POM. Not necessarily unique
