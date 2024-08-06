@@ -46,7 +46,7 @@ THE SOFTWARE.
     <revision>3.24</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
-    <jenkins.version>2.387.3</jenkins.version>
+    <jenkins.version>2.461-rc34998.da_5964da_3eb_b_</jenkins.version>
     <mavenInterceptorsVersion>1.14</mavenInterceptorsVersion>
     <!--
       Minimal supported version of Maven.
@@ -76,8 +76,8 @@ THE SOFTWARE.
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.387.x</artifactId>
-        <version>2543.vfb_1a_5fb_9496d</version>
+        <artifactId>bom-2.452.x</artifactId>
+        <version>3056.v53343b_a_b_a_850</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
