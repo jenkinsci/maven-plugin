@@ -77,7 +77,7 @@ THE SOFTWARE.
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-2.440.x</artifactId>
-        <version>3234.v5ca_5154341ef</version>
+        <version>3307.v2769886db_63b_</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -814,7 +814,6 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>promoted-builds</artifactId>
-      <version>957.vf5b_cee587563</version>
       <scope>test</scope>
     </dependency>
     <dependency>
