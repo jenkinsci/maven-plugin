@@ -89,7 +89,7 @@ THE SOFTWARE.
     </j:if>
     <f:entry title="${%Root POM}" help="/plugin/maven-plugin/root-pom.html">
       <f:textbox name="rootPOM" value="${it.rootPOM}"
-              checkUrl="'checkFileInWorkspace?value='+escape(this.value)" />
+              checkUrl="checkFileInWorkspace" checkDependsOn="" />
     </f:entry>
     <f:entry title="${%Goals and options}" help="/plugin/maven-plugin/goals.html">
       <f:textbox name="goals" value="${it.userConfiguredGoals}"/>
