@@ -864,7 +864,7 @@ THE SOFTWARE.
                 <artifactItem>
                   <groupId>org.apache.maven</groupId>
                   <artifactId>apache-maven</artifactId>
-                  <version>3.6.3</version>
+                  <version>3.9.9</version>
                   <type>zip</type>
                   <classifier>bin</classifier>
                   <outputDirectory>${project.build.directory}</outputDirectory>
