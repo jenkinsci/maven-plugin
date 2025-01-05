@@ -46,7 +46,9 @@ THE SOFTWARE.
     <revision>3.25</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
-    <jenkins.version>2.440.3</jenkins.version>
+    <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
+    <jenkins.baseline>2.452</jenkins.baseline>
+    <jenkins.version>${jenkins.baseline}.4</jenkins.version>
     <mavenInterceptorsVersion>1.14</mavenInterceptorsVersion>
     <!--
       Minimal supported version of Maven.
@@ -76,8 +78,8 @@ THE SOFTWARE.
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.440.x</artifactId>
-        <version>3307.v2769886db_63b_</version>
+        <artifactId>bom-${jenkins.baseline}.x</artifactId>
+        <version>3875.v1df09947cde6</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
