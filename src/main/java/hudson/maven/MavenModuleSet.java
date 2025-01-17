@@ -1412,7 +1412,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
          */
         @Override
         public String getIconClassName() {
-            return "icon-maven-moduleset";
+            return "symbol-apache-maven-icon-solid plugin-oss-symbols-api ";
         }
 
 
