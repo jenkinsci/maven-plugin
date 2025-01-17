@@ -75,7 +75,7 @@ import org.jvnet.hudson.maven3.launcher.Maven35Launcher;
 import org.jvnet.hudson.maven3.launcher.Maven3Launcher;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.File;
@@ -142,7 +142,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
     @Override
     public String getUpUrl() {
-        StaplerRequest req = Stapler.getCurrentRequest();
+        StaplerRequest2 req = Stapler.getCurrentRequest2();
         if(req!=null) {
             List<Ancestor> ancs = req.getAncestors();
             for( int i=1; i<ancs.size(); i++) {
@@ -159,7 +159,7 @@ public class MavenBuild extends AbstractMavenBuild<MavenModule,MavenBuild> {
 
     @Override
     public String getDisplayName() {
-        StaplerRequest req = Stapler.getCurrentRequest();
+        StaplerRequest2 req = Stapler.getCurrentRequest2();
         if(req!=null) {
             List<Ancestor> ancs = req.getAncestors();
             for( int i=1; i<ancs.size(); i++) {

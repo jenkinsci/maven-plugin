@@ -40,6 +40,8 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -305,8 +307,12 @@ public final class MavenArtifact implements Serializable {
      * TODO: figure out how to make this URL more discoverable to the remote API.
      */
     public HttpResponse doFile(final @AncestorInPath MavenArtifactRecord parent) throws IOException {
-        return ( req, rsp, node ) ->
-                IOUtils.copy(parent.parent.getArtifactManager().root().child(artifactPath()).open(), rsp.getCompressedOutputStream(req));
+        return new HttpResponse() {
+            @Override
+            public void generateResponse(StaplerRequest2 req, StaplerResponse2 rsp, Object node) throws IOException {
+                IOUtils.copy(parent.parent.getArtifactManager().root().child(artifactPath()).open(), rsp.getOutputStream());
+            }
+        };
     }
 
     private String artifactPath() {

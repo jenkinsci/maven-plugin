@@ -188,7 +188,7 @@ public final class ExecutedMojo implements Serializable {
     public String getPluginLink(Cache c) {
         MavenModule m = c.get(this);
         if(m!=null)
-            return Stapler.getCurrentRequest().getContextPath()+m.getUrl();
+            return Stapler.getCurrentRequest2().getContextPath()+m.getUrl();
         if(groupId.equals("org.apache.maven.plugins"))
             return "https://maven.apache.org/plugins/"+artifactId+'/';
         if (groupId.equals("org.codehaus.mojo"))

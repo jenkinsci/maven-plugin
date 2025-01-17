@@ -43,7 +43,7 @@ import net.sf.json.JSONObject;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.ToolInstallations;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * @author Dominik Bartholdi (imod)
@@ -159,7 +159,7 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 			}
 
 			@Override
-			public BuildWrapper newInstance(StaplerRequest req, JSONObject formData) {
+			public BuildWrapper newInstance(StaplerRequest2 req, JSONObject formData) {
 				throw new UnsupportedOperationException();
 			}
 

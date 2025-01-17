@@ -51,11 +51,11 @@ import hudson.util.DescribableList;
 import jenkins.model.Jenkins;
 
 import org.apache.maven.project.MavenProject;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -740,7 +740,7 @@ public class MavenModule extends AbstractMavenProject<MavenModule,MavenBuild> im
     }
 
     @Override
-    protected void submit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, FormException {
+    protected void submit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException, FormException {
         super.submit(req, rsp);
 
         reporters.rebuild(req, req.getSubmittedForm(),MavenReporters.getConfigurableList());
