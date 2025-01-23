@@ -69,7 +69,7 @@ import org.apache.maven.cli.transfer.BatchModeMavenTransferListener;
 import org.apache.maven.repository.Proxy;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * {@link Publisher} for {@link MavenModuleSetBuild} to deploy artifacts
@@ -369,7 +369,7 @@ public class RedeployPublisher extends Recorder {
             return jobType==MavenModuleSet.class;
         }
 
-        public RedeployPublisher newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+        public RedeployPublisher newInstance(StaplerRequest2 req, JSONObject formData) throws FormException {
             return req.bindJSON(RedeployPublisher.class,formData);
         }
 

@@ -28,7 +28,7 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * This test case verifies that a maven build also takes EnvironmentContributingAction into account to resolve variables on the command line
@@ -130,7 +130,7 @@ public class MavenEnvironmentContributingActionTest {
             }
 
             @Override
-            public BuildWrapper newInstance(StaplerRequest req, JSONObject formData) {
+            public BuildWrapper newInstance(StaplerRequest2 req, JSONObject formData) {
                 throw new UnsupportedOperationException();
             }
 

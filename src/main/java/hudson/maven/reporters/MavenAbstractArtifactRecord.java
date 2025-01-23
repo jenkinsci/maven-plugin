@@ -52,7 +52,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import org.apache.maven.artifact.deployer.ArtifactDeploymentException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -62,8 +62,8 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
 import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.interceptor.RequirePOST;
@@ -148,7 +148,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
         }
 
         // TODO: Eventually provide a better UI
-        public void doIndex(StaplerResponse rsp) throws IOException {
+        public void doIndex(StaplerResponse2 rsp) throws IOException {
             rsp.setContentType("text/plain;charset=UTF-8");
             getLog().writeLogTo(0,rsp.getWriter());
         }
@@ -204,7 +204,7 @@ public abstract class MavenAbstractArtifactRecord<T extends AbstractBuild<?,?>> 
     }
 
     @SuppressFBWarnings(value = "DM_BOXED_PRIMITIVE_FOR_PARSING", justification = "TODO needs triage")
-    public Object getDynamic(String token, StaplerRequest req, StaplerResponse rsp) {
+    public Object getDynamic(String token, StaplerRequest2 req, StaplerResponse2 rsp) {
         return records.get(Integer.valueOf(token));
     }
 

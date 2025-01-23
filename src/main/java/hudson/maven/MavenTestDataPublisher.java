@@ -46,7 +46,7 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * Augments {@link SurefireReport} by executing {@link TestDataPublisher}s.
@@ -117,7 +117,7 @@ public class MavenTestDataPublisher extends Recorder {
 		}
 		
 		@Override
-		public Publisher newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+		public Publisher newInstance(StaplerRequest2 req, JSONObject formData) throws FormException {
 			DescribableList<TestDataPublisher, Descriptor<TestDataPublisher>> testDataPublishers
                     = new DescribableList<TestDataPublisher, Descriptor<TestDataPublisher>>(Saveable.NOOP);
             try {
