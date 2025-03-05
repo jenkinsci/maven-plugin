@@ -30,7 +30,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.74</version>
+    <version>5.7</version>
     <relativePath />
   </parent>
 
@@ -43,10 +43,12 @@ THE SOFTWARE.
   <url>https://github.com/jenkinsci/${project.artifactId}</url>
 
   <properties>
-    <revision>3.24</revision>
+    <revision>3.26</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
-    <jenkins.version>2.461-rc34998.da_5964da_3eb_b_</jenkins.version>
+    <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
+    <jenkins.baseline>2.479</jenkins.baseline>
+    <jenkins.version>${jenkins.baseline}.1</jenkins.version>
     <mavenInterceptorsVersion>1.14</mavenInterceptorsVersion>
     <!--
       Minimal supported version of Maven.
@@ -76,8 +78,8 @@ THE SOFTWARE.
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.452.x</artifactId>
-        <version>3056.v53343b_a_b_a_850</version>
+        <artifactId>bom-${jenkins.baseline}.x</artifactId>
+        <version>4051.v78dce3ce8b_d6</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -86,22 +88,14 @@ THE SOFTWARE.
         <artifactId>javax.annotation-api</artifactId>
         <version>1.3.2</version>
       </dependency>
-      <!-- TODO Remove once in BOM -->
-      <dependency>
-        <groupId>io.jenkins.plugins</groupId>
-        <artifactId>jakarta-activation-api</artifactId>
-        <version>2.1.3-1</version>
-      </dependency>
-      <!-- TODO Remove once in BOM -->
-      <dependency>
-        <groupId>io.jenkins.plugins</groupId>
-        <artifactId>jakarta-mail-api</artifactId>
-        <version>2.1.3-1</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>oss-symbols-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>javadoc</artifactId>
@@ -584,7 +578,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.15.3</version>
+      <version>1.18.3</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -646,7 +640,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-classworlds</artifactId>
-      <version>2.7.0</version>
+      <version>2.6.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -814,7 +808,6 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>promoted-builds</artifactId>
-      <version>892.vd6219fc0a_efb</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -957,7 +950,7 @@ THE SOFTWARE.
           <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>1.4.0</version>
+            <version>2.6.0</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -980,8 +973,8 @@ THE SOFTWARE.
   </pluginRepositories>
 
   <scm>
-    <connection>scm:git:https://github.com/${gitHubRepo}</connection>
-    <developerConnection>scm:git:https://github.com/${gitHubRepo}</developerConnection>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
     <url>https://github.com/${gitHubRepo}</url>
     <tag>${scmTag}</tag>
   </scm>

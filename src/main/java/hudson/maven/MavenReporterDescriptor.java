@@ -30,7 +30,7 @@ import hudson.model.Describable;
 import jenkins.model.Jenkins;
 import org.apache.commons.jelly.JellyException;
 import org.kohsuke.stapler.MetaClass;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebApp;
 import org.kohsuke.stapler.jelly.JellyClassTearOff;
 
@@ -81,7 +81,7 @@ public abstract class MavenReporterDescriptor extends Descriptor<MavenReporter> 
      * this method can safely return null, which is the default implementation.
      */
     @Deprecated
-    public MavenReporter newInstance(StaplerRequest req) throws FormException {
+    public MavenReporter newInstance(StaplerRequest2 req) throws FormException {
         return null;
     }
 

@@ -88,7 +88,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import jenkins.model.Jenkins;
 import jenkins.mvn.FilePathSettingsProvider;
 import jenkins.mvn.GlobalMavenConfig;
@@ -109,8 +109,8 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 
 import static hudson.model.ItemGroupMixIn.loadChildren;
@@ -519,7 +519,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 
     /**
-     * Called by {@link MavenModule#doDoDelete(StaplerRequest, StaplerResponse)}.
+     * Called by {@link MavenModule#doDoDelete(StaplerRequest2, StaplerResponse2)}.
      * Real deletion is done by the caller, and this method only adjusts the
      * data structure the parent maintains.
      */
@@ -750,7 +750,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         return buildWrappers;
     }
 
-    public Object getDynamic(String token, StaplerRequest req, StaplerResponse rsp) {
+    public Object getDynamic(String token, StaplerRequest2 req, StaplerResponse2 rsp) {
         if(ModuleName.isValid(token))
             return getModule(token);
         return super.getDynamic(token,req,rsp);
@@ -1205,7 +1205,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
 //
 //
 
-    protected void submit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, FormException {
+    protected void submit(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException, FormException {
         super.submit(req,rsp);
         JSONObject json = req.getSubmittedForm();
 
@@ -1284,7 +1284,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
     }
 
     @Override
-    public ContextMenu doChildrenContextMenu(StaplerRequest request, StaplerResponse response) throws Exception {
+    public ContextMenu doChildrenContextMenu(StaplerRequest2 request, StaplerResponse2 response) throws Exception {
         ContextMenu menu = new ContextMenu();
         for (MavenModule mm : getModules()) {
             menu.add(mm);
@@ -1412,7 +1412,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
          */
         @Override
         public String getIconClassName() {
-            return "icon-maven-moduleset";
+            return "symbol-apache-maven-icon-solid plugin-oss-symbols-api ";
         }
 
 
@@ -1436,7 +1436,7 @@ public class MavenModuleSet extends AbstractMavenProject<MavenModuleSet,MavenMod
         }
 
         @Override
-        public boolean configure( StaplerRequest req, JSONObject o ) {
+        public boolean configure( StaplerRequest2 req, JSONObject o ) {
             globalMavenOpts = Util.fixEmptyAndTrim(o.getString("globalMavenOpts"));
             localRepository = req.bindJSON(LocalRepositoryLocator.class,o.getJSONObject("localRepository"));
             save();

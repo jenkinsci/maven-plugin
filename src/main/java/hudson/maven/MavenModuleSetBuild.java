@@ -104,8 +104,8 @@ import jenkins.maven3.agent.Maven32Main;
 
 import org.jvnet.hudson.maven3.agent.Maven3Main;
 import org.jvnet.hudson.maven3.launcher.*;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 import org.eclipse.aether.transfer.TransferCancelledException;
 import org.eclipse.aether.transfer.TransferEvent;
@@ -463,7 +463,7 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
     }
     
     @Override
-    public Object getDynamic(String token, StaplerRequest req, StaplerResponse rsp) {
+    public Object getDynamic(String token, StaplerRequest2 req, StaplerResponse2 rsp) {
         // map corresponding module build under this object
         if(token.indexOf('$')>0) {
             MavenModule m = getProject().getModule(token);

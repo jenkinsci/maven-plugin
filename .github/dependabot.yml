@@ -1,13 +1,32 @@
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+---
 version: 2
 updates:
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "master"
-
+    ignore:
+      # An upgrade of the Maven dependencies for this plugin would require
+      # significant build work and compatibility testing.
+      - dependency-name: "org.apache.maven:apache-maven"
+      - dependency-name: "org.apache.maven:maven-compat"
+      - dependency-name: "org.apache.maven:maven-core"
+      - dependency-name: "org.apache.maven:maven-embedder"
+      - dependency-name: "org.apache.maven:maven-repository-metadata"
+      - dependency-name: "org.apache.maven:maven-resolver-provider"
+      - dependency-name: "org.apache.maven.reporting:maven-reporting-api"
+      - dependency-name: "org.apache.maven.resolver:maven-resolver-api"
+      - dependency-name: "org.apache.maven.resolver:maven-resolver-connector-basic"
+      - dependency-name: "org.apache.maven.resolver:maven-resolver-impl"
+      - dependency-name: "org.apache.maven.resolver:maven-resolver-spi"
+      - dependency-name: "org.apache.maven.resolver:maven-resolver-transport-wagon"
+      - dependency-name: "org.apache.maven.resolver:maven-resolver-util"
+      - dependency-name: "org.codehaus.plexus:plexus-cipher"
+      - dependency-name: "org.codehaus.plexus:plexus-classworlds"
+      - dependency-name: "org.codehaus.plexus:plexus-component-annotations"
+      - dependency-name: "org.codehaus.plexus:plexus-utils"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "master"

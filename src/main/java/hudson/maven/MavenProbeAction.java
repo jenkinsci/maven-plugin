@@ -30,13 +30,13 @@ import jenkins.model.Jenkins;
 import hudson.remoting.Channel;
 import hudson.util.RemotingDiagnostics;
 import hudson.util.RemotingDiagnostics.HeapDump;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 
 import com.google.common.collect.Maps;
 import hudson.AbortException;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
@@ -123,7 +123,7 @@ public final class MavenProbeAction implements Action {
         return RemotingDiagnostics.getThreadDump(channel);
     }
 
-    public void doScript( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
+    public void doScript( StaplerRequest2 req, StaplerResponse2 rsp ) throws IOException, ServletException {
         if (owner == null) {
             throw new AbortException("Completed build");
         }
