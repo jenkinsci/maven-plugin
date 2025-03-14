@@ -28,8 +28,21 @@ THE SOFTWARE.
   <l:layout title="${it.name}">
     <st:include page="sidepanel.jelly" />
     <l:main-panel>
-      <h1>${it.pronoun} ${it.displayName}</h1>
-      <t:editableDescription permission="${it.CONFIGURE}"/>
+      <div class="jenkins-app-bar">
+        <div class="jenkins-app-bar__content jenkins-build-caption">
+          <j:set var="lastBuild" value="${it.lastBuild}" />
+          <j:if test="${lastBuild != null}">
+            <a href="${rootURL + '/' + lastBuild.url}" class="jenkins-!-display-contents" tabindex="-1">
+              <l:icon src="symbol-status-${lastBuild.iconColor.iconName}" tooltip="${lastBuild.iconColor.description}"/>
+            </a>
+          </j:if>
+          <h1><l:breakable value="${it.displayName}"/></h1>
+        </div>
+        <div class="jenkins-app-bar__controls">
+          <t:editDescriptionButton permission="${it.CONFIGURE}"/>
+        </div>
+      </div>
+      <t:editableDescription permission="${it.CONFIGURE}" hideButton="true"/>
 
       <st:include page="makeDisabled.jelly" />
 
