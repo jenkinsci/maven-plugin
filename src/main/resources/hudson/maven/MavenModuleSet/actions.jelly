@@ -30,7 +30,7 @@ THE SOFTWARE.
     </l:isAdmin>
   </j:if>
   <!-- Icon TBD -->
-  <j:set var="url" value="${h.getNearestAncestorUrl(request,it)}"/>
+  <j:set var="url" value="${h.getNearestAncestorUrl(request2,it)}"/>
   <l:task icon="icon-document icon-md" href="${url}/modules" title="${%Modules}" />
 
   <!-- include super class definition -->
