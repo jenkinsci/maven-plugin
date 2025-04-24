@@ -3,6 +3,11 @@
  */
 package hudson.maven;
 
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.maven.reporters.MavenFingerprinter;
@@ -19,7 +24,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
 
 /**
@@ -88,12 +92,8 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest
         throws Exception
     {
         File directory = new File( new FilePath( jobs, "p/builds/1" ).getRemote() );
-        Collection<File> files = FileUtils.listFiles( directory, new String[]{ "jar" }, true );
-        Assert.assertTrue( "Found jars in previous build, that should not happen", files.isEmpty() );
-        Collection<File> files2 =
-            FileUtils.listFiles( new File( new FilePath( jobs, "p/builds/2" ).getRemote() ), new String[]{ "jar" },
-                                 true );
-        Assert.assertFalse( "No jars in last build ALERT!", files2.isEmpty() );
+        await("Found jars in previous build, that should not happen").until(() -> FileUtils.listFiles(directory, new String[] {"jar"}, true), empty());
+        await("No jars in last build ALERT!").until(() -> FileUtils.listFiles(new File(new FilePath(jobs, "p/builds/2").getRemote()), new String[] {"jar"}, true), not(empty()));
     }
 
     /**
@@ -107,7 +107,7 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest
     {
         j.buildAndAssertSuccess( m );
         File directory = new File( new FilePath( jobs, "p/builds/1" ).getRemote() );
-        Assert.assertFalse( "oops the build should have been deleted", directory.exists() );
+        await("oops the build should have been deleted").until(directory::exists, is(false));
     }
 
 }
