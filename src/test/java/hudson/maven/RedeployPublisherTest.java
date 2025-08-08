@@ -37,7 +37,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import jenkins.mvn.FilePathSettingsProvider;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import static org.junit.Assert.*;
 import org.junit.ClassRule;
 import org.junit.Rule;

@@ -25,7 +25,7 @@ package hudson.maven;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;

@@ -35,7 +35,7 @@ import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Maven.ProjectWithMaven;
 import jenkins.model.Jenkins;
 import jenkins.mvn.SettingsProvider;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.cli.logging.Slf4jLoggerManager;
 import org.apache.maven.project.MavenProject;
