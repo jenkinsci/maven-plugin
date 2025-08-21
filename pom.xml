@@ -30,7 +30,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>5.22</version>
+    <version>5.24</version>
     <relativePath />
   </parent>
 
@@ -61,6 +61,8 @@ THE SOFTWARE.
     <wagonVersion>3.5.3</wagonVersion>
     <!-- TODO fix existing violatiosn -->
     <spotbugs.threshold>High</spotbugs.threshold>
+    <hpi.bundledArtifacts>cdi-api,commons-cli,commons-net,doxia-logging-api,doxia-sink-api,jackrabbit-webdav,javax.annotation-api,javax.inject,lib-jenkins-maven-artifact-manager,lib-jenkins-maven-embedder,maven-agent,maven-artifact,maven-builder-support,maven-compat,maven-core,maven-embedder,maven-interceptor,maven-model,maven-model-builder,maven-plugin-api,maven-reporting-api,maven-repository-metadata,maven-resolver-api,maven-resolver-connector-basic,maven-resolver-impl,maven-resolver-named-locks,maven-resolver-provider,maven-resolver-spi,maven-resolver-transport-wagon,maven-resolver-util,maven-settings,maven-settings-builder,maven-shared-utils,maven2.1-interceptor,maven3-agent,maven3-interceptor,maven3-interceptor-commons,maven31-agent,maven31-interceptor,maven32-agent,maven32-interceptor,maven33-agent,maven33-interceptor,maven35-agent,maven35-interceptor,org.eclipse.sisu.inject,org.eclipse.sisu.plexus,plexus-cipher,plexus-classworlds,plexus-component-annotations,plexus-interactivity-api,plexus-interpolation,plexus-sec-dispatcher,plexus-utils,wagon-file,wagon-ftp,wagon-http,wagon-http-shared,wagon-provider-api,wagon-ssh,wagon-ssh-common,wagon-ssh-external,wagon-webdav-jackrabbit</hpi.bundledArtifacts>
+    <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
   </properties>
 
   <issueManagement>
