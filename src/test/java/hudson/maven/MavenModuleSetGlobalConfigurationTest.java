@@ -1,19 +1,15 @@
 package hudson.maven;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import hudson.maven.local_repo.PerExecutorLocalRepositoryLocator;
 import io.jenkins.plugins.casc.misc.ConfiguredWithCode;
 import io.jenkins.plugins.casc.misc.JenkinsConfiguredWithCodeRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
+import io.jenkins.plugins.casc.misc.junit.jupiter.WithJenkinsConfiguredWithCode;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-
-public class MavenModuleSetGlobalConfigurationTest
-{
-
-    @Rule
-    public final JenkinsRule r = new JenkinsConfiguredWithCodeRule();
+@WithJenkinsConfiguredWithCode
+class MavenModuleSetGlobalConfigurationTest {
 
 //<hudson.maven.MavenModuleSet_-DescriptorImpl plugin="maven-plugin@3.7-SNAPSHOT">
 //  <globalMavenOpts>-Xmx200303m</globalMavenOpts>
@@ -22,10 +18,10 @@ public class MavenModuleSetGlobalConfigurationTest
 
     @Test
     @ConfiguredWithCode("maven-entries.yml")
-    public void configureEntries() throws Exception {
-        MavenModuleSet.DescriptorImpl descriptor = r.jenkins.getDescriptorByType( MavenModuleSet.DescriptorImpl.class );
-        assertEquals( "-Xms2000m", descriptor.getGlobalMavenOpts());
-        assertEquals( PerExecutorLocalRepositoryLocator.class, descriptor.getLocalRepository().getClass() );
+    void configureEntries(JenkinsConfiguredWithCodeRule r) {
+        MavenModuleSet.DescriptorImpl descriptor = r.jenkins.getDescriptorByType(MavenModuleSet.DescriptorImpl.class);
+        assertEquals("-Xms2000m", descriptor.getGlobalMavenOpts());
+        assertEquals(PerExecutorLocalRepositoryLocator.class, descriptor.getLocalRepository().getClass());
     }
 
 }

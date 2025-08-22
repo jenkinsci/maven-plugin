@@ -29,22 +29,31 @@ import org.htmlunit.html.HtmlPage;
 
 import hudson.maven.MavenModuleSet;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.LoggerRule;
+import org.jvnet.hudson.test.LogRecorder;
 import org.jvnet.hudson.test.TestExtension;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class JobPropertyTest {
+@WithJenkins
+class JobPropertyTest {
 
-    @Rule public JenkinsRule j = new JenkinsRule();
+    @SuppressWarnings("unused")
+    private final LogRecorder logRecorder = new LogRecorder();
 
-    @Rule public LoggerRule logs = new LoggerRule();
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     @Test
     @Issue("JENKINS-2398")
-    public void jobPropertySummaryIsShownInMavenModuleSetIndexPage() throws Exception {
+    void jobPropertySummaryIsShownInMavenModuleSetIndexPage() throws Exception {
         assertJobPropertySummaryIsShownInIndexPage(MavenModuleSet.class);
     }
 
@@ -72,7 +81,6 @@ public class JobPropertyTest {
 
         @TestExtension
         public static class DescriptorImpl extends JobPropertyDescriptor {
-            @SuppressWarnings("rawtypes")
             @Override
             public boolean isApplicable(Class<? extends Job> jobType) {
                 return false;

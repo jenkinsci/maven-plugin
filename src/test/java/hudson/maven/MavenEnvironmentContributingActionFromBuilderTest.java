@@ -1,5 +1,7 @@
 package hudson.maven;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -11,15 +13,14 @@ import hudson.model.Result;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 
-import java.io.IOException;
-import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * This test case verifies that a maven build also takes EnvironmentContributingAction into account to resolve variables on the command line
@@ -27,14 +28,19 @@ import org.jvnet.hudson.test.ToolInstallations;
  * @see hudson.model.EnvironmentContributingAction
  * @author Marcin Cylke (mcl)
  */
-public class MavenEnvironmentContributingActionFromBuilderTest {
+@WithJenkins
+class MavenEnvironmentContributingActionFromBuilderTest {
 
-    @Rule
-    public JenkinsRule j = new MavenJenkinsRule();
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     @Test
-    @Bug(20844)
-    public void builderInjectedVariableFromEnvironmentContributingActionMustBeAvailableInMavenModuleSetBuild() throws Exception {
+    @Issue("JENKINS-20844")
+    void builderInjectedVariableFromEnvironmentContributingActionMustBeAvailableInMavenModuleSetBuild() throws Exception {
         j.jenkins.getInjector().injectMembers(this);
 
         final MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "mvn");
@@ -82,8 +88,8 @@ public class MavenEnvironmentContributingActionFromBuilderTest {
         @Override
         public ArgumentListBuilder intercept(ArgumentListBuilder cli, MavenModuleSetBuild arg1) {
             String all = cli.toString();
-            Assert.assertTrue(containsString + " was not found in the goals arguments(" + all + ")",
-                all.contains(containsString));
+            assertTrue(all.contains(containsString),
+                containsString + " was not found in the goals arguments(" + all + ")");
             return cli;
         }
 
@@ -104,7 +110,7 @@ public class MavenEnvironmentContributingActionFromBuilderTest {
         }
 
         @Override
-        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
 
             build.addAction(new MvnCmdLineVerifier(containsString));
 
@@ -124,7 +130,7 @@ public class MavenEnvironmentContributingActionFromBuilderTest {
         }
 
         @Override
-        public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+        public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
             build.addAction(new TestAction("KEY", envVariableValue));
             return true;
         }

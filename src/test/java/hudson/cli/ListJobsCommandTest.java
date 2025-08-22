@@ -30,27 +30,31 @@ import static org.hamcrest.Matchers.containsString;
 import hudson.maven.MavenModuleSet;
 import hudson.model.FreeStyleProject;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class ListJobsCommandTest {
+@WithJenkins
+class ListJobsCommandTest {
 
-    @Rule public JenkinsRule j = new JenkinsRule();
     private CLICommandInvoker command;
 
-    @Before
-    public void setUp() {
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
         CLICommand listJobsCommand = new ListJobsCommand();
         command = new CLICommandInvoker(j, listJobsCommand);
     }
 
     @Issue("JENKINS-18393")
     @Test
-    public void getAllJobsFromFolderWithMavenModuleSet() throws Exception {
+    void getAllJobsFromFolderWithMavenModuleSet() throws Exception {
         MockFolder folder = j.createFolder("Folder");
 
         folder.createProject(FreeStyleProject.class, "job1");

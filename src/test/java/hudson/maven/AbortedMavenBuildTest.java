@@ -3,18 +3,35 @@ package hudson.maven;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Result;
-import org.jvnet.hudson.test.Bug;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import java.io.IOException;
+import java.io.Serial;
 
-public class AbortedMavenBuildTest extends AbstractMavenTestCase {
-    @Bug(8054)
-    public void testBuildWrapperSeesAbortedStatus() throws Exception {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@WithJenkins
+class AbortedMavenBuildTest {
+
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
+
+    @Issue("JENKINS-8054")
+    @Test
+    void testBuildWrapperSeesAbortedStatus() throws Exception {
         ToolInstallations.configureMaven35();
-        MavenModuleSet project = jenkins.createProject(MavenModuleSet.class, "p");
-        TestBuildWrapper wrapper = new TestBuildWrapper();
+        MavenModuleSet project = j.createProject(MavenModuleSet.class, "p");
+        JenkinsRule.TestBuildWrapper wrapper = new JenkinsRule.TestBuildWrapper();
         project.getBuildWrappersList().add(wrapper);
         project.getReporters().add(new AbortingReporter());
         project.setGoals("clean verify -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
@@ -25,10 +42,11 @@ public class AbortedMavenBuildTest extends AbstractMavenTestCase {
     }
 
     private static class AbortingReporter extends MavenReporter {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
-        public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+        public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) throws InterruptedException {
             throw new InterruptedException();
         }
     }
