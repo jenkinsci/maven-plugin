@@ -3,29 +3,34 @@ package hudson.maven;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Result;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.ExtractChangeLogSet;
 import org.jvnet.hudson.test.For;
 import org.jvnet.hudson.test.JenkinsRule;
 
-import java.io.IOException;
+import java.io.Serial;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * Test incremental build for a project with modules and submodules.
  *
  * @author Jean Blanchard
  */
-public class MavenMultiLevelModuleTest {
+@WithJenkins
+class MavenMultiLevelModuleTest {
 
-    @Rule
-    public JenkinsRule j = new MavenJenkinsRule();
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     /**
      * Given a multi-module project:
@@ -41,7 +46,7 @@ public class MavenMultiLevelModuleTest {
      */
     @For(MavenModuleSetBuild.class)
     @Test
-    public void testIncrementalBuildWithMultiModuleChangeSet() throws Exception {
+    void testIncrementalBuildWithMultiModuleChangeSet() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
@@ -57,18 +62,19 @@ public class MavenMultiLevelModuleTest {
         MavenModuleSetBuild pBuild = m.getLastBuild();
         ExtractChangeLogSet changeSet = (ExtractChangeLogSet) pBuild.getChangeSet();
 
-        assertFalse("ExtractChangeLogSet should not be empty.", changeSet.isEmptySet());
+        assertFalse(changeSet.isEmptySet(), "ExtractChangeLogSet should not be empty.");
 
         for (MavenBuild modBuild : pBuild.getModuleLastBuilds().values()) {
-            String moduleName = modBuild.getProject().getName().toString();
-            if (moduleName.equals("org.jvnet.hudson.main.test.multilevelmod:moduleA")) {
-                assertEquals("moduleA should have Result.NOT_BUILT", Result.NOT_BUILT, modBuild.getResult());
-            } else if (moduleName.equals("org.jvnet.hudson.main.test.multilevelmod:moduleAA")) {
-                assertEquals("moduleAA should have Result.SUCCESS", Result.SUCCESS, modBuild.getResult());
-            } else if (moduleName.equals("org.jvnet.hudson.main.test.multilevelmod:moduleAB")) {
-                assertEquals("moduleAB should have Result.NOT_BUILT", Result.NOT_BUILT, modBuild.getResult());
-            } else if (moduleName.equals("org.jvnet.hudson.main.test.multilevelmod:moduleB")) {
-                assertEquals("moduleB should have Result.SUCCESS", Result.SUCCESS, modBuild.getResult());
+            String moduleName = modBuild.getProject().getName();
+            switch (moduleName) {
+                case "org.jvnet.hudson.main.test.multilevelmod:moduleA" ->
+                        assertEquals(Result.NOT_BUILT, modBuild.getResult(), "moduleA should have Result.NOT_BUILT");
+                case "org.jvnet.hudson.main.test.multilevelmod:moduleAA" ->
+                        assertEquals(Result.SUCCESS, modBuild.getResult(), "moduleAA should have Result.SUCCESS");
+                case "org.jvnet.hudson.main.test.multilevelmod:moduleAB" ->
+                        assertEquals(Result.NOT_BUILT, modBuild.getResult(), "moduleAB should have Result.NOT_BUILT");
+                case "org.jvnet.hudson.main.test.multilevelmod:moduleB" ->
+                        assertEquals(Result.SUCCESS, modBuild.getResult(), "moduleB should have Result.SUCCESS");
             }
         }
 
@@ -76,15 +82,16 @@ public class MavenMultiLevelModuleTest {
         for (MavenBuild modBuild : pBuild.getModuleLastBuilds().values()) {
             summedModuleDuration += modBuild.getDuration();
         }
-        assertTrue("duration of moduleset build should be greater-equal than sum of the module builds",
-                pBuild.getDuration() >= summedModuleDuration);
+        assertTrue(pBuild.getDuration() >= summedModuleDuration,
+                "duration of moduleset build should be greater-equal than sum of the module builds");
     }
 
     private static class TestReporter extends MavenReporter {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
-        public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+        public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) {
             assertNotNull(build.getWorkspace());
             return true;
         }

@@ -1,5 +1,7 @@
 package hudson.maven;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
@@ -15,19 +17,18 @@ import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.ArgumentListBuilder;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
 import net.sf.json.JSONObject;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.kohsuke.stapler.StaplerRequest2;
 
 /**
@@ -36,14 +37,19 @@ import org.kohsuke.stapler.StaplerRequest2;
  * @see EnvironmentContributingAction
  * @author Dominik Bartholdi (imod)
  */
-public class MavenEnvironmentContributingActionTest {
+@WithJenkins
+class MavenEnvironmentContributingActionTest {
 
-    @Rule
-    public JenkinsRule j = new MavenJenkinsRule();
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     @Test
-    @Bug(17555)
-    public void envVariableFromEnvironmentContributingActionMustBeAvailableInMavenModuleSetBuild() throws Exception {
+    @Issue("JENKINS-17555")
+    void envVariableFromEnvironmentContributingActionMustBeAvailableInMavenModuleSetBuild() throws Exception {
         j.jenkins.getInjector().injectMembers(this);
 
         final MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "mvn");
@@ -88,7 +94,7 @@ public class MavenEnvironmentContributingActionTest {
         @Override
         public ArgumentListBuilder intercept(ArgumentListBuilder cli, MavenModuleSetBuild arg1) {
             String all = cli.toString();
-            Assert.assertTrue(containsString + " was not found in the goals arguments", all.contains(containsString));
+            assertTrue(all.contains(containsString), containsString + " was not found in the goals arguments");
             return cli;
         }
 
@@ -114,7 +120,7 @@ public class MavenEnvironmentContributingActionTest {
         }
 
         @Override
-        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
 
             build.addAction(new MvnCmdLineVerifier(containsString));
 

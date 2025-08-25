@@ -38,27 +38,41 @@ import hudson.tasks.Shell;
 
 import jenkins.model.Jenkins;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * This class tests that environment variables from node properties are applied, and that the
  * priority is maintained: parameters > agent node properties > controller node properties
  */
-public class ToolLocationNodePropertyTest {
-
-    @Rule public JenkinsRule j = new JenkinsRule();
-    @Rule public TemporaryFolder tmp = new TemporaryFolder();
+@WithJenkins
+class ToolLocationNodePropertyTest {
 
     private DumbSlave slave;
     private FreeStyleProject project;
 
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) throws Exception {
+        j = rule;
+        EnvVars env = new EnvVars();
+        // we don't want Maven, Ant, etc. to be discovered in the path for this test to work,
+        // but on Unix these tools rely on other basic Unix tools (like env) for its operation,
+        // so empty path breaks the test.
+        env.put("PATH", "/bin:/usr/bin");
+        env.put("M2_HOME", "empty");
+        slave = j.createSlave(new LabelAtom("slave"), env);
+        project = j.createFreeStyleProject();
+        project.setAssignedLabel(slave.getSelfLabel());
+    }
+
     @Test
-    public void maven() throws Exception {
+    void maven() throws Exception {
         MavenInstallation maven = ToolInstallations.configureDefaultMaven();
         String mavenPath = maven.getHome();
         Jenkins.get().getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(new MavenInstallation("maven", "THIS IS WRONG", JenkinsRule.NO_PROPERTIES));
@@ -83,18 +97,5 @@ public class ToolLocationNodePropertyTest {
         } else {
             project.getBuildersList().add(new Shell("export"));
         }
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        EnvVars env = new EnvVars();
-        // we don't want Maven, Ant, etc. to be discovered in the path for this test to work,
-        // but on Unix these tools rely on other basic Unix tools (like env) for its operation,
-        // so empty path breaks the test.
-        env.put("PATH", "/bin:/usr/bin");
-        env.put("M2_HOME", "empty");
-        slave = j.createSlave(new LabelAtom("slave"), env);
-        project = j.createFreeStyleProject();
-        project.setAssignedLabel(slave.getSelfLabel());
     }
 }

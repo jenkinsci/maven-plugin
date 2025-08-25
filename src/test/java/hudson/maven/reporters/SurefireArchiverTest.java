@@ -23,7 +23,6 @@
  */
 package hudson.maven.reporters;
 
-import hudson.maven.AbstractMavenTestCase;
 import hudson.maven.Maven36xBuildTest;
 import hudson.maven.MavenBuild;
 import hudson.maven.MavenModuleSet;
@@ -31,22 +30,37 @@ import hudson.maven.MavenModuleSetBuild;
 import hudson.maven.MavenProjectActionBuilder;
 import hudson.maven.reporters.SurefireArchiver.FactoryImpl;
 import hudson.model.Result;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-public class SurefireArchiverTest extends AbstractMavenTestCase {
-    public void testSerialization() throws Exception {
+@WithJenkins
+class SurefireArchiverTest {
+
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
+
+    @Test
+    void testSerialization() throws Exception {
         Maven36xBuildTest.configureMaven36();
-        MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
+        MavenModuleSet m = j.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("../maven-surefire-unstable.zip")));
         m.setGoals("install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
 
         MavenModuleSetBuild b = m.scheduleBuild2(0).get();
-        assertBuildStatus(Result.UNSTABLE, b);
+        j.assertBuildStatus(Result.UNSTABLE, b);
 
 
         MavenBuild mb = b.getModuleLastBuilds().values().iterator().next();

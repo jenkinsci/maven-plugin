@@ -36,26 +36,35 @@ import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.jvnet.hudson.test.BuildWatcher;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.junit.jupiter.BuildWatcherExtension;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import java.io.IOException;
+import java.io.Serial;
 
-public class SimpleBuildWrapperTest {
+@WithJenkins
+class SimpleBuildWrapperTest {
 
-    @ClassRule public static BuildWatcher buildWatcher = new BuildWatcher();
-    @Rule public JenkinsRule r = new JenkinsRule();
-    @Rule public TemporaryFolder tmp = new TemporaryFolder();
+    @SuppressWarnings("unused")    
+    @RegisterExtension
+    private static final BuildWatcherExtension BUILD_WATCHER = new BuildWatcherExtension();
+
+    private JenkinsRule r;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        r = rule;
+    }
 
     @Test
-    public void disposerWithMaven() throws Exception {
+    void disposerWithMaven() throws Exception {
         MavenInstallation maven = ToolInstallations.configureDefaultMaven();
         r.jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(maven);
         MavenModuleSet p = r.createProject(MavenModuleSet.class, "p");
@@ -67,14 +76,16 @@ public class SimpleBuildWrapperTest {
         r.assertLogContains("ran DisposerImpl #1", b);
         r.assertLogNotContains("ran DisposerImpl #2", b);
     }
+
     public static class WrapperWithDisposer extends SimpleBuildWrapper {
-        @Override public void setUp(Context context, Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener, EnvVars initialEnvironment) throws IOException, InterruptedException {
+        @Override public void setUp(Context context, Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener, EnvVars initialEnvironment) {
             context.setDisposer(new DisposerImpl());
         }
         private static final class DisposerImpl extends Disposer {
+            @Serial
             private static final long serialVersionUID = 1;
             private int tearDownCount = 0;
-            @Override public void tearDown(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, InterruptedException {
+            @Override public void tearDown(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) {
                 listener.getLogger().println("ran DisposerImpl #" + (++tearDownCount));
             }
         }
