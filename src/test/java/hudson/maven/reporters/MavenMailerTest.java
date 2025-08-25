@@ -24,6 +24,7 @@
 package hudson.maven.reporters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -326,7 +327,7 @@ class MavenMailerTest {
 
 	private void assertContainsRecipient(String email, Message message) throws Exception {
 		assertNotNull(email);
-		assertTrue(email.trim().isEmpty());
+		assertFalse(email.trim().isEmpty());
 		boolean containRecipient = false;
 		for (Address address: message.getAllRecipients()) {
 			if (email.equals(address.toString())) {

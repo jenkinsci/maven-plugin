@@ -16,7 +16,7 @@ import java.io.Serial;
 
 import static hudson.Functions.isWindows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 @WithJenkins
 class AbortedMavenBuildTest {
@@ -31,7 +31,7 @@ class AbortedMavenBuildTest {
     @Issue("JENKINS-8054")
     @Test
     void testBuildWrapperSeesAbortedStatus() throws Exception {
-        assumeTrue(isWindows(), "Build fails on Windows due to open file handles.");
+        assumeFalse(isWindows(), "Build fails on Windows due to open file handles.");
         ToolInstallations.configureMaven35();
         MavenModuleSet project = j.createProject(MavenModuleSet.class, "p");
         JenkinsRule.TestBuildWrapper wrapper = new JenkinsRule.TestBuildWrapper();
