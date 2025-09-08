@@ -34,25 +34,35 @@ import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.util.ArgumentListBuilder;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import net.sf.json.JSONObject;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.kohsuke.stapler.StaplerRequest2;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Dominik Bartholdi (imod)
  */
-public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
+@WithJenkins
+class MavenArgumentInterceptorTest {
 
-	public void testSimpleMaven3BuildWithArgInterceptor_Goals() throws Exception {
+    private JenkinsRule j;
 
-		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
+
+	@Test
+    void testSimpleMaven3BuildWithArgInterceptor_Goals() throws Exception {
+		MavenModuleSet m = j.createProject(MavenModuleSet.class, "p");
 		MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
 		m.setMaven(mavenInstallation.getName());
 		m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
@@ -62,13 +72,13 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 		// executed
 		m.getBuildWrappersList().add(new TestMvnBuildWrapper("clean"));
 
-		MavenModuleSetBuild b = buildAndAssertSuccess(m);
+		MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
 		assertTrue(MavenUtil.maven3orLater(b.getMavenVersionUsed()));
 	}
 
-	public void testSimpleMaven3BuildWithArgInterceptor_ArgBuilder() throws Exception {
-
-		MavenModuleSet m = jenkins.createProject(MavenModuleSet.class, "p");
+	@Test
+    void testSimpleMaven3BuildWithArgInterceptor_ArgBuilder() throws Exception {
+		MavenModuleSet m = j.createProject(MavenModuleSet.class, "p");
 		MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
 		m.setMaven(mavenInstallation.getName());
 		m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimodule-unit-failure.zip")));
@@ -76,9 +86,9 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 										// tests
 
 		// add an action to build, adding argument to skip the test execution
-		m.getBuildWrappersList().add(new TestMvnBuildWrapper(Arrays.asList("-DskipTests")));
+		m.getBuildWrappersList().add(new TestMvnBuildWrapper(List.of("-DskipTests")));
 
-		MavenModuleSetBuild b = buildAndAssertSuccess(m);
+		MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
 		assertTrue(MavenUtil.maven3orLater(b.getMavenVersionUsed()));
 	}
 
@@ -134,7 +144,7 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 		}
 
 		@Override
-		public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+		public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
 
 			if (goalsAndOptions != null) {
 				build.addAction(new TestMvnArgInterceptor(goalsAndOptions));
@@ -144,7 +154,7 @@ public class MavenArgumentInterceptorTest extends AbstractMavenTestCase {
 
 			return new BuildWrapper.Environment() {
 				@Override
-				public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+				public boolean tearDown(AbstractBuild build, BuildListener listener) {
 					buildResultInTearDown = build.getResult();
 					return true;
 				}

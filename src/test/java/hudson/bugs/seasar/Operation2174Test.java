@@ -24,17 +24,19 @@
 
 package hudson.bugs.seasar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import hudson.maven.MavenModuleSet;
 import hudson.model.FreeStyleProject;
 import hudson.model.Item;
 import hudson.tasks.BuildTrigger;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import java.util.Collections;
 
@@ -43,13 +45,19 @@ import java.util.Collections;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Operation2174Test {
+@WithJenkins
+class Operation2174Test {
 
-    @Rule public JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     /** Tests that configuring a dependency from a freestyle to a maven project actually works. */
     @Test
-    public void testBuildChains() throws Exception {
+    void testBuildChains() throws Exception {
         FreeStyleProject up = j.createFreeStyleProject("up");
         MavenModuleSet dp = j.createProject(MavenModuleSet.class, "dp");
 

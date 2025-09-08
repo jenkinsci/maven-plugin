@@ -5,35 +5,41 @@ import hudson.Functions;
 import hudson.model.AbstractBuild;
 import hudson.remoting.Which;
 import hudson.slaves.DumbSlave;
-import hudson.tasks.Maven.MavenInstallation;
-import org.junit.Assume;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.SingleFileSCM;
 import org.jvnet.hudson.test.TestExtension;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import test.BogusPlexusComponent;
 
 import java.io.File;
 import java.io.IOException;
-import org.jvnet.hudson.test.ToolInstallations;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-public class PlexusModuleContributorTest {
-    @Rule
-    public JenkinsRule j = new MavenJenkinsRule();
+@WithJenkins
+class PlexusModuleContributorTest {
+
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     /**
      * Tests the effect of PlexusModuleContributor by trying to parse a POM that uses a custom packaging
      * that only exists inside our custom jar.
      */
     @Test
-    public void testCustomPlexusComponent() throws Exception {
+    void testCustomPlexusComponent() throws Exception {
         // FIXME for some reasons there are some jars (the plexus extensions jar) leaking on windows
         // but we are on maintenance mode here so....
-        Assume.assumeFalse(Functions.isWindows());
+        Assumptions.assumeFalse(Functions.isWindows());
         Maven36xBuildTest.configureMaven36();
 
         MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -43,7 +49,7 @@ public class PlexusModuleContributorTest {
     }
 
     @Test
-    public void testCustomPlexusComponent_Maven3_slave() throws Exception {
+    void testCustomPlexusComponent_Maven3_slave() throws Exception {
         Maven36xBuildTest.configureMaven36();
         DumbSlave s = j.createSlave();
         s.toComputer().connect(false).get();

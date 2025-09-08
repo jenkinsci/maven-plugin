@@ -24,50 +24,48 @@
 
 package hudson.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import hudson.maven.MavenModuleSet;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.RunLoadCounter;
-
-import java.util.concurrent.Callable;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * @author Lucie Votypkova
  */
-public class NodeTest {
+@WithJenkins
+class NodeTest {
 
-    @Rule public JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
 
-    @Before
-    public void before() {
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
     }
 
     /** Verify that the Label#getTiedJobCount does not perform a lazy loading operation. */
     @Issue("JENKINS-26391")
     @Test
-    public void testGetAssignedLabelWithJobs() throws Exception {
+    void testGetAssignedLabelWithJobs() throws Exception {
         final Node node = j.createSlave("label1 label2", null);
         MavenModuleSet mavenProject = j.jenkins.createProject(MavenModuleSet.class, "p");
         mavenProject.setAssignedLabel(j.jenkins.getLabel("label1"));
         RunLoadCounter.prepare(mavenProject);
         j.assertBuildStatus(Result.FAILURE, mavenProject.scheduleBuild2(0).get());
-        Integer labelCount = RunLoadCounter.assertMaxLoads(mavenProject, 0, new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                final Label label = j.jenkins.getLabel("label1");
-                label.reset(); // Make sure cached value is not used
-                return label.getTiedJobCount();
-            }
+        Integer labelCount = RunLoadCounter.assertMaxLoads(mavenProject, 0, () -> {
+            final Label label = j.jenkins.getLabel("label1");
+            label.reset(); // Make sure cached value is not used
+            return label.getTiedJobCount();
         });
 
-        assertEquals("Should have only one job tied to label.", 1, labelCount.intValue());
+        assertEquals(1, labelCount.intValue(), "Should have only one job tied to label.");
     }
 
     /**
@@ -76,7 +74,7 @@ public class NodeTest {
      */
     @Issue("JENKINS-26391")
     @Test
-    public void testGetAssignedLabelMultipleSlaves() throws Exception {
+    void testGetAssignedLabelMultipleSlaves() throws Exception {
         final Node node1 = j.createSlave("label1", null);
         final Node node2 = j.createSlave("label1", null);
 
@@ -90,7 +88,7 @@ public class NodeTest {
         j.assertBuildStatus(Result.FAILURE, project2.scheduleBuild2(0).get());
 
         label.reset(); // Make sure cached value is not used
-        assertEquals("Two jobs should be tied to this label.", 2, label.getTiedJobCount());
+        assertEquals(2, label.getTiedJobCount(), "Two jobs should be tied to this label.");
     }
 
     /**
@@ -99,7 +97,7 @@ public class NodeTest {
      */
     @Issue("JENKINS-26391")
     @Test
-    public void testGetAssignedLabelWhenLabelRemoveFromProject() throws Exception {
+    void testGetAssignedLabelWhenLabelRemoveFromProject() throws Exception {
         final Node node = j.createSlave("label1", null);
 
         MavenModuleSet project = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -109,6 +107,6 @@ public class NodeTest {
 
         project.setAssignedLabel(null);
         label.reset(); // Make sure cached value is not used
-        assertEquals("Label1 should have no tied jobs after the job label was removed.", 0, label.getTiedJobCount());
+        assertEquals(0, label.getTiedJobCount(), "Label1 should have no tied jobs after the job label was removed.");
     }
 }
