@@ -1,6 +1,6 @@
 package hudson.maven.reporters;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.net.URISyntaxException;
+import java.io.Serial;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
@@ -37,11 +37,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.output.NullOutputStream;
-import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.RandomlyFails;
 import org.mockito.ArgumentMatchers;
@@ -54,7 +53,7 @@ import org.mockito.stubbing.Answer;
  * 
  * @author kutzi
  */
-public class SurefireArchiverUnitTest {
+class SurefireArchiverUnitTest {
 
     private SurefireArchiver archiver;
     private MavenBuild build;
@@ -62,13 +61,13 @@ public class SurefireArchiverUnitTest {
     private MojoInfo mojoInfo;
     private MockedStatic<JunitTestResultStorage> mockJunitTestResultStorage;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
-    public void before() throws ComponentConfigurationException, URISyntaxException {
+    void beforeEach() throws Exception {
         this.archiver = new SurefireArchiver();
         this.build = mock(MavenBuild.class);
         final List<Action> actions = new ArrayList<>();
-        when(build.getAction(ArgumentMatchers.any(Class.class))).thenAnswer( (Answer<Action>) invocation -> {
+        when(build.getAction(ArgumentMatchers.any(Class.class))).thenAnswer((Answer<Action>) invocation -> {
             Class<?> type = (Class<?>) invocation.getArguments()[0];
             for (Action action : actions) {
                 if (type.isInstance(action)) {
@@ -76,7 +75,7 @@ public class SurefireArchiverUnitTest {
                 }
             }
             return null;
-        } );
+        });
         when(build.getActions()).thenReturn(actions);
         when(build.getRootDir()).thenReturn(new File("target"));
         
@@ -95,12 +94,12 @@ public class SurefireArchiverUnitTest {
         return mock;
     }
 
-    @After
-    public void after() {
+    @AfterEach
+    void afterEach() {
         mockJunitTestResultStorage.close();
     }
 
-    private MojoInfo createMojoInfo() throws ComponentConfigurationException {
+    private MojoInfo createMojoInfo() throws Exception {
         MojoInfo info = MojoInfoBuilder.mojoBuilder("org.apache.maven.plugins", "maven-surefire-plugin", "test")
                 .version("2.9").build();
         
@@ -109,9 +108,9 @@ public class SurefireArchiverUnitTest {
         doReturn(Boolean.FALSE).when(spy).getConfigurationValue(ArgumentMatchers.anyString(), ArgumentMatchers.eq(Boolean.class));
         return spy;
     }
-    
+
     @Test
-    public void testNotArchivingEmptyResults() throws InterruptedException, IOException, URISyntaxException, ComponentConfigurationException {
+    void testNotArchivingEmptyResults() throws Exception {
         URL resource = SurefireArchiverUnitTest.class.getResource("/surefire-archiver-test1");
         File reportsDir = new File(resource.toURI().getPath());
         doReturn(reportsDir).when(this.mojoInfo).getConfigurationValue("reportsDirectory", File.class);
@@ -119,12 +118,12 @@ public class SurefireArchiverUnitTest {
         this.archiver.postExecute(buildProxy, null, this.mojoInfo, new NullBuildListener(), null);
         
         SurefireReport action = this.build.getAction(SurefireReport.class);
-        Assert.assertNull(action);
+        assertNull(action);
     }
 
     @RandomlyFails("TestResult.parse: Test reports were found but none of them are new. Did tests run?")
     @Test
-    public void testArchiveResults() throws InterruptedException, IOException, URISyntaxException, ComponentConfigurationException {
+    void testArchiveResults() throws Exception {
         URL resource = SurefireArchiverUnitTest.class.getResource("/surefire-archiver-test2");
         File reportsDir = new File(resource.toURI().getPath());
         
@@ -134,10 +133,10 @@ public class SurefireArchiverUnitTest {
         this.archiver.postExecute(buildProxy, null, this.mojoInfo, new NullBuildListener(), null);
         
         SurefireReport action = this.build.getAction(SurefireReport.class);
-        Assert.assertNotNull(action);
+        assertNotNull(action);
         TestResult result = action.getResult();
-        Assert.assertNotNull(result);
-        Assert.assertEquals(2658, result.getTotalCount());
+        assertNotNull(result);
+        assertEquals(2658, result.getTotalCount());
         
         
         resource = SurefireArchiverUnitTest.class.getResource("/surefire-archiver-test3");
@@ -148,14 +147,14 @@ public class SurefireArchiverUnitTest {
         this.archiver.postExecute(buildProxy, null, this.mojoInfo, new NullBuildListener(), null);
         
         action = this.build.getAction(SurefireReport.class);
-        Assert.assertNotNull(action);
+        assertNotNull(action);
         result = action.getResult();
-        Assert.assertNotNull(result);
-        Assert.assertEquals(2670, result.getTotalCount());
+        assertNotNull(result);
+        assertEquals(2670, result.getTotalCount());
     }
-    
+
     @Test
-    public void testResultsAreNotCountedTwice() throws InterruptedException, IOException, URISyntaxException, ComponentConfigurationException {
+    void testResultsAreNotCountedTwice() throws Exception {
         URL resource = SurefireArchiverUnitTest.class.getResource("/surefire-archiver-test2");
         File reportsDir = new File(resource.toURI().getPath());
         doReturn(reportsDir).when(this.mojoInfo).getConfigurationValue("reportsDirectory", File.class);
@@ -172,10 +171,10 @@ public class SurefireArchiverUnitTest {
         result = action.getResult();
         assertEquals(2658, result.getTotalCount());
     }
-    
+
     @Test
     @Issue("JENKINS-31524")
-    public void testUpdatedExistingResultsAreCounted() throws InterruptedException, IOException, URISyntaxException, ComponentConfigurationException {
+    void testUpdatedExistingResultsAreCounted() throws Exception {
         URL resource = SurefireArchiverUnitTest.class.getResource("/surefire-archiver-test2");
         File reportsDir = new File(resource.toURI().getPath());
         doReturn(reportsDir).when(this.mojoInfo).getConfigurationValue("reportsDirectory", File.class);
@@ -199,9 +198,9 @@ public class SurefireArchiverUnitTest {
         result = action.getResult();
         assertEquals(2658, result.getTotalCount());
     }
-    
+
     @Test
-    public void testMultiThreaded() throws InterruptedException, IOException, URISyntaxException, ComponentConfigurationException {
+    void testMultiThreaded() throws Exception {
         File reportsDir2 = new File(SurefireArchiverUnitTest.class.getResource("/surefire-archiver-test2").toURI().getPath());
         doReturn(reportsDir2).when(this.mojoInfo).getConfigurationValue("reportsDirectory", File.class);
         touchReportFiles(reportsDir2);
@@ -220,19 +219,19 @@ public class SurefireArchiverUnitTest {
         
         if (t1.exception != null) {
             t1.exception.printStackTrace(System.out);
-            Assert.fail(t1.exception.toString());
+            fail(t1.exception.toString());
         }
         
         if (t2.exception != null) {
             t2.exception.printStackTrace(System.out);
-            Assert.fail(t2.exception.toString());
+            fail(t2.exception.toString());
         }
         
         SurefireReport action = this.build.getAction(SurefireReport.class);
-        Assert.assertNotNull(action);
+        assertNotNull(action);
         TestResult result = action.getResult();
-        Assert.assertNotNull(result);
-        Assert.assertEquals(2658, result.getTotalCount());
+        assertNotNull(result);
+        assertEquals(2658, result.getTotalCount());
     }
     
     private class ArchiverThread extends Thread {
@@ -257,9 +256,9 @@ public class SurefireArchiverUnitTest {
         }
     }
  
-    private void touchReportFiles(File reportsDir) throws IOException {
+    private void touchReportFiles(File reportsDir) throws Exception {
         File[] files = reportsDir.listFiles();
-        for(File f : files) {
+        for (File f : files) {
             // yup some OS need to live in the future!
             Files.setLastModifiedTime(f.toPath(), FileTime.from(this.mojoInfo.getStartTime() + 5000, TimeUnit.MILLISECONDS));
         }
@@ -359,20 +358,20 @@ public class SurefireArchiverUnitTest {
     
     private static class NullBuildListener implements BuildListener {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
         public PrintStream getLogger() {
-            return new PrintStream(new NullOutputStream());
-        }
-
-        @SuppressWarnings("rawtypes")
-        @Override
-        public void annotate(ConsoleNote ann) throws IOException {
+            return new PrintStream(NullOutputStream.INSTANCE);
         }
 
         @Override
-        public void hyperlink(String url, String text) throws IOException {
+        public void annotate(ConsoleNote ann) {
+        }
+
+        @Override
+        public void hyperlink(String url, String text) {
         }
 
         @Override

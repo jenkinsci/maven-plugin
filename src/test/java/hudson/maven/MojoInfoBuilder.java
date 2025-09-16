@@ -32,7 +32,7 @@ public class MojoInfoBuilder {
         }
     };
 
-    private Map<String, String> configValues = new HashMap<String, String>();
+    private Map<String, String> configValues = new HashMap<>();
     private long startTime = System.currentTimeMillis();
     
     public static MojoInfoBuilder mojoBuilder(String groupId, String artifactId, String goalName) {

@@ -1,23 +1,22 @@
 package hudson.maven.reporters;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import hudson.maven.reporters.SurefireArchiver.FilteredReportsFileIterable;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.junit.Test;
+class SurefireArchiverFilterReportsFileTest {
 
-public class SurefireArchiverFilterReportsFileTest {
-    
     @Test
-    public void shouldIncludeAllReportFiles() {
+    void shouldIncludeAllReportFiles() {
         File reportsDir = new File("bla");
         String[] reportFiles = { "a", "b", "c" };
         FilteredReportsFileIterable iterable = new FilteredReportsFileIterable(reportsDir, reportFiles, 0, 1000);
@@ -34,16 +33,11 @@ public class SurefireArchiverFilterReportsFileTest {
         iterator.next();
         iterator.next();
         
-        try {
-            iterator.next();
-            fail("Iterator should only have 3 elements");
-        } catch (NoSuchElementException e) {
-            // expected
-        }
+        assertThrows(NoSuchElementException.class, iterator::next, "Iterator should only have 3 elements");
     }
-    
+
     @Test
-    public void shouldExcludeReportFileTooOld() {
+    void shouldExcludeReportFileTooOld() {
         File reportsDir = new File("bla");
         String[] reportFiles = { "a", "b", "c" };
         FilteredReportsFileIterable iterable = new FilteredReportsFileIterable(reportsDir, reportFiles, 5000, 10000);
@@ -61,17 +55,12 @@ public class SurefireArchiverFilterReportsFileTest {
         
         iterator.next();
         iterator.next();
-        
-        try {
-            iterator.next();
-            fail("Iterator should only have 2 elements");
-        } catch (NoSuchElementException e) {
-            // expected
-        }
+
+        assertThrows(NoSuchElementException.class, iterator::next, "Iterator should only have 2 elements");
     }
-    
+
     @Test
-    public void shouldExcludeReportFileTooYoung() {
+    void shouldExcludeReportFileTooYoung() {
         File reportsDir = new File("bla");
         String[] reportFiles = { "a", "b", "c" };
         FilteredReportsFileIterable iterable = new FilteredReportsFileIterable(reportsDir, reportFiles, 5000, 10000);
@@ -89,13 +78,8 @@ public class SurefireArchiverFilterReportsFileTest {
         
         iterator.next();
         iterator.next();
-        
-        try {
-            iterator.next();
-            fail("Iterator should only have 2 elements");
-        } catch (NoSuchElementException e) {
-            // expected
-        }
+
+        assertThrows(NoSuchElementException.class, iterator::next, "Iterator should only have 2 elements");
     }
 
 }

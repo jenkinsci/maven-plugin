@@ -880,10 +880,10 @@ public class MavenModuleSetBuild extends AbstractMavenBuild<MavenModuleSet,Maven
                             }
                             return r;
                         } finally {
-                            builder.end(launcher);
                             getActions().remove(mpa);
                             process.discard();
-                        }                            
+                            builder.end(launcher);
+                        }
                         
                     } catch (InterruptedException e) {
                         r = Executor.currentExecutor().abortResult();

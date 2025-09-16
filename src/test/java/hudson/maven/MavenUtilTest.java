@@ -23,54 +23,22 @@ package hudson.maven;
 
 
 import org.apache.maven.project.MavenProject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Olivier Lamy
  */
-public class MavenUtilTest
-{
-    @Test
-    public void testMaven2(){
-        Assert.assertEquals( MavenUtil.MavenVersion.MAVEN_2, MavenUtil.getMavenVersion( "2.2.1" ) );
-    }
-
-    @Test
-    public void testMaven301(){
-        Assert.assertEquals( MavenUtil.MavenVersion.MAVEN_3_0_X, MavenUtil.getMavenVersion( "3.0.1" ) );
-    }
-
-    @Test
-    public void testMaven31(){
-        Assert.assertEquals( MavenUtil.MavenVersion.MAVEN_3_1, MavenUtil.getMavenVersion( "3.1.0" ) );
-    }
-
-    @Test
-    public void eventSpy2x(){
-        Assert.assertFalse( MavenUtil.supportEventSpy( "2.2.1" ) );
-    }
-
-    @Test
-    public void eventSpy301(){
-        Assert.assertFalse( MavenUtil.supportEventSpy( "3.0.1" ) );
-    }
-
-    @Test
-    public void eventSpy302(){
-        Assert.assertFalse( MavenUtil.supportEventSpy( "3.0.2" ) );
-    }
-
-    @Test
-    public void eventSpy31x(){
-        Assert.assertTrue( MavenUtil.supportEventSpy( "3.1.0" ) );
-    }
+class MavenUtilTest {
 
     private MavenProject project;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         project = new MavenProject();
         project.setGroupId("test");
         project.setArtifactId("testmodule");
@@ -79,25 +47,60 @@ public class MavenUtilTest
     }
 
     @Test
-    public void resolveVersionPlain() {
-        Assert.assertTrue("1.2.3".equals(MavenUtil.resolveVersion("1.2.3", project)));
+    void testMaven2(){
+        assertEquals(MavenUtil.MavenVersion.MAVEN_2, MavenUtil.getMavenVersion("2.2.1"));
     }
 
     @Test
-    public void resolveVersionComplex() {
-        Assert.assertNull(MavenUtil.resolveVersion("1.${abc}.3", project));
-        Assert.assertNull(MavenUtil.resolveVersion("1.${abc}", project));
-        Assert.assertNull(MavenUtil.resolveVersion("${abc}.3", project));
+    void testMaven301(){
+        assertEquals(MavenUtil.MavenVersion.MAVEN_3_0_X, MavenUtil.getMavenVersion("3.0.1"));
     }
 
     @Test
-    public void resolveVersionMissingProperty() {
-        Assert.assertNull(MavenUtil.resolveVersion("${abc}", project));
+    void testMaven31(){
+        assertEquals(MavenUtil.MavenVersion.MAVEN_3_1, MavenUtil.getMavenVersion("3.1.0"));
     }
 
     @Test
-    public void resolveVersionProperty() {
+    void eventSpy2x(){
+        assertFalse(MavenUtil.supportEventSpy("2.2.1"));
+    }
+
+    @Test
+    void eventSpy301(){
+        assertFalse(MavenUtil.supportEventSpy("3.0.1"));
+    }
+
+    @Test
+    void eventSpy302(){
+        assertFalse(MavenUtil.supportEventSpy("3.0.2"));
+    }
+
+    @Test
+    void eventSpy31x(){
+        assertTrue(MavenUtil.supportEventSpy("3.1.0"));
+    }
+
+    @Test
+    void resolveVersionPlain() {
+        assertEquals("1.2.3", MavenUtil.resolveVersion("1.2.3", project));
+    }
+
+    @Test
+    void resolveVersionComplex() {
+        assertNull(MavenUtil.resolveVersion("1.${abc}.3", project));
+        assertNull(MavenUtil.resolveVersion("1.${abc}", project));
+        assertNull(MavenUtil.resolveVersion("${abc}.3", project));
+    }
+
+    @Test
+    void resolveVersionMissingProperty() {
+        assertNull(MavenUtil.resolveVersion("${abc}", project));
+    }
+
+    @Test
+    void resolveVersionProperty() {
         project.getProperties().setProperty("abc", "1.2.3");
-        Assert.assertTrue("1.2.3".equals(MavenUtil.resolveVersion("${abc}", project)));
+        assertEquals("1.2.3", MavenUtil.resolveVersion("${abc}", project));
     }
 }

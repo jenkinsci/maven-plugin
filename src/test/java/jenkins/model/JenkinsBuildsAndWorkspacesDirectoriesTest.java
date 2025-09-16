@@ -1,19 +1,20 @@
 package jenkins.model;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.LoggerRule;
-import org.jvnet.hudson.test.RestartableJenkinsRule;
+import org.jvnet.hudson.test.LogRecorder;
+import org.jvnet.hudson.test.junit.jupiter.JenkinsSessionExtension;
 
 import java.util.logging.Level;
 import java.util.stream.Stream;
@@ -22,22 +23,23 @@ import java.util.stream.Stream;
  * Since JENKINS-50164, Jenkins#workspacesDir and Jenkins#buildsDir had their associated UI deleted.
  * So instead of configuring through the UI, we now have to use sysprops for this.
  *
- * <p>So this test class uses a {@link RestartableJenkinsRule} to check the behaviour of this
+ * <p>So this test class uses a {@link JenkinsSessionExtension} to check the behaviour of this
  * sysprop being present or not between two restarts.
  */
-public class JenkinsBuildsAndWorkspacesDirectoriesTest {
+class JenkinsBuildsAndWorkspacesDirectoriesTest {
 
-    @Rule public RestartableJenkinsRule story = new RestartableJenkinsRule();
+    @RegisterExtension
+    private final JenkinsSessionExtension story = new JenkinsSessionExtension();
 
-    @Rule public LoggerRule loggerRule = new LoggerRule();
+    private final LogRecorder logRecorder = new LogRecorder();
 
-    @Before
-    public void before() {
+    @BeforeEach
+    void beforeEach() {
         clearSystemProperties();
     }
 
-    @After
-    public void after() {
+    @AfterEach
+    void afterEach() {
         clearSystemProperties();
     }
 
@@ -55,31 +57,31 @@ public class JenkinsBuildsAndWorkspacesDirectoriesTest {
     }
 
     private boolean logWasFound(String searched) {
-        return loggerRule.getRecords().stream()
+        return logRecorder.getRecords().stream()
                 .anyMatch(record -> record.getMessage().contains(searched));
     }
 
     @Test
     @Issue("JENKINS-12251")
-    public void testItemFullNameExpansion() {
-        loggerRule.record(Jenkins.class, Level.WARNING)
+    void testItemFullNameExpansion() throws Throwable {
+        logRecorder.record(Jenkins.class, Level.WARNING)
                 .record(Jenkins.class, Level.INFO)
                 .capture(1000);
 
-        story.then(steps -> {
-            assertTrue(story.j.getInstance().isDefaultBuildDir());
-            assertTrue(story.j.getInstance().isDefaultWorkspaceDir());
+        story.then(j -> {
+            assertTrue(j.getInstance().isDefaultBuildDir());
+            assertTrue(j.getInstance().isDefaultWorkspaceDir());
             setBuildsDirProperty("${JENKINS_HOME}/test12251_builds/${ITEM_FULL_NAME}");
             setWorkspacesDirProperty("${JENKINS_HOME}/test12251_ws/${ITEM_FULL_NAME}");
         });
 
-        story.then(steps -> {
+        story.then(j -> {
             assertTrue(JenkinsBuildsAndWorkspacesDirectoriesTest.this.logWasFound("Changing builds directories from "));
-            assertFalse(story.j.getInstance().isDefaultBuildDir());
-            assertFalse(story.j.getInstance().isDefaultWorkspaceDir());
+            assertFalse(j.getInstance().isDefaultBuildDir());
+            assertFalse(j.getInstance().isDefaultWorkspaceDir());
 
             // build a dummy project
-            MavenModuleSet m = story.j.jenkins.createProject(MavenModuleSet.class, "p");
+            MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
             m.setScm(new ExtractResourceSCM(getClass().getResource("/simple-projects.zip")));
             MavenModuleSetBuild b = m.scheduleBuild2(0).get();
 

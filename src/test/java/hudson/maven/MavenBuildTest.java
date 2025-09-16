@@ -1,9 +1,7 @@
 package hudson.maven;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+
 import hudson.Launcher;
 import hudson.maven.MavenBuildProxy.BuildCallable;
 import hudson.model.AbstractBuild;
@@ -22,8 +20,8 @@ import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.AggregatedTestResultAction;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,68 +32,74 @@ import jakarta.servlet.ServletException;
 
 
 import org.apache.maven.project.MavenProject;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.Email;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.SingleFileSCM;
-import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-public class MavenBuildTest {
+@WithJenkins
+class MavenBuildTest {
 
-    @Rule public JenkinsRule j = new MavenJenkinsRule();
-    
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
+
     /**
      * NPE in {@code build.getProject().getWorkspace()} for {@link MavenBuild}.
      */
-    @Bug(4192)
+    @Issue("JENKINS-4192")
     @Test
-    public void testMavenWorkspaceExists() throws Exception {
+    void testMavenWorkspaceExists() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("HUDSON-4192.zip")));
         j.buildAndAssertSuccess(m);
     }
-    
+
     /**
      * {@link Result} getting set to SUCCESS even if there's a test failure, when the test failure
      * does not happen in the final task segment.
      */
-    @Bug(4177)
+    @Issue("JENKINS-4177")
     @Test
-    public void testTestFailureInEarlyTaskSegment() throws Exception {
+    void testTestFailureInEarlyTaskSegment() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install org.codehaus.mojo:findbugs-maven-plugin:3.0.5:findbugs -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-test-failure-findbugs.zip")));
         j.assertBuildStatus(Result.UNSTABLE, m.scheduleBuild2(0).get());
     }
-    
+
     /**
      * Verify that a compilation error properly shows up as a failure.
      */
     @Test
-    public void testCompilationFailure() throws Exception {
+    void testCompilationFailure() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-compilation-failure.zip")));
         j.assertBuildStatus(Result.FAILURE, m.scheduleBuild2(0).get());
     }
-    
+
     /**
      * Workspace determination problem on non-aggregator style build.
      */
-    @Bug(4226)
+    @Issue("JENKINS-4226")
     @Test
-    public void testParallelModuleBuild() throws Exception {
+    void testParallelModuleBuild() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
@@ -110,66 +114,63 @@ public class MavenBuildTest {
     }
 
 
-    @Bug(value=8445)
+    @Issue("JENKINS-8445")
     @Test
-    public void testMaven2SeveralModulesInDirectory() throws Exception {
-        
+    void testMaven2SeveralModulesInDirectory() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("several-modules-in-directory.zip")));
-        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
+        m.setGoals("clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
-        assertFalse( mmsb.getProject().getModules().isEmpty());
-    }    
+        assertFalse(mmsb.getProject().getModules().isEmpty());
+    }
 
     @Email("https://groups.google.com/d/msg/hudson-users/Xhw00UopVN0/FA9YqDAIsSYJ")
     @Test
-    public void testMavenWithDependencyVersionInEnvVar() throws Exception {
-        
+    void testMavenWithDependencyVersionInEnvVar() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
         ParametersDefinitionProperty parametersDefinitionProperty = 
-            new ParametersDefinitionProperty(new StringParameterDefinition( "JUNITVERSION", "3.8.2" ));
+            new ParametersDefinitionProperty(new StringParameterDefinition("JUNITVERSION", "3.8.2"));
         
-        m.addProperty( parametersDefinitionProperty );
-        m.setMaven( mavenInstallation.getName() );
+        m.addProperty(parametersDefinitionProperty);
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("envars-maven-project.zip")));
-        m.setGoals( "clean test-compile -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
+        m.setGoals("clean test-compile -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
-        assertFalse( mmsb.getProject().getModules().isEmpty());
-    }     
-    
-    @Bug(8573)
+        assertFalse(mmsb.getProject().getModules().isEmpty());
+    }
+
+    @Issue("JENKINS-8573")
     @Test
-    public void testBuildTimeStampProperty() throws Exception {
+    void testBuildTimeStampProperty() throws Exception {
         MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-8573.zip")));
-        m.setGoals( "process-resources" );
+        m.setGoals("process-resources");
         j.buildAndAssertSuccess(m);
-        String content = m.getLastBuild().getWorkspace().child( "target/classes/test.txt" ).readToString();
-        assertFalse( content.contains( "${maven.build.timestamp}") );
-        assertFalse( content.contains( "${maven.build.timestamp}") );
+        String content = m.getLastBuild().getWorkspace().child("target/classes/test.txt").readToString();
+        assertFalse(content.contains("${maven.build.timestamp}"));
+        assertFalse(content.contains("${maven.build.timestamp}"));
 
-        System.out.println( "content " + content );
+        System.out.println("content " + content);
     }
-    
-    @Bug(value=15865)
+
+    @Issue("JENKINS-15865")
     @Test
-    public void testMavenFailsafePluginTestResultsAreRecorded() throws Exception {
-        
+    void testMavenFailsafePluginTestResultsAreRecorded() throws Exception {
         // GIVEN: a Maven project with maven-failsafe-plugin and Maven 2.2.1
         MavenModuleSet mavenProject = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
         mavenProject.setMaven(mavenInstallation.getName());
         mavenProject.getReporters().add(new TestReporter());
         mavenProject.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-15865.zip")));
-        mavenProject.setGoals( "clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
+        mavenProject.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         
         // WHEN project is build
         MavenModuleSetBuild mmsb = j.buildAndAssertSuccess(mavenProject);
@@ -187,9 +188,9 @@ public class MavenBuildTest {
         assertEquals(1, testResultAction.getTotalCount());
     }
 
-    @Bug(18178)
+    @Issue("JENKINS-18178")
     @Test
-    public void testExtensionsConflictingWithCore() throws Exception {
+    void testExtensionsConflictingWithCore() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setMaven(Maven36xBuildTest.configureMaven36().getName());
         m.setScm(new SingleFileSCM("pom.xml",
@@ -201,15 +202,15 @@ public class MavenBuildTest {
         j.buildAndAssertSuccess(m);
     }
 
-    @Bug(19801)
+    @Issue("JENKINS-19801")
     @Test
-    public void stopBuildAndAllSubmoduleBuilds() throws Exception {
+    void stopBuildAndAllSubmoduleBuilds() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet project = j.jenkins.createProject(MavenModuleSet.class, "p");
         project.setGoals("clean package -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         project.setScm(new ExtractResourceSCM(
                 getClass().getResource("/hudson/maven/maven-multimod.zip")
-        ));
+       ));
 
         project.getReporters().add(new AbortInTheMiddleOfModuleB());
 
@@ -224,19 +225,20 @@ public class MavenBuildTest {
 
         for (MavenBuild mb: build.getModuleLastBuilds().values()) {
             final String moduleName = mb.getParent().getDisplayName();
-            assertFalse("Module " + moduleName + " is still building", mb.isBuilding());
+            assertFalse(mb.isBuilding(), "Module " + moduleName + " is still building");
         }
     }
 
     private MavenBuild getModuleBuild(MavenModuleSetBuild build, String name) {
         MavenModule module = build.getProject().getModule(
                 "org.jvnet.hudson.main.test.multimod:" + name
-        );
+       );
         return build.getModuleLastBuilds().get(module);
     }
 
     /** Abort build after ModuleB compile phase */
     private static class AbortInTheMiddleOfModuleB extends MavenReporter {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -251,9 +253,10 @@ public class MavenBuildTest {
 
         private void stop(MavenBuildProxy build) throws IOException, InterruptedException {
             build.execute(new BuildCallable<Void, IOException>() {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
-                public Void call(MavenBuild build) throws InterruptedException, IOException {
+                public Void call(MavenBuild build) throws IOException {
                     try {
 
                         build.getParentBuild().doStop();
@@ -273,14 +276,14 @@ public class MavenBuildTest {
      * 
      * @throws Exception
      */
-    @Bug(16522)
+    @Issue("JENKINS-16522")
     @Test
-    public void testCorrectModuleBuildStatus() throws Exception {
+    void testCorrectModuleBuildStatus() throws Exception {
         MavenModuleSet mavenProject = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = Maven36xBuildTest.configureMaven36();
         mavenProject.setMaven(mavenInstallation.getName());
         mavenProject.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-16522.zip")));
-        mavenProject.setGoals( "clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
+        mavenProject.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild build = mavenProject.scheduleBuild2(0).get();
         
         j.assertBuildStatus(Result.FAILURE, build);
@@ -296,23 +299,24 @@ public class MavenBuildTest {
     }
     
     private static class TestReporter extends MavenReporter {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
-        public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+        public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) {
             assertNotNull(build.getWorkspace());
             return true;
         }
-    }    
+    }
 
     /**
      * This test makes sure the project actions of the prebuilders and postbuilders get requested (and therefore exposed).
      * 
      * @throws Exception
      */
-    @Bug(20506)
+    @Issue("JENKINS-20506")
     @Test
-    public void testActionsOfPreAndPostBuildersMustBeExposed() throws Exception {
+    void testActionsOfPreAndPostBuildersMustBeExposed() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
@@ -328,17 +332,17 @@ public class MavenBuildTest {
         
         j.buildAndAssertSuccess(m);
         
-        assertTrue("actions of prebuilders have not been requested during build",pre.projectActionsGotRequested());
-        assertTrue("actions of postbuilders have not been requested during build",post.projectActionsGotRequested());
+        assertTrue(pre.projectActionsGotRequested(),"actions of prebuilders have not been requested during build");
+        assertTrue(post.projectActionsGotRequested(),"actions of postbuilders have not been requested during build");
         
         final TestAction action = m.getAction(TestAction.class);
         assertNotNull(action);
         final List<TestAction> actions = m.getActions(TestAction.class);
         assertEquals(2, actions.size());
-    }     
+    }
 
     @Test
-    public void testBuildWrappersTeardown() throws Exception {
+    void testBuildWrappersTeardown() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         m.setScm(new ExtractResourceSCM(getClass().getResource("multimodule-maven.zip")));
@@ -378,7 +382,7 @@ public class MavenBuildTest {
 
     private static class FailingBuildWrapper extends BuildWrapper {
         @Override
-        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
             return null;
         }
     }
@@ -387,7 +391,7 @@ public class MavenBuildTest {
         public boolean tearDown;
 
         @Override
-        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
             return new Environment() {
                 public boolean tearDown(AbstractBuild build, BuildListener listener) {
                     tearDown = true;

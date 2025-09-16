@@ -7,6 +7,7 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import hudson.FilePath;
 import hudson.Launcher;
@@ -14,17 +15,18 @@ import hudson.maven.reporters.MavenFingerprinter;
 import hudson.model.BuildListener;
 import hudson.tasks.LogRotator;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.For;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.Serial;
+
 import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  *
@@ -35,63 +37,53 @@ import org.jvnet.hudson.test.ExtractResourceWithChangesSCM;
  *
  *
  */
-public class MavenMultiModuleLogRotatorCleanArtifactsTest
-{
+@WithJenkins
+class MavenMultiModuleLogRotatorCleanArtifactsTest {
 
-
-    @Rule
-    public JenkinsRule j = new MavenJenkinsRule();
+    private JenkinsRule j;
 
     private MavenModuleSet m;
 
     private FilePath jobs;
 
-    private static class TestReporter
-        extends MavenReporter
-    {
-        /**
-         *
-         */
+    private static class TestReporter extends MavenReporter {
+
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
-        public boolean end( MavenBuild build, Launcher launcher, BuildListener listener )
-            throws InterruptedException, IOException
-        {
-            Assert.assertNotNull( build.getProject().getSomeWorkspace() );
-            Assert.assertNotNull( build.getWorkspace() );
+        public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) {
+            assertNotNull(build.getProject().getSomeWorkspace());
+            assertNotNull(build.getWorkspace());
             return true;
         }
     }
 
-    @Before
-    public void setUp()
-        throws Exception
-    {
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) throws Exception {
+        j = rule;
+
         Maven36xBuildTest.configureMaven36();
-        m = j.jenkins.createProject( MavenModuleSet.class, "p" );
-        m.setBuildDiscarder( new LogRotator( "-1", "2", "-1", "1" ) );
-        m.getReporters().add( new TestReporter() );
-        m.getReporters().add( new MavenFingerprinter() );
-        m.setScm( new ExtractResourceWithChangesSCM( getClass().getResource( "maven-multimod.zip" ),
-                                                      getClass().getResource( "maven-multimod-changes.zip" ) ) );
-        j.buildAndAssertSuccess( m );
+        m = j.jenkins.createProject(MavenModuleSet.class, "p");
+        m.setBuildDiscarder(new LogRotator("-1", "2", "-1", "1"));
+        m.getReporters().add(new TestReporter());
+        m.getReporters().add(new MavenFingerprinter());
+        m.setScm(new ExtractResourceWithChangesSCM(getClass().getResource("maven-multimod.zip"),
+                                                      getClass().getResource("maven-multimod-changes.zip")));
+        j.buildAndAssertSuccess(m);
         // Now run a second build with the changes.
-        m.setIncrementalBuild( false );
-        j.buildAndAssertSuccess( m );
+        m.setIncrementalBuild(false);
+        j.buildAndAssertSuccess(m);
         FilePath workspace = m.getSomeWorkspace();
         FilePath parent = workspace.getParent().getParent();
-        jobs = new FilePath( parent, "jobs" );
+        jobs = new FilePath(parent, "jobs");
     }
 
     @Test
-    @Bug( 17508 )
-    @For( { MavenModuleSetBuild.class, LogRotator.class } )
-    @SuppressWarnings( "unchecked" )
-    public void testArtifactsAreDeletedInBuildOneWhenBuildDiscarderRun()
-        throws Exception
-    {
-        File directory = new File( new FilePath( jobs, "p/builds/1" ).getRemote() );
+    @Issue("JENKINS-17508")
+    @For({MavenModuleSetBuild.class, LogRotator.class})
+    void testArtifactsAreDeletedInBuildOneWhenBuildDiscarderRun() {
+        File directory = new File(new FilePath(jobs, "p/builds/1").getRemote());
         await("Found jars in previous build, that should not happen").until(() -> FileUtils.listFiles(directory, new String[] {"jar"}, true), empty());
         await("No jars in last build ALERT!").until(() -> FileUtils.listFiles(new File(new FilePath(jobs, "p/builds/2").getRemote()), new String[] {"jar"}, true), not(empty()));
     }
@@ -100,14 +92,11 @@ public class MavenMultiModuleLogRotatorCleanArtifactsTest
      * Performs a third build and expecting build one to be deleted
      * @throws Exception
      */
-    @For( { MavenModuleSetBuild.class, LogRotator.class } )
+    @For({MavenModuleSetBuild.class, LogRotator.class})
     @Test
-    public void testArtifactsOldBuildsDeletedWhenBuildDiscarderRun()
-        throws Exception
-    {
-        j.buildAndAssertSuccess( m );
-        File directory = new File( new FilePath( jobs, "p/builds/1" ).getRemote() );
+    void testArtifactsOldBuildsDeletedWhenBuildDiscarderRun() throws Exception {
+        j.buildAndAssertSuccess(m);
+        File directory = new File(new FilePath(jobs, "p/builds/1").getRemote());
         await("oops the build should have been deleted").until(directory::exists, is(false));
     }
-
 }
