@@ -23,11 +23,13 @@
  */
 package hudson.maven.reporters;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.EnvVars;
 import hudson.maven.Maven36xBuildTest;
-import hudson.maven.MavenJenkinsRule;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
 import hudson.model.Result;
@@ -45,12 +47,13 @@ import hudson.util.DescribableList;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jvnet.mock_javamail.Mailbox;
 
 import java.util.List;
@@ -61,7 +64,8 @@ import java.util.List;
  * @author mrebasti
  *
  */
-public class MavenMailerTest {
+@WithJenkins
+class MavenMailerTest {
 
 	private static final String EMAIL_JENKINS_CONFIGURED = "jenkins.configured.mail@domain.org";
 	private static final String EMAIL_ADMIN = "\"me <me@sun.com>\"";
@@ -69,30 +73,32 @@ public class MavenMailerTest {
 	private static final String EMAIL_OTHER = "other.email@domain.org";
 	private static final String ENV_EMAILS_VARIABLE = "ENV_EMAILS";
 	private static final String ENV_EMAILS_VALUE = "another.email@domain.org";
-	
-	@Rule public JenkinsRule j = new MavenJenkinsRule();
 
-	@Test
-	@Bug(5695)
-    public void testMulipleMails() throws Exception {
+    private JenkinsRule j;
 
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
+
+    @Test 
+    @Issue("JENKINS-5695")
+    void testMultipleMails() throws Exception {
         // there is one module failing in the build, therefore we expect one mail for the failed module and one for the over all build status
         final Mailbox inbox = runMailTest(true);
         assertEquals(2, inbox.size());
 
     }
 
-	@Test
-    @Bug(5695)
-    public void testSingleMails() throws Exception {
-
+    @Test
+    @Issue("JENKINS-5695")
+    void testSingleMails() throws Exception {
         final Mailbox inbox = runMailTest(false);
         assertEquals(1, inbox.size());
 
     }
 
-    public Mailbox runMailTest(boolean perModuleEamil) throws Exception {
-
+    private Mailbox runMailTest(boolean perModuleEamil) throws Exception {
         final DescriptorImpl mailDesc = Jenkins.get().getDescriptorByType(Mailer.DescriptorImpl.class);
 
         // intentionally give the whole thin in a double quote
@@ -121,17 +127,17 @@ public class MavenMailerTest {
 
         return yourInbox;
     }
-    
-    
+
+
     /**
-	 * Test using the list of recipients of TAG ciManagement defined in
-	 * ModuleRoot for all the modules.
-	 * 
-	 * @throws Exception
-	 */
+     * Test using the list of recipients of TAG ciManagement defined in
+     * ModuleRoot for all the modules.
+     * 
+     * @throws Exception
+     */
     @Test
     @Issue({"JENKINS-1201", "JENKINS-50251"})
-    public void testCiManagementNotificationRoot() throws Exception {
+    void testCiManagementNotificationRoot() throws Exception {
     	JenkinsLocationConfiguration.get().setAdminAddress(EMAIL_ADMIN);
         Mailbox yourInbox = Mailbox.get(new InternetAddress(EMAIL_SOME));
         Mailbox jenkinsConfiguredInbox = Mailbox.get(new InternetAddress(EMAIL_JENKINS_CONFIGURED));
@@ -175,18 +181,17 @@ public class MavenMailerTest {
         assertContainsRecipient(EMAIL_JENKINS_CONFIGURED, message);
         
     }
-    
+
     /**
-	 * Test using the list of recipients of TAG ciManagement defined in
-	 * ModuleRoot for de root module, and the recipients defined in moduleA for
-	 * moduleA.
-	 * 
-	 * @throws Exception
-	 */
+     * Test using the list of recipients of TAG ciManagement defined in
+     * ModuleRoot for de root module, and the recipients defined in moduleA for
+     * moduleA.
+     * 
+     * @throws Exception
+     */
     @Test
-    @Bug(6421)
-    public void testCiManagementNotificationModule() throws Exception {
-    	
+    @Issue("JENKINS-6421")
+    void testCiManagementNotificationModule() throws Exception {
     	JenkinsLocationConfiguration.get().setAdminAddress(EMAIL_ADMIN);
         Mailbox otherInbox = Mailbox.get(new InternetAddress(EMAIL_OTHER));
         Mailbox someInbox = Mailbox.get(new InternetAddress(EMAIL_SOME));
@@ -231,13 +236,13 @@ public class MavenMailerTest {
     }
 
     @Test
-    public void testEnvironmentVariableMailBeingReplaced() throws Exception {
+    void testEnvironmentVariableMailBeingReplaced() throws Exception {
         Jenkins instance = j.getInstance();
         DescribableList<NodeProperty<?>, NodePropertyDescriptor> globalNodeProperties = instance.getGlobalNodeProperties();
         List<EnvironmentVariablesNodeProperty> envVarsNodePropertyList =
                 globalNodeProperties.getAll(EnvironmentVariablesNodeProperty.class);
 
-        EnvVars envVars = null;
+        EnvVars envVars;
         if (envVarsNodePropertyList == null || envVarsNodePropertyList.isEmpty()) {
             EnvironmentVariablesNodeProperty envVarsNodeProperty = new EnvironmentVariablesNodeProperty();
             globalNodeProperties.add(envVarsNodeProperty);
@@ -291,28 +296,28 @@ public class MavenMailerTest {
     }
 
     @Test
-    @Bug(20209)
-    public void testRecipientsNotNullAndMavenRecipientsNull () {
+    @Issue("JENKINS-20209")
+    void testRecipientsNotNullAndMavenRecipientsNull() {
         MavenMailer fixture = new MavenMailer();
         fixture.recipients = "your-mail@gmail.com";
         fixture.mavenRecipients = null;
         
         assertEquals("your-mail@gmail.com", fixture.getAllRecipients());
     }
-    
+
     @Test
-    @Bug(20209)
-    public void testMavenRecipientsNotNullAndRecipientsNull () {
+    @Issue("JENKINS-20209")
+    void testMavenRecipientsNotNullAndRecipientsNull() {
         MavenMailer fixture = new MavenMailer();
         fixture.recipients = null;
         fixture.mavenRecipients = "your-mail@gmail.com";
         
         assertEquals("your-mail@gmail.com", fixture.getAllRecipients());
     }
-    
+
     @Test
-    @Bug(20209)
-    public void testMavenRecipientsAndRecipientsNotNull () {
+    @Issue("JENKINS-20209")
+    void testMavenRecipientsAndRecipientsNotNull() {
         MavenMailer fixture = new MavenMailer();
         fixture.recipients = "your-mail@gmail.com";
         fixture.mavenRecipients = "your-other-mail@gmail.com";
@@ -321,8 +326,8 @@ public class MavenMailerTest {
     }
 
 	private void assertContainsRecipient(String email, Message message) throws Exception {
-		assert email != null;
-		assert !email.trim().equals("");
+		assertNotNull(email);
+		assertFalse(email.trim().isEmpty());
 		boolean containRecipient = false;
 		for (Address address: message.getAllRecipients()) {
 			if (email.equals(address.toString())) {
@@ -330,7 +335,7 @@ public class MavenMailerTest {
 				break;
 			}
 		}
-		assert containRecipient;
+		assertTrue(containRecipient);
 	}
 
 }

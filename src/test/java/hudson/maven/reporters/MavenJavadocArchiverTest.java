@@ -24,31 +24,40 @@
 package hudson.maven.reporters;
 
 import hudson.maven.Maven36xBuildTest;
-import hudson.maven.MavenJenkinsRule;
 import hudson.maven.MavenModule;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
 import java.io.File;
-import org.junit.ClassRule;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Rule;
-import org.jvnet.hudson.test.BuildWatcher;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.junit.jupiter.BuildWatcherExtension;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class MavenJavadocArchiverTest
-{
+@WithJenkins
+class MavenJavadocArchiverTest {
 
-    @ClassRule public static BuildWatcher buildWatcher = new BuildWatcher();
+    @SuppressWarnings("unused")
+    @RegisterExtension
+    private static final BuildWatcherExtension BUILD_WATCHER = new BuildWatcherExtension();
 
-    @Rule public JenkinsRule r = new MavenJenkinsRule();
+    private JenkinsRule r;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        r = rule;
+    }
 
     @Issue("JENKINS-57244")
     @Test
-    public void simple() throws Exception {
+    void simple() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet mms = r.createProject(MavenModuleSet.class, "p");
         mms.setAssignedNode(r.createSlave());

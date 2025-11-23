@@ -21,197 +21,187 @@ package hudson.maven;
  */
 
 import hudson.Launcher;
-import hudson.maven.reporters.SurefireReport;
 import hudson.model.BuildListener;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Result;
 import hudson.model.StringParameterDefinition;
 import hudson.tasks.Maven.MavenInstallation;
-import hudson.tasks.junit.TestResult;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TestResultProjectAction;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.JavaVersion;
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.Assume;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.Email;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.*;
 import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import static org.junit.Assert.*;
-import org.junit.Ignore;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Olivier Lamy
  */
-public abstract class AbstractMaven3xBuildTest {
+@WithJenkins
+abstract class AbstractMaven3xBuildTest {
 
-    @Rule
-    public MavenJenkinsRule j = new MavenJenkinsRule();
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     public abstract MavenInstallation configureMaven3x() throws Exception;
 
     @Test
-    public void testSimpleMaven3Build() throws Exception {
-        
+    void testSimpleMaven3Build() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
-        m.setGoals( "clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
+        m.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
-        assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
+        assertTrue(MavenUtil.maven3orLater(b.getMavenVersionUsed()));
     }
 
     @Test
-    public void testSimpleMaven3BuildRedeployPublisher() throws Exception {
-        
+    void testSimpleMaven3BuildRedeployPublisher() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         File repo = j.createTmpDir();
-        FileUtils.cleanDirectory( repo );
+        FileUtils.cleanDirectory(repo);
         m.getReporters().add(new TestReporter());
         m.getPublishersList().add(new RedeployPublisher("",repo.toURI().toString(),true, false));
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
-        m.setGoals( "clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
+        m.setGoals("clean install -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
-        assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
+        assertTrue(MavenUtil.maven3orLater(b.getMavenVersionUsed()));
         File artifactDir = new File(repo,"com/mycompany/app/my-app/1.7-SNAPSHOT/");
-        String[] files = artifactDir.list( new FilenameFilter()
-        {
-            
-            public boolean accept( File dir, String name )
-            {
-                System.out.println("file name : " +name );
-                return name.endsWith( ".jar" );
-            }
+        String[] files = artifactDir.list((dir, name) -> {
+            System.out.println("file name : " +name);
+            return name.endsWith(".jar");
         });
-        assertTrue("SNAPSHOT exist",!files[0].contains( "SNAPSHOT" ));
-        assertTrue("file not ended with -1.jar", files[0].endsWith( "-1.jar" ));
+        assertFalse(files[0].contains("SNAPSHOT"), "SNAPSHOT exist");
+        assertTrue(files[0].endsWith("-1.jar"), "file not ended with -1.jar");
     }
 
     @Test
-    public void testSiteBuildWithForkedMojo() throws Exception {
+    void testSiteBuildWithForkedMojo() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
-        m.setMaven( mavenInstallation.getName() );        
+        m.setMaven(mavenInstallation.getName());        
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven3-project.zip")));
         m.setGoals("-e clean site -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild b = j.buildAndAssertSuccess(m);
-        assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
+        assertTrue(MavenUtil.maven3orLater(b.getMavenVersionUsed()));
     }
 
     @Test
-    @Bug(value=8395)
-    public void testMaven3BuildWrongScope() throws Exception {
-        
+    @Issue("JENKINS-8395")
+    void testMaven3BuildWrongScope() throws Exception {
         File pom = new File(this.getClass().getResource("test-pom-8395.xml").toURI());
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setRootPOM(pom.getAbsolutePath());
-        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
-        MavenModuleSetBuild mmsb =  m.scheduleBuild2( 0 ).get();
-        j.assertBuildStatus( Result.FAILURE, mmsb );
-        System.out.println("mmsb.getProject().getModules " + mmsb.getProject().getModules() );
-        assertTrue( mmsb.getProject().getModules().isEmpty());
+        m.setGoals("clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
+        MavenModuleSetBuild mmsb =  m.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, mmsb);
+        System.out.println("mmsb.getProject().getModules " + mmsb.getProject().getModules());
+        assertTrue(mmsb.getProject().getModules().isEmpty());
     }
 
     @Test
-    @Bug(value=8390)
-    public void testMaven3BuildWrongInheritence() throws Exception {
-        
+    @Issue("JENKINS-8390")
+    void testMaven3BuildWrongInheritance() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("incorrect-inheritence-testcase.zip")));
-        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
-        MavenModuleSetBuild mmsb =  m.scheduleBuild2( 0 ).get();
-        j.assertBuildStatus( Result.FAILURE, mmsb );
-        System.out.println("mmsb.getProject().getModules " + mmsb.getProject().getModules() );
-        assertTrue( mmsb.getProject().getModules().isEmpty());
+        m.setGoals("clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
+        MavenModuleSetBuild mmsb =  m.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, mmsb);
+        System.out.println("mmsb.getProject().getModules " + mmsb.getProject().getModules());
+        assertTrue(mmsb.getProject().getModules().isEmpty());
     }
 
     @Test
-    @Bug(value=8445)
-    public void testMavenSeveralModulesInDirectory() throws Exception {
-        
+    @Issue("JENKINS-8445")
+    void testMavenSeveralModulesInDirectory() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("several-modules-in-directory.zip")));
-        m.setGoals( "clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
+        m.setGoals("clean validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
-        assertFalse( mmsb.getProject().getModules().isEmpty());
+        assertFalse(mmsb.getProject().getModules().isEmpty());
     }
 
     @Test
     @Email("https://groups.google.com/d/msg/hudson-users/Xhw00UopVN0/FA9YqDAIsSYJ")
-    public void testMavenWithDependencyVersionInEnvVar() throws Exception {
-        
+    void testMavenWithDependencyVersionInEnvVar() throws Exception {
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mavenInstallation = configureMaven3x();
         ParametersDefinitionProperty parametersDefinitionProperty = 
-            new ParametersDefinitionProperty(new StringParameterDefinition( "JUNITVERSION", "3.8.2" ));
+            new ParametersDefinitionProperty(new StringParameterDefinition("JUNITVERSION", "3.8.2"));
         
-        m.addProperty( parametersDefinitionProperty );
-        m.setMaven( mavenInstallation.getName() );
+        m.addProperty(parametersDefinitionProperty);
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("envars-maven-project.zip")));
-        m.setGoals( "clean test-compile -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
+        m.setGoals("clean test-compile -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         MavenModuleSetBuild mmsb =  j.buildAndAssertSuccess(m);
-        assertFalse( mmsb.getProject().getModules().isEmpty());
+        assertFalse(mmsb.getProject().getModules().isEmpty());
     }
 
     @Test
-    @Bug(8484)
-    public void testMultiModMavenNonRecursive() throws Exception {
+    @Issue("JENKINS-8484")
+    void testMultiModMavenNonRecursive() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
-        m.setGoals( "-N validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
-        assertTrue("MavenModuleSet.isNonRecursive() should be true", m.isNonRecursive());
+        m.setGoals("-N validate -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
+        assertTrue(m.isNonRecursive(), "MavenModuleSet.isNonRecursive() should be true");
         j.buildAndAssertSuccess(m);
-        assertEquals("not only one module", 1, m.getModules().size());
+        assertEquals(1, m.getModules().size(), "not only one module");
     }
 
     @Test
-    @Bug(8573)
-    public void testBuildTimeStampProperty() throws Exception {
+    @Issue("JENKINS-8573")
+    void testBuildTimeStampProperty() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-8573.zip")));
-        m.setGoals( "process-resources -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8" );
+        m.setGoals("process-resources -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
         j.buildAndAssertSuccess(m);
-        String content = m.getLastBuild().getWorkspace().child( "target/classes/test.txt" ).readToString();
-        assertFalse( content.contains( "${maven.build.timestamp}") );
-        assertFalse( content.contains( "${maven.build.timestamp}") );
+        String content = m.getLastBuild().getWorkspace().child("target/classes/test.txt").readToString();
+        assertFalse(content.contains("${maven.build.timestamp}"));
+        assertFalse(content.contains("${maven.build.timestamp}"));
     }
 
     @Test
-    @Bug(1557)
-    public void testDuplicateTestResults() throws Exception {
+    @Issue("JENKINS-1557")
+    void testDuplicateTestResults() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-1557.zip")));
         m.setGoals("verify -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
@@ -226,15 +216,15 @@ public abstract class AbstractMaven3xBuildTest {
     @Issue("JENKINS-9326")
     // Because of https://bugs.eclipse.org/bugs/show_bug.cgi?id=340852 this test is failing
     // if you maven installation (MAVEN_HOME) is using a symbolic link
-    @Ignore("Flaky test which need too much external resource download")
-    public void testTychoTestResults() throws Exception {
+    @Disabled("Flaky test which need too much external resource download")
+    void testTychoTestResults() throws Exception {
         // a pain to get tycho build working with 11
         if(!SystemUtils.IS_JAVA_1_8) return;
 
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setRootPOM( "org.foobar.build/pom.xml" );
-        m.setMaven( mavenInstallation.getName() );
+        m.setRootPOM("org.foobar.build/pom.xml");
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("JENKINS-9326.zip"),"foobar"));
         m.setGoals("verify -Dtycho-version=1.0.0");
@@ -243,7 +233,7 @@ public abstract class AbstractMaven3xBuildTest {
         MavenModule testModule = null;
         for (MavenModule mavenModule : m.getModules()) {
             System.out.println("module " + mavenModule.getName() + "/" + mavenModule.getDisplayName());
-            if ("org.foobar:org.foobar.test".equals( mavenModule.getName() )) testModule = mavenModule;
+            if ("org.foobar:org.foobar.test".equals(mavenModule.getName())) testModule = mavenModule;
         }
 
         AbstractTestResultAction trpa = testModule.getLastBuild().getAction(AbstractTestResultAction.class);
@@ -253,16 +243,16 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(9326)
-    @Ignore("Flaky test which need too much external resource download")
-    public void testTychoEclipseTestResults() throws Exception {
+    @Issue("JENKINS-9326")
+    @Disabled("Flaky test which need too much external resource download")
+    void testTychoEclipseTestResults() throws Exception {
         // a pain to get tycho build working with 11
         if(!SystemUtils.IS_JAVA_1_8) return;
 
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setRootPOM( "org.foobar.build/pom.xml" );
-        m.setMaven( mavenInstallation.getName() );
+        m.setRootPOM("org.foobar.build/pom.xml");
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("foobar_eclipse_with_fix.zip"),"foobar_eclipse"));
         m.setGoals("verify -Dtycho-version=1.0.0");
@@ -273,7 +263,7 @@ public abstract class AbstractMaven3xBuildTest {
         MavenModule testModule = null;
         for (MavenModule mavenModule : m.getModules()) {
             System.out.println("module '" + mavenModule.getName() + "/" + mavenModule.getDisplayName() + "'");
-            if ("org.foobar:org.foobar.test".equals( mavenModule.getName() )) testModule = mavenModule;
+            if ("org.foobar:org.foobar.test".equals(mavenModule.getName())) testModule = mavenModule;
         }
 
         AbstractTestResultAction trpa = testModule.getLastBuild().getAction(AbstractTestResultAction.class);
@@ -281,17 +271,17 @@ public abstract class AbstractMaven3xBuildTest {
         assertEquals(getTychoEclipseTestResultsCount(), totalCount);
     }
 
-    int getTychoEclipseTestResultsCount() {
+    protected int getTychoEclipseTestResultsCount() {
         return 1;
     }
 
     @Test
-    @Bug(11964)
-    public void testSingleModuleBuild() throws Exception {
+    @Issue("JENKINS-11964")
+    void testSingleModuleBuild() throws Exception {
         // Given a multi-module build.
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setMaven( mavenInstallation.getName() );
+        m.setMaven(mavenInstallation.getName());
         m.getReporters().add(new TestReporter());
         m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
         m.setGoals("verify -Dmaven.compiler.target=1.8 -Dmaven.compiler.source=1.8");
@@ -302,7 +292,7 @@ public abstract class AbstractMaven3xBuildTest {
         MavenBuild isolated = j.buildAndAssertSuccess(singleModule);
 
         // Then only the single module should have been built.
-        Collection<MavenModule> expectedNonBuiltModules = new ArrayList<MavenModule>(m.getModules());
+        Collection<MavenModule> expectedNonBuiltModules = new ArrayList<>(m.getModules());
         expectedNonBuiltModules.remove(singleModule);
 
         assertEquals(2, isolated.number);
@@ -317,8 +307,8 @@ public abstract class AbstractMaven3xBuildTest {
     }
 
     @Test
-    @Bug(12109)
-    public void testMultiModuleInvalidRecursivePom() throws Exception {
+    @Issue("JENKINS-12109")
+    void testMultiModuleInvalidRecursivePom() throws Exception {
         MavenInstallation mavenInstallation = configureMaven3x();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "JENKINS-12109");
         m.setMaven(mavenInstallation.getName());
@@ -331,7 +321,7 @@ public abstract class AbstractMaven3xBuildTest {
 
     private static class TestReporter extends MavenReporter {
         @Override
-        public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+        public boolean end(MavenBuild build, Launcher launcher, BuildListener listener) {
             assertNotNull(build.getProject().getWorkspace());
             assertNotNull(build.getWorkspace());
             return true;

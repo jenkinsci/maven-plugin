@@ -4,15 +4,19 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
-public class PomInfoTest {
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
+class PomInfoTest {
+
     private MavenProject project;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         project = new MavenProject();
         project.setGroupId("test");
         project.setArtifactId("testmodule");
@@ -23,7 +27,7 @@ public class PomInfoTest {
     }
 
     @Test
-    public void testImportedDependencyManagementIncludedInDependencies() {
+    void testImportedDependencyManagementIncludedInDependencies() {
         Dependency depImport = new Dependency();
         depImport.setGroupId("importedGroup");
         depImport.setArtifactId("importedArtifact");
@@ -33,11 +37,11 @@ public class PomInfoTest {
         ModuleDependency modDepImport = new ModuleDependency(depImport);
 
         final PomInfo pomInfo = new PomInfo(project, null, "relPath");
-        Assert.assertTrue(pomInfo.dependencies.contains(modDepImport));
+        assertTrue(pomInfo.dependencies.contains(modDepImport));
     }
 
     @Test
-    public void testRegularDependencyManagementNotIncludedInDependencies() {
+    void testRegularDependencyManagementNotIncludedInDependencies() {
         Dependency depImport = new Dependency();
         depImport.setGroupId("group");
         depImport.setArtifactId("artifact");
@@ -46,6 +50,6 @@ public class PomInfoTest {
         ModuleDependency modDepImport = new ModuleDependency(depImport);
 
         final PomInfo pomInfo = new PomInfo(project, null, "relPath");
-        Assert.assertFalse(pomInfo.dependencies.contains(modDepImport));
+        assertFalse(pomInfo.dependencies.contains(modDepImport));
     }
 }

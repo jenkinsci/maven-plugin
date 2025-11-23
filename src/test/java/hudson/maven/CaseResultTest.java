@@ -28,23 +28,33 @@ import hudson.maven.reporters.SurefireReport;
 import hudson.model.Result;
 import hudson.tasks.junit.CaseResult;
 import hudson.tasks.junit.TestResult;
-import static org.junit.Assert.*;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class CaseResultTest {
+@WithJenkins
+class CaseResultTest {
 
-    @Rule public JenkinsRule j = new MavenJenkinsRule();
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     /**
      * Verifies that the error message and stacktrace from a failed junit test actually render properly.
      */
-    @Bug(4257)
-    @Test public void mavenErrorMsgAndStacktraceRender() throws Exception {
+    @Issue("JENKINS-4257")
+    @Test
+    void mavenErrorMsgAndStacktraceRender() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "maven-render-test");
         m.setScm(new ExtractResourceSCM(m.getClass().getResource("maven-test-failure-findbugs.zip")));
@@ -56,8 +66,8 @@ public class CaseResultTest {
         CaseResult cr = tr.getFailedTests().get(0);
         assertEquals("test.AppTest",cr.getClassName());
         assertEquals("testApp",cr.getName());
-        assertNotNull("Error details should not be null", cr.getErrorDetails());
-        assertNotNull("Error stacktrace should not be null", cr.getErrorStackTrace());
+        assertNotNull(cr.getErrorDetails(), "Error details should not be null");
+        assertNotNull(cr.getErrorStackTrace(), "Error stacktrace should not be null");
     }
 
 }

@@ -29,38 +29,50 @@ import hudson.plugins.promoted_builds.PromotedBuildAction;
 import hudson.plugins.promoted_builds.PromotionProcess;
 import hudson.plugins.promoted_builds.conditions.SelfPromotionCondition;
 import hudson.plugins.promoted_builds.tasks.RedeployBatchTaskPublisher;
-import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import jenkins.mvn.FilePathSettingsProvider;
 import org.apache.commons.lang3.StringUtils;
-import static org.junit.Assert.*;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
+
 import org.jvnet.hudson.test.*;
+import org.jvnet.hudson.test.junit.jupiter.BuildWatcherExtension;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-public class RedeployPublisherTest {
+@WithJenkins
+class RedeployPublisherTest {
 
-    @ClassRule public static BuildWatcher buildWatcher = new BuildWatcher();
-    @Rule public JenkinsRule j = new MavenJenkinsRule();
-    @Rule public TemporaryFolder tmp = new TemporaryFolder();
+    @SuppressWarnings("unused")    
+    @RegisterExtension
+    private static final BuildWatcherExtension BUILD_WATCHER = new BuildWatcherExtension();
+
+    @TempDir
+    private File tmp;
+
+    private JenkinsRule j;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        j = rule;
+    }
 
     @RandomlyFails("Not a v4.0.0 POM. for project org.jvnet.maven-antrun-extended-plugin:maven-antrun-extended-plugin at /home/jenkins/.m2/repository/org/jvnet/maven-antrun-extended-plugin/maven-antrun-extended-plugin/1.39/maven-antrun-extended-plugin-1.39.pom")
-    @Bug(2593)
+    @Issue("JENKINS-2593")
     @Test
-    public void testBug2593() throws Exception {
+    void testBug2593() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
-        File repo = tmp.getRoot();
+        File repo = tmp;
 
         // a fake build
         m2.setScm(new SingleFileSCM("pom.xml",getClass().getResource("big-artifact.pom")));
@@ -77,7 +89,7 @@ public class RedeployPublisherTest {
     }
 
     @Test
-    public void testConfigRoundtrip() throws Exception {
+    void testConfigRoundtrip() throws Exception {
         MavenModuleSet p = j.jenkins.createProject(MavenModuleSet.class, "p");
         RedeployPublisher rp = new RedeployPublisher("theId", "http://some.url/", true, true);
         p.getPublishersList().add(rp);
@@ -89,12 +101,12 @@ public class RedeployPublisherTest {
      * Are we having a problem in handling file names with multiple extensions, like ".tar.gz"?
      */
     @Email("http://www.nabble.com/tar.gz-becomes-.gz-after-Hudson-deployment-td25391364.html")
-    @Bug(3814)
+    @Issue("JENKINS-3814")
     @Test
-    public void testTarGz() throws Exception {
+    void testTarGz() throws Exception {
         ToolInstallations.configureMaven35();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
-        File repo = tmp.getRoot();
+        File repo = tmp;
 
         // a fake build
         m2.setScm(new SingleFileSCM("pom.xml",getClass().getResource("targz-artifact.pom")));
@@ -104,16 +116,16 @@ public class RedeployPublisherTest {
         j.assertBuildStatus(Result.SUCCESS, b);
 
         String[] files =
-            new File(repo,"test/test/0.1-SNAPSHOT").list( ( dir, name ) -> name.startsWith( "test-0.1-" ) && name.endsWith( "-1-bin.tar.gz" ) );
+            new File(repo,"test/test/0.1-SNAPSHOT").list((dir, name) -> name.startsWith("test-0.1-") && name.endsWith("-1-bin.tar.gz"));
 
-        assertTrue("tar.gz doesn't exist",files.length==1);
+        assertEquals(1, files.length, "tar.gz doesn't exist");
     }
-    
+
     @Test
-    public void testTarGzUniqueVersionTrue() throws Exception {
+    void testTarGzUniqueVersionTrue() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
-        File repo = tmp.getRoot();
+        File repo = tmp;
         
         // a fake build
         m2.setScm(new SingleFileSCM("pom.xml",getClass().getResource("targz-artifact.pom")));
@@ -123,47 +135,41 @@ public class RedeployPublisherTest {
         j.assertBuildStatus(Result.SUCCESS, b);
 
         File artifactDir = new File(repo,"test/test/0.1-SNAPSHOT/");
-        String[] files = artifactDir.list( new FilenameFilter()
-        {
-            
-            public boolean accept( File dir, String name )
-            {
-                System.out.print( "deployed file " + name );
-                return name.contains( "-bin.tar.gz" ) || name.endsWith( ".jar" ) || name.endsWith( "-bin.zip" );
-            }
+        String[] files = artifactDir.list((dir, name) -> {
+            System.out.print("deployed file " + name);
+            return name.contains("-bin.tar.gz") || name.endsWith(".jar") || name.endsWith("-bin.zip");
         });
-        System.out.println("deployed files " + Arrays.asList( files ));
-        assertFalse("tar.gz doesn't exist",new File(repo,"test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-bin.tar.gz").exists());
-        assertTrue("tar.gz doesn't exist",!files[0].contains( "SNAPSHOT" ));
+        System.out.println("deployed files " + Arrays.asList(files));
+        assertFalse(new File(repo,"test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-bin.tar.gz").exists(),"tar.gz doesn't exist");
+        assertFalse(files[0].contains("SNAPSHOT"), "tar.gz doesn't exist");
         for (String file : files) {
-            if (file.endsWith( "-bin.tar.gz" )) {
-                String ver = StringUtils.remove( file, "-bin.tar.gz" );
-                ver = ver.substring( ver.length() - 1, ver.length() );
-                assertEquals("-bin.tar.gz not ended with 1 , file " + file , "1", ver);
+            if (file.endsWith("-bin.tar.gz")) {
+                String ver = StringUtils.remove(file, "-bin.tar.gz");
+                ver = ver.substring(ver.length() - 1);
+                assertEquals("1", ver, "-bin.tar.gz not ended with 1 , file " + file);
             }
-            if (file.endsWith( ".jar" )) {
-                String ver = StringUtils.remove( file, ".jar" );
-                ver = ver.substring( ver.length() - 1, ver.length() );
-                assertEquals(".jar not ended with 1 , file " + file , "1", ver);
+            if (file.endsWith(".jar")) {
+                String ver = StringUtils.remove(file, ".jar");
+                ver = ver.substring(ver.length() - 1);
+                assertEquals("1", ver, ".jar not ended with 1 , file " + file);
             }            
-            if (file.endsWith( "-bin.zip" )) {
-                String ver = StringUtils.remove( file, "-bin.zip" );
-                ver = ver.substring( ver.length() - 1, ver.length() );
-                assertEquals("-bin.zip not ended with 1 , file " + file , "1", ver);
+            if (file.endsWith("-bin.zip")) {
+                String ver = StringUtils.remove(file, "-bin.zip");
+                ver = ver.substring(ver.length() - 1);
+                assertEquals("1", ver, "-bin.zip not ended with 1 , file " + file);
             }            
         }
         assertEquals(1, b.getModuleBuilds().size());
         assertEquals(1, b.getModuleBuilds().values().iterator().next().size());
         assertEquals(5, b.getModuleBuilds().values().iterator().next().iterator().next().getArtifacts().size());
-    }    
-    
+    }
+
     @Test
-    public void testTarGzMaven3() throws Exception {
-        
+    void testTarGzMaven3() throws Exception {
         MavenModuleSet m3 = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mvn = Maven36xBuildTest.configureMaven36();
-        m3.setMaven( mvn.getName() );
-        File repo = tmp.getRoot();
+        m3.setMaven(mvn.getName());
+        File repo = tmp;
         // a fake build
         m3.setScm(new SingleFileSCM("pom.xml",getClass().getResource("targz-artifact.pom")));
         m3.getPublishersList().add(new RedeployPublisher("",repo.toURI().toString(),false, false));
@@ -171,26 +177,19 @@ public class RedeployPublisherTest {
         MavenModuleSetBuild b = m3.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.SUCCESS, b);
 
-        assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
+        assertTrue(MavenUtil.maven3orLater(b.getMavenVersionUsed()));
         File artifactDir = new File(repo,"test/test/0.1-SNAPSHOT/");
-        String[] files = artifactDir.list( new FilenameFilter()
-        {
-            
-            public boolean accept( File dir, String name )
-            {
-                return name.endsWith( "tar.gz" );
-            }
-        });
-        assertFalse("tar.gz doesn't exist",new File(repo,"test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-bin.tar.gz").exists());
-        assertTrue("tar.gz doesn't exist",!files[0].contains( "SNAPSHOT" ));
-    }    
-    
+        String[] files = artifactDir.list((dir, name) -> name.endsWith("tar.gz"));
+        assertFalse(new File(repo,"test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-bin.tar.gz").exists(),"tar.gz doesn't exist");
+        assertFalse(files[0].contains("SNAPSHOT"), "tar.gz doesn't exist");
+    }
+
     @Test
-    public void testTarGzUniqueVersionTrueMaven3() throws Exception {
+    void testTarGzUniqueVersionTrueMaven3() throws Exception {
         MavenModuleSet m3 = j.jenkins.createProject(MavenModuleSet.class, "p");
         MavenInstallation mvn = Maven36xBuildTest.configureMaven36();
-        m3.setMaven( mvn.getName() );        
-        File repo = tmp.getRoot();
+        m3.setMaven(mvn.getName());        
+        File repo = tmp;
         // a fake build
         m3.setScm(new SingleFileSCM("pom.xml",getClass().getResource("targz-artifact.pom")));
         m3.getPublishersList().add(new RedeployPublisher("",repo.toURI().toString(),true, false));
@@ -198,45 +197,38 @@ public class RedeployPublisherTest {
         MavenModuleSetBuild b = m3.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.SUCCESS, b);
         
-        assertTrue( MavenUtil.maven3orLater( b.getMavenVersionUsed() ) );
+        assertTrue(MavenUtil.maven3orLater(b.getMavenVersionUsed()));
         
         File artifactDir = new File(repo,"test/test/0.1-SNAPSHOT/");
-        String[] files = artifactDir.list( new FilenameFilter()
-        {
-            
-            public boolean accept( File dir, String name )
-            {
-                return name.contains( "-bin.tar.gz" ) || name.endsWith( ".jar" ) || name.endsWith( "-bin.zip" );
-            }
-        });
-        System.out.println("deployed files " + Arrays.asList( files ));
-        assertFalse("tar.gz doesn't exist",new File(repo,"test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-bin.tar.gz").exists());
-        assertTrue("tar.gz doesn't exist",!files[0].contains( "SNAPSHOT" ));
+        String[] files = artifactDir.list((dir, name) -> name.contains("-bin.tar.gz") || name.endsWith(".jar") || name.endsWith("-bin.zip"));
+        System.out.println("deployed files " + Arrays.asList(files));
+        assertFalse(new File(repo,"test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-bin.tar.gz").exists(),"tar.gz doesn't exist");
+        assertFalse(files[0].contains("SNAPSHOT"), "tar.gz doesn't exist");
         for (String file : files) {
-            if (file.endsWith( "-bin.tar.gz" )) {
-                String ver = StringUtils.remove( file, "-bin.tar.gz" );
-                ver = ver.substring( ver.length() - 1, ver.length() );
-                assertEquals("-bin.tar.gz not ended with 1 , file " + file , "1", ver);
+            if (file.endsWith("-bin.tar.gz")) {
+                String ver = StringUtils.remove(file, "-bin.tar.gz");
+                ver = ver.substring(ver.length() - 1);
+                assertEquals("1", ver, "-bin.tar.gz not ended with 1 , file " + file);
             }
-            if (file.endsWith( ".jar" )) {
-                String ver = StringUtils.remove( file, ".jar" );
-                ver = ver.substring( ver.length() - 1, ver.length() );
-                assertEquals(".jar not ended with 1 , file " + file , "1", ver);
+            if (file.endsWith(".jar")) {
+                String ver = StringUtils.remove(file, ".jar");
+                ver = ver.substring(ver.length() - 1);
+                assertEquals("1", ver, ".jar not ended with 1 , file " + file);
             }            
-            if (file.endsWith( "-bin.zip" )) {
-                String ver = StringUtils.remove( file, "-bin.zip" );
-                ver = ver.substring( ver.length() - 1, ver.length() );
-                assertEquals("-bin.zip not ended with 1 , file " + file , "1", ver);
+            if (file.endsWith("-bin.zip")) {
+                String ver = StringUtils.remove(file, "-bin.zip");
+                ver = ver.substring(ver.length() - 1);
+                assertEquals("1", ver, "-bin.zip not ended with 1 , file " + file);
             }            
         }
-    }    
+    }
 
-    @Bug(3773)
+    @Issue("JENKINS-3773")
     @Test
-    public void testDeployUnstable() throws Exception {
+    void testDeployUnstable() throws Exception {
         Maven36xBuildTest.configureMaven36();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
-        File repo = tmp.getRoot();
+        File repo = tmp;
         // a build with a failing unit tests
         m2.setScm(new ExtractResourceSCM(getClass().getResource("maven-test-failure-findbugs.zip")));
         m2.getPublishersList().add(new RedeployPublisher("",repo.toURI().toString(),false, true));
@@ -244,17 +236,17 @@ public class RedeployPublisherTest {
         MavenModuleSetBuild b = m2.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.UNSTABLE, b);
 
-        assertTrue("Artifact should have been published even when the build is unstable",
+        assertTrue(new File(repo,"test/test/1.0-SNAPSHOT").isDirectory(),
             // exact filename unpreductable in M3, e.g. test-1.0-20160317.213607-1.jar
-                   new File(repo,"test/test/1.0-SNAPSHOT").isDirectory());
+                   "Artifact should have been published even when the build is unstable");
     }
 
-    @Bug(7010)
+    @Issue("JENKINS-7010")
     @Test
-    public void testSettingsInsidePromotion() throws Exception {
+    void testSettingsInsidePromotion() throws Exception {
         ToolInstallations.configureMaven35();
         MavenModuleSet m2 = j.jenkins.createProject(MavenModuleSet.class, "p");
-        File repo = tmp.getRoot();
+        File repo = tmp;
         URL resource = RedeployPublisherTest.class.getResource("settings.xml");
         File customUserSettings = new File(resource.toURI().getPath());
 
@@ -284,19 +276,18 @@ public class RedeployPublisherTest {
         }
 
         // We should have one promotion
-        assertEquals("1 promotion expected", 1, promotedBuildAction.getPromotions().size());
+        assertEquals(1, promotedBuildAction.getPromotions().size(), "1 promotion expected");
 
         // The promotion should succeed
-        assertEquals("promotion succeeded", Result.SUCCESS, promotedBuildAction.getPromotion("deploy").getLast().getResult());
+        assertEquals(Result.SUCCESS, promotedBuildAction.getPromotion("deploy").getLast().getResult(), "promotion succeeded");
 
         // no more unique version but only timestamped
-        String[] poms = new File(repo,"test/maven/simple-pom/1.0-SNAPSHOT/").list( ( dir, name ) ->
-            name.startsWith( "simple-pom-1.0-" ) && name.endsWith( "-1.pom" ) );
+        String[] poms = new File(repo,"test/maven/simple-pom/1.0-SNAPSHOT/").list((dir, name) ->
+            name.startsWith("simple-pom-1.0-") && name.endsWith("-1.pom"));
         // It should have deployed the artifact
-        assertTrue("Artifact should have been published", poms.length==1);
+        assertEquals(1, poms.length, "Artifact should have been published");
         // The RedeployPublisher should display the information that it used the custom settings.xml file
         // There is no easy solution to test that the custom settings are used excepted the log
         j.assertLogContains(customUserSettings.getAbsolutePath(),promotedBuildAction.getPromotion("deploy").getLast());
-
     }
 }
