@@ -29,7 +29,7 @@ THE SOFTWARE.
       <l:task icon="icon-document icon-md" href="systemProperties" title="${%System Properties}" />
       <l:task icon="icon-document icon-md" href="envVars" title="${%Environment Variables}" />
       <l:task icon="icon-document icon-md" href="threads" title="${%Thread Dump}" />
-      <l:hasPermission permission="${app.RUN_SCRIPTS}">
+      <l:hasPermission permission="${app.ADMINISTER}">
         <l:task icon="icon-notepad icon-md" href="script" title="${%Script Console}" />
       </l:hasPermission>
     </l:tasks>
