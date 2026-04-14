@@ -43,7 +43,7 @@ THE SOFTWARE.
   <url>https://github.com/jenkinsci/${project.artifactId}</url>
 
   <properties>
-    <revision>3.28</revision>
+    <revision>3.28.1</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->

@@ -64,7 +64,17 @@ public class ExecutionEventLogger
 
     public ExecutionEventLogger( Logger logger, String mojoNote )
     {
-        super(logger);
+        // IMPORTANT: Do NOT call super(logger) here. The Logger parameter comes from the
+        // Jenkins controller/remoting classloader, while the parent class
+        // (org.apache.maven.cli.event.ExecutionEventLogger) is loaded from Maven's plexus.core
+        // ClassRealm. If we pass the Logger to super(), the JVM detects that the org.slf4j.Logger
+        // interface was loaded by two different classloaders and throws a LinkageError:
+        //   "loader constraint violation: wants to load interface org.slf4j.Logger"
+        // By calling super() (no-arg), the parent obtains its own Logger from the plexus.core
+        // realm's LoggerFactory, keeping classloader boundaries clean.
+        // The child's logger field (from the controller classloader) is only used in overridden
+        // methods in this subclass, which never pass it back to the parent.
+        super();
         this.logger = logger;
         this.mojoNote = mojoNote;
     }
