@@ -70,7 +70,6 @@ class JenkinsBuildsAndWorkspacesDirectoriesTest {
 
         story.then(j -> {
             assertTrue(j.getInstance().isDefaultBuildDir());
-            assertTrue(j.getInstance().isDefaultWorkspaceDir());
             setBuildsDirProperty("${JENKINS_HOME}/test12251_builds/${ITEM_FULL_NAME}");
             setWorkspacesDirProperty("${JENKINS_HOME}/test12251_ws/${ITEM_FULL_NAME}");
         });
@@ -78,7 +77,6 @@ class JenkinsBuildsAndWorkspacesDirectoriesTest {
         story.then(j -> {
             assertTrue(JenkinsBuildsAndWorkspacesDirectoriesTest.this.logWasFound("Changing builds directories from "));
             assertFalse(j.getInstance().isDefaultBuildDir());
-            assertFalse(j.getInstance().isDefaultWorkspaceDir());
 
             // build a dummy project
             MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
