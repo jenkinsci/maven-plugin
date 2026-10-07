@@ -57,7 +57,7 @@ THE SOFTWARE.
     -->
     <mavenMinimalVersion>3.8.3</mavenMinimalVersion>
     <resolverVersion>1.7.3</resolverVersion>
-    <sisuInjectVersion>0.3.5</sisuInjectVersion>
+    <sisuInjectVersion>1.0.0</sisuInjectVersion>
     <wagonVersion>3.5.3</wagonVersion>
     <!-- TODO fix existing violatiosn -->
     <spotbugs.threshold>High</spotbugs.threshold>
